@@ -163,7 +163,7 @@ class BaseRepository[ModelType: Base]:
             return False
 
         if soft_delete and hasattr(db_obj, "deleted_at"):
-            db_obj.deleted_at = func.now()  # type: ignore[attr-defined]
+            db_obj.deleted_at = func.now()
             await self.db.flush()
         else:
             await self.db.delete(db_obj)
