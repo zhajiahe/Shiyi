@@ -12,6 +12,8 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
+# 确保所有模型被加载到元数据中
+from app import models  # noqa: F401
 from app.core.database import get_db
 from app.models.base import Base
 
@@ -177,7 +179,7 @@ async def superuser_token(client: TestClient, db: AsyncSession, cached_admin_pas
     from app.models.user import User
 
     # 检查是否已存在admin用户
-    result = await db.execute(select(User).where(User.username == "admin", User.deleted == 0))
+    result = await db.execute(select(User).where(User.username == "admin", User.deleted_at.is_(None)))
     existing_user = result.scalar_one_or_none()
 
     if not existing_user:

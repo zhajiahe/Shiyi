@@ -48,13 +48,13 @@ async def create_superuser():
     async with AsyncSessionLocal() as db:
         try:
             # 检查用户名是否已存在
-            result = await db.execute(select(User).where(User.username == username, User.deleted == 0))
+            result = await db.execute(select(User).where(User.username == username, User.deleted_at.is_(None)))
             if result.scalar_one_or_none():
                 logger.error(f"❌ 用户名 '{username}' 已存在")
                 return
 
             # 检查邮箱是否已存在
-            result = await db.execute(select(User).where(User.email == email, User.deleted == 0))
+            result = await db.execute(select(User).where(User.email == email, User.deleted_at.is_(None)))
             if result.scalar_one_or_none():
                 logger.error(f"❌ 邮箱 '{email}' 已存在")
                 return

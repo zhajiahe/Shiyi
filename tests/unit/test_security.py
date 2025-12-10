@@ -4,6 +4,8 @@
 测试密码哈希、JWT 令牌等安全功能
 """
 
+import uuid
+
 import pytest
 
 from app.core.security import (
@@ -78,7 +80,7 @@ class TestJWTTokens:
     @pytest.mark.unit
     def test_create_tokens(self):
         """测试令牌创建"""
-        user_data = {"user_id": 1}
+        user_data = {"user_id": uuid.uuid4()}
         access_token, refresh_token = create_tokens(user_data)
 
         assert access_token is not None
@@ -90,7 +92,7 @@ class TestJWTTokens:
     @pytest.mark.unit
     def test_verify_access_token_success(self):
         """测试访问令牌验证成功"""
-        user_id = 123
+        user_id = str(uuid.uuid4())
         access_token, _ = create_tokens({"user_id": user_id})
 
         class MockException(Exception):
@@ -112,7 +114,7 @@ class TestJWTTokens:
     @pytest.mark.unit
     def test_verify_refresh_token_success(self):
         """测试刷新令牌验证成功"""
-        user_id = 456
+        user_id = str(uuid.uuid4())
         _, refresh_token = create_tokens({"user_id": user_id})
 
         class MockException(Exception):
@@ -134,7 +136,7 @@ class TestJWTTokens:
     @pytest.mark.unit
     def test_access_token_cannot_be_used_as_refresh(self):
         """测试访问令牌不能作为刷新令牌使用"""
-        access_token, _ = create_tokens({"user_id": 1})
+        access_token, _ = create_tokens({"user_id": str(uuid.uuid4())})
 
         class MockException(Exception):
             pass
@@ -145,7 +147,7 @@ class TestJWTTokens:
     @pytest.mark.unit
     def test_refresh_token_cannot_be_used_as_access(self):
         """测试刷新令牌不能作为访问令牌使用"""
-        _, refresh_token = create_tokens({"user_id": 1})
+        _, refresh_token = create_tokens({"user_id": str(uuid.uuid4())})
 
         class MockException(Exception):
             pass

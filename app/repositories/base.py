@@ -26,7 +26,7 @@ class BaseRepository[ModelType: Base]:
         self.model = model
         self.db = db
 
-    async def get_by_id(self, id: int) -> ModelType | None:
+    async def get_by_id(self, id: str) -> ModelType | None:
         """
         根据 ID 获取单个记录
 
@@ -38,9 +38,9 @@ class BaseRepository[ModelType: Base]:
         """
         query = select(self.model).where(self.model.id == id)  # type: ignore[attr-defined]
 
-        # 如果模型有 deleted 字段，过滤已删除记录
-        if hasattr(self.model, "deleted"):
-            query = query.where(self.model.deleted == 0)  # type: ignore[attr-defined]
+        # 如果模型有 deleted_at 字段，过滤已删除记录
+        if hasattr(self.model, "deleted_at"):
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
@@ -65,9 +65,9 @@ class BaseRepository[ModelType: Base]:
         """
         query = select(self.model)
 
-        # 如果模型有 deleted 字段，过滤已删除记录
-        if hasattr(self.model, "deleted"):
-            query = query.where(self.model.deleted == 0)  # type: ignore[attr-defined]
+        # 如果模型有 deleted_at 字段，过滤已删除记录
+        if hasattr(self.model, "deleted_at"):
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         # 应用过滤条件
         if filters:
@@ -95,9 +95,9 @@ class BaseRepository[ModelType: Base]:
         """
         query = select(func.count()).select_from(self.model)
 
-        # 如果模型有 deleted 字段，过滤已删除记录
-        if hasattr(self.model, "deleted"):
-            query = query.where(self.model.deleted == 0)  # type: ignore[attr-defined]
+        # 如果模型有 deleted_at 字段，过滤已删除记录
+        if hasattr(self.model, "deleted_at"):
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         # 应用过滤条件
         if filters:
@@ -147,7 +147,7 @@ class BaseRepository[ModelType: Base]:
         await self.db.refresh(db_obj)
         return db_obj
 
-    async def delete(self, id: int, *, soft_delete: bool = True) -> bool:
+    async def delete(self, id: str, *, soft_delete: bool = True) -> bool:
         """
         删除记录
 
@@ -162,8 +162,8 @@ class BaseRepository[ModelType: Base]:
         if not db_obj:
             return False
 
-        if soft_delete and hasattr(db_obj, "deleted"):
-            db_obj.deleted = 1
+        if soft_delete and hasattr(db_obj, "deleted_at"):
+            db_obj.deleted_at = func.now()  # type: ignore[attr-defined]
             await self.db.flush()
         else:
             await self.db.delete(db_obj)

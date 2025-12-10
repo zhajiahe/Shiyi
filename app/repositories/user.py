@@ -27,7 +27,7 @@ class UserRepository(BaseRepository[User]):
         Returns:
             用户实例或 None
         """
-        result = await self.db.execute(select(User).where(User.username == username, User.deleted == 0))
+        result = await self.db.execute(select(User).where(User.username == username, User.deleted_at.is_(None)))
         return result.scalar_one_or_none()
 
     async def get_by_email(self, email: str) -> User | None:
@@ -40,7 +40,7 @@ class UserRepository(BaseRepository[User]):
         Returns:
             用户实例或 None
         """
-        result = await self.db.execute(select(User).where(User.email == email, User.deleted == 0))
+        result = await self.db.execute(select(User).where(User.email == email, User.deleted_at.is_(None)))
         return result.scalar_one_or_none()
 
     async def search(
@@ -66,8 +66,8 @@ class UserRepository(BaseRepository[User]):
             (用户列表, 总数) 元组
         """
         # 基础查询
-        query = select(User).where(User.deleted == 0)
-        count_query = select(User).where(User.deleted == 0)
+        query = select(User).where(User.deleted_at.is_(None))
+        count_query = select(User).where(User.deleted_at.is_(None))
 
         # 关键词搜索
         if keyword:
@@ -102,7 +102,7 @@ class UserRepository(BaseRepository[User]):
 
         return users, total
 
-    async def username_exists(self, username: str, exclude_id: int | None = None) -> bool:
+    async def username_exists(self, username: str, exclude_id: str | None = None) -> bool:
         """
         检查用户名是否已存在
 
@@ -113,13 +113,13 @@ class UserRepository(BaseRepository[User]):
         Returns:
             是否存在
         """
-        query = select(User).where(User.username == username, User.deleted == 0)
+        query = select(User).where(User.username == username, User.deleted_at.is_(None))
         if exclude_id:
             query = query.where(User.id != exclude_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none() is not None
 
-    async def email_exists(self, email: str, exclude_id: int | None = None) -> bool:
+    async def email_exists(self, email: str, exclude_id: str | None = None) -> bool:
         """
         检查邮箱是否已存在
 
@@ -130,7 +130,7 @@ class UserRepository(BaseRepository[User]):
         Returns:
             是否存在
         """
-        query = select(User).where(User.email == email, User.deleted == 0)
+        query = select(User).where(User.email == email, User.deleted_at.is_(None))
         if exclude_id:
             query = query.where(User.id != exclude_id)
         result = await self.db.execute(query)

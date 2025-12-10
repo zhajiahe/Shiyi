@@ -5,6 +5,13 @@ SQLAlchemy数据模型模块
 """
 
 from app.models.base import Base, BasePageQuery, BaseResponse, BaseTableMixin, PageResponse, Token, TokenPayload
+from app.models.card import Card
+from app.models.card_template import CardTemplate
+from app.models.deck import Deck
+from app.models.note import Note
+from app.models.note_model import NoteModel
+from app.models.review_log import ReviewLog
+from app.models.shared_deck import SharedDeck
 from app.models.user import User
 
 __all__ = [
@@ -16,4 +23,11 @@ __all__ = [
     "Token",
     "TokenPayload",
     "User",
+    "NoteModel",
+    "CardTemplate",
+    "Deck",
+    "Note",
+    "Card",
+    "ReviewLog",
+    "SharedDeck",
 ]

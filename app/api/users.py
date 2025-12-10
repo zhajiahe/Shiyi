@@ -4,6 +4,8 @@
 提供用户的CRUD操作和认证相关接口
 """
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, status
 
 from app.core.deps import CurrentSuperUser, CurrentUser, DBSession
@@ -100,10 +102,10 @@ async def get_users(
 
 
 @router.get("/{user_id}", response_model=BaseResponse[UserResponse])
-async def get_user(user_id: int, _current_user: CurrentSuperUser, db: DBSession):
+async def get_user(user_id: UUID, _current_user: CurrentSuperUser, db: DBSession):
     """获取单个用户详情 - 需要超级管理员权限"""
     user_service = UserService(db)
-    user = await user_service.get_user(user_id)
+    user = await user_service.get_user(str(user_id))
     return BaseResponse(success=True, code=200, msg="获取用户成功", data=UserResponse.model_validate(user))
 
 
@@ -116,16 +118,16 @@ async def create_user(user_data: UserCreate, _current_user: CurrentSuperUser, db
 
 
 @router.put("/{user_id}", response_model=BaseResponse[UserResponse])
-async def update_user(user_id: int, user_data: UserUpdate, _current_user: CurrentSuperUser, db: DBSession):
+async def update_user(user_id: UUID, user_data: UserUpdate, _current_user: CurrentSuperUser, db: DBSession):
     """更新用户信息 - 需要超级管理员权限"""
     user_service = UserService(db)
-    user = await user_service.update_user(user_id, user_data)
+    user = await user_service.update_user(str(user_id), user_data)
     return BaseResponse(success=True, code=200, msg="更新用户成功", data=UserResponse.model_validate(user))
 
 
 @router.delete("/{user_id}", response_model=BaseResponse[None])
-async def delete_user(user_id: int, _current_user: CurrentSuperUser, db: DBSession):
+async def delete_user(user_id: UUID, _current_user: CurrentSuperUser, db: DBSession):
     """删除用户（逻辑删除）- 需要超级管理员权限"""
     user_service = UserService(db)
-    await user_service.delete_user(user_id)
+    await user_service.delete_user(str(user_id))
     return BaseResponse(success=True, code=200, msg="删除用户成功", data=None)

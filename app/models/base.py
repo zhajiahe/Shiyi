@@ -1,7 +1,8 @@
+import uuid
 from datetime import datetime
 
 from pydantic import BaseModel, Field, computed_field
-from sqlalchemy import DateTime, Integer, String, func
+from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -14,7 +15,12 @@ class Base(DeclarativeBase):
 class BaseTableMixin:
     """所有数据库表的Mixin，包含通用字段"""
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        comment="主键ID(UUID)",
+    )
     create_by: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="创建人")
     update_by: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="更新人")
     create_time: Mapped[datetime] = mapped_column(
@@ -23,7 +29,7 @@ class BaseTableMixin:
     update_time: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now(), onupdate=func.now(), comment="更新时间"
     )
-    deleted: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="逻辑删除(0:未删除 1:已删除)")
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, comment="逻辑删除时间")
 
 
 class BaseResponse[T](BaseModel):
@@ -66,7 +72,7 @@ class PageResponse[T](BaseModel):
 class Token(BaseModel):
     """Token基础数据"""
 
-    id: int
+    id: str
     nickname: str
     access_token: str
     refresh_token: str

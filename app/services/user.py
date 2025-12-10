@@ -20,7 +20,7 @@ class UserService:
         self.db = db
         self.user_repo = UserRepository(db)
 
-    async def get_user(self, user_id: int) -> User:
+    async def get_user(self, user_id: str) -> User:
         """
         获取单个用户
 
@@ -101,7 +101,7 @@ class UserService:
 
     async def update_user(
         self,
-        user_id: int,
+        user_id: str,
         user_data: UserUpdate,
     ) -> User:
         """
@@ -168,7 +168,7 @@ class UserService:
 
         return user
 
-    async def delete_user(self, user_id: int) -> None:
+    async def delete_user(self, user_id: str) -> None:
         """
         删除用户（逻辑删除）
 

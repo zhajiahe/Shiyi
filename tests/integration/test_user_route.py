@@ -4,6 +4,8 @@
 包含用户管理和认证相关的测试
 """
 
+import uuid
+
 from fastapi import status
 from fastapi.testclient import TestClient
 
@@ -431,7 +433,8 @@ class TestUserAPI:
 
     def test_get_user_not_found(self, client: TestClient, auth_headers: dict):
         """测试获取不存在的用户"""
-        response = client.get("/api/v1/users/99999", headers=auth_headers)
+        nonexistent_id = str(uuid.uuid4())
+        response = client.get(f"/api/v1/users/{nonexistent_id}", headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         data = response.json()
         assert "用户不存在" in data.get("msg", "") or "用户不存在" in data.get("detail", "")
@@ -469,7 +472,7 @@ class TestUserAPI:
 
     def test_update_user_not_found(self, client: TestClient, auth_headers: dict):
         """测试更新不存在的用户"""
-        response = client.put("/api/v1/users/99999", json={"nickname": "Test"}, headers=auth_headers)
+        response = client.put(f"/api/v1/users/{uuid.uuid4()}", json={"nickname": "Test"}, headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_delete_user(self, client: TestClient, auth_headers: dict):
@@ -498,5 +501,5 @@ class TestUserAPI:
 
     def test_delete_user_not_found(self, client: TestClient, auth_headers: dict):
         """测试删除不存在的用户"""
-        response = client.delete("/api/v1/users/99999", headers=auth_headers)
+        response = client.delete(f"/api/v1/users/{uuid.uuid4()}", headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND

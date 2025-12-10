@@ -1,6 +1,7 @@
 import hashlib
 import os
 from datetime import datetime, timedelta
+from uuid import UUID
 
 import bcrypt
 from fastapi.security import HTTPBearer
@@ -40,17 +41,28 @@ def get_token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
+def _normalize_token_payload(data: dict) -> dict:
+    """确保token负载可序列化且user_id为字符串"""
+    payload = data.copy()
+    user_id = payload.get("user_id")
+    if isinstance(user_id, UUID):
+        payload["user_id"] = str(user_id)
+    return payload
+
+
 def create_tokens(data: dict) -> tuple[str, str]:
     """创建访问令牌和刷新令牌"""
+    payload = _normalize_token_payload(data)
+
     # 访问令牌
     access_expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_payload = data.copy()
+    access_payload = payload.copy()
     access_payload.update({"exp": access_expire, "type": "access"})
     access_token = jwt.encode(access_payload, SECRET_KEY, algorithm=ALGORITHM)
 
     # 刷新令牌
     refresh_expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    refresh_payload = data.copy()
+    refresh_payload = payload.copy()
     refresh_payload.update({"exp": refresh_expire, "type": "refresh"})
     refresh_token = jwt.encode(refresh_payload, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
 
@@ -64,8 +76,10 @@ def verify_access_token(token: str, credentials_exception):
         if payload.get("type") != "access":
             raise credentials_exception
         # 从令牌中获取租户ID和用户ID并设置上下文
-        user_id = int(payload.get("user_id"))
-        return user_id
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise credentials_exception
+        return str(user_id)
     except JWTError as e:
         raise credentials_exception from e
 
@@ -76,7 +90,9 @@ def verify_refresh_token(token: str, credentials_exception):
         payload = jwt.decode(token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("type") != "refresh":
             raise credentials_exception
-        user_id = int(payload.get("user_id"))
-        return user_id
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise credentials_exception
+        return str(user_id)
     except JWTError as e:
         raise credentials_exception from e
