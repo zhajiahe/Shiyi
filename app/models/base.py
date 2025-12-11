@@ -21,12 +21,12 @@ class BaseTableMixin:
         default=lambda: str(uuid.uuid4()),
         comment="主键ID(UUID)",
     )
-    create_by: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="创建人")
-    update_by: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="更新人")
-    create_time: Mapped[datetime] = mapped_column(
+    created_by: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="创建人")
+    updated_by: Mapped[str | None] = mapped_column(String(50), nullable=True, comment="更新人")
+    created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now(), comment="创建时间"
     )
-    update_time: Mapped[datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now(), onupdate=func.now(), comment="更新时间"
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, comment="逻辑删除时间")
