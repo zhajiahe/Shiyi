@@ -4,7 +4,7 @@
 Note 是抽象知识单位，包含字段内容
 """
 
-from sqlalchemy import JSON, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, BaseTableMixin

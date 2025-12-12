@@ -8,7 +8,6 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-
 # ==================== 字段定义 ====================
 
 

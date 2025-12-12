@@ -96,7 +96,7 @@ class UserRepository(BaseRepository[User]):
         total = count_result.scalar() or 0
 
         # 分页查询
-        query = query.order_by(User.create_time.desc()).offset(skip).limit(limit)
+        query = query.order_by(User.created_at.desc()).offset(skip).limit(limit)
         result = await self.db.execute(query)
         users = list(result.scalars().all())
 

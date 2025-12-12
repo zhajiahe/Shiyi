@@ -4,7 +4,6 @@
 封装 ReviewLog 相关的数据库操作
 """
 
-import time
 from datetime import datetime, timedelta
 
 from sqlalchemy import func, select
@@ -88,7 +87,6 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
         Returns:
             统计数据
         """
-        now = int(time.time() * 1000)
         today_start = int(
             datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000
         )
