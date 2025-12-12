@@ -8,6 +8,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from app.api.cards import router as cards_router
+from app.api.decks import router as decks_router
+from app.api.note_models import router as note_models_router
+from app.api.notes import router as notes_router
+from app.api.review_logs import router as review_logs_router
+from app.api.shared_decks import router as shared_decks_router
+from app.api.shared_decks import template_set_router
 from app.api.users import auth_router
 from app.api.users import router as users_router
 from app.core.config import settings
@@ -67,6 +74,25 @@ app.include_router(auth_router, prefix="/api/v1")
 
 # 注册用户路由
 app.include_router(users_router, prefix="/api/v1")
+
+# 注册笔记类型路由
+app.include_router(note_models_router, prefix="/api/v1")
+
+# 注册牌组路由
+app.include_router(decks_router, prefix="/api/v1")
+
+# 注册笔记路由
+app.include_router(notes_router, prefix="/api/v1")
+
+# 注册卡片路由
+app.include_router(cards_router, prefix="/api/v1")
+
+# 注册复习日志路由
+app.include_router(review_logs_router, prefix="/api/v1")
+
+# 注册共享牌组路由
+app.include_router(shared_decks_router, prefix="/api/v1")
+app.include_router(template_set_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":
