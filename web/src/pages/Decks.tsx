@@ -222,13 +222,16 @@ export function DecksPage() {
                   创建一个新的牌组来组织您的学习内容
                 </DialogDescription>
               </DialogHeader>
-              <div className="py-4">
+              <div className="py-4 space-y-4">
                 <Input
                   placeholder="输入牌组名称"
                   value={newDeckName}
                   onChange={e => setNewDeckName(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleCreateDeck()}
                 />
+                <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                  💡 提示：创建空牌组后，您可以从「牌组市场」导入共享牌组内容，或等待后续版本支持手动添加笔记。
+                </p>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
