@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronRight, Home, Plus, Folder, BookOpen, Loader2, Trash2 } from 'lucide-react'
+import { 
+  ChevronRight, Home, Plus, Folder, BookOpen, Loader2, Trash2,
+  MoreVertical, Edit, Download
+} from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +17,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { deckRepository } from '@/db/repositories'
+import { db } from '@/db'
 import type { Deck } from '@/types'
 
 export function DecksPage() {
@@ -25,6 +36,12 @@ export function DecksPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [newDeckName, setNewDeckName] = useState('')
   const [creating, setCreating] = useState(false)
+  
+  // 重命名对话框状态
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [renameDeckId, setRenameDeckId] = useState<string | null>(null)
+  const [renameDeckName, setRenameDeckName] = useState('')
+  const [renaming, setRenaming] = useState(false)
 
   useEffect(() => {
     loadDecks()
@@ -61,9 +78,8 @@ export function DecksPage() {
     }
   }
 
-  const handleDeleteDeck = async (deckId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!confirm('确定要删除这个牌组吗？')) return
+  const handleDeleteDeck = async (deckId: string) => {
+    if (!confirm('确定要删除这个牌组吗？所有关联的笔记和卡片也会被删除。')) return
     
     await deckRepository.delete(deckId)
     await loadDecks()
@@ -71,6 +87,101 @@ export function DecksPage() {
 
   const handleStudyDeck = (deckId: string) => {
     navigate(`/review?deck=${deckId}`)
+  }
+  
+  // 打开重命名对话框
+  const openRenameDialog = (deck: Deck) => {
+    setRenameDeckId(deck.id)
+    setRenameDeckName(deck.name)
+    setRenameDialogOpen(true)
+  }
+  
+  // 执行重命名
+  const handleRenameDeck = async () => {
+    if (!renameDeckId || !renameDeckName.trim()) return
+    
+    try {
+      setRenaming(true)
+      await deckRepository.update(renameDeckId, { name: renameDeckName.trim() })
+      setRenameDialogOpen(false)
+      setRenameDeckId(null)
+      setRenameDeckName('')
+      await loadDecks()
+    } finally {
+      setRenaming(false)
+    }
+  }
+  
+  // 导出牌组为 JSON 文件
+  const handleExportDeck = async (deck: Deck) => {
+    try {
+      // 收集牌组相关的所有数据
+      const notes = await db.notes.where('deckId').equals(deck.id).filter(n => !n.deletedAt).toArray()
+      const cards = await db.cards.where('deckId').equals(deck.id).filter(c => !c.deletedAt).toArray()
+      
+      // 收集笔记类型
+      const noteModelIds = new Set(notes.map(n => n.noteModelId))
+      const noteModels = []
+      const cardTemplates = []
+      
+      for (const nmId of noteModelIds) {
+        const nm = await db.noteModels.get(nmId)
+        if (nm) {
+          noteModels.push(nm)
+          const templates = await db.cardTemplates.where('noteModelId').equals(nmId).toArray()
+          cardTemplates.push(...templates)
+        }
+      }
+      
+      // 构建导出数据
+      const exportData = {
+        version: 1,
+        exportDate: new Date().toISOString(),
+        deck: {
+          id: deck.id,
+          name: deck.name,
+          description: deck.description,
+          config: deck.config,
+          scheduler: deck.scheduler,
+        },
+        noteModels,
+        cardTemplates,
+        notes: notes.map(n => ({
+          id: n.id,
+          noteModelId: n.noteModelId,
+          guid: n.guid,
+          fields: n.fields,
+          tags: n.tags,
+        })),
+        cards: cards.map(c => ({
+          id: c.id,
+          noteId: c.noteId,
+          cardTemplateId: c.cardTemplateId,
+          ord: c.ord,
+          state: c.state,
+          queue: c.queue,
+          due: c.due,
+          interval: c.interval,
+          easeFactor: c.easeFactor,
+          reps: c.reps,
+          lapses: c.lapses,
+        })),
+      }
+      
+      // 创建并下载文件
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${deck.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}_backup.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('导出失败，请重试')
+    }
   }
 
   return (
@@ -173,14 +284,35 @@ export function DecksPage() {
                         <Folder className="h-5 w-5 text-muted-foreground" />
                         {deck.name}
                       </CardTitle>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => handleDeleteDeck(deck.id, e)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuItem onClick={() => openRenameDialog(deck)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            重命名
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleExportDeck(deck)}>
+                            <Download className="h-4 w-4 mr-2" />
+                            导出备份
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            className="text-destructive"
+                            onClick={() => handleDeleteDeck(deck.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            删除牌组
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                     {deck.description && (
                       <CardDescription className="line-clamp-2">
@@ -219,6 +351,34 @@ export function DecksPage() {
           </div>
         )}
       </div>
+
+      {/* 重命名对话框 */}
+      <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>重命名牌组</DialogTitle>
+            <DialogDescription>
+              为您的牌组设置一个新名称
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="输入新名称"
+              value={renameDeckName}
+              onChange={e => setRenameDeckName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleRenameDeck()}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenameDialogOpen(false)}>
+              取消
+            </Button>
+            <Button onClick={handleRenameDeck} disabled={renaming || !renameDeckName.trim()}>
+              {renaming ? <Loader2 className="h-4 w-4 animate-spin" /> : '保存'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ChevronRight, Home, CheckCircle, Loader2 } from 'lucide-react'
+import { ChevronRight, Home, CheckCircle, Loader2, Undo2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cardRepository } from '@/db/repositories'
+import { reviewLogRepo } from '@/db/repositories/reviewLog'
 import { db } from '@/db'
 import type { Card as CardType, Note, NoteModel, CardTemplate, Rating } from '@/types'
 import { getButtonIntervals } from '@/scheduler/sm2'
@@ -12,6 +13,13 @@ interface ReviewCard extends CardType {
   note: Note
   noteModel: NoteModel
   template: CardTemplate
+}
+
+// 撤销历史记录
+interface UndoRecord {
+  cardSnapshot: CardType
+  reviewLogId: string
+  previousIndex: number
 }
 
 export function ReviewPage() {
@@ -24,6 +32,10 @@ export function ReviewPage() {
   const [showAnswer, setShowAnswer] = useState(false)
   const [completed, setCompleted] = useState(0)
   const [total, setTotal] = useState(0)
+  
+  // 撤销功能状态
+  const [undoStack, setUndoStack] = useState<UndoRecord[]>([])
+  const canUndo = undoStack.length > 0
 
   const loadCards = useCallback(async () => {
     try {
@@ -69,8 +81,17 @@ export function ReviewPage() {
   const handleAnswer = async (rating: Rating) => {
     if (!currentCard) return
     
-    // 提交复习结果
-    await cardRepository.submitReview(currentCard.id, rating)
+    // 保存当前卡片状态用于撤销
+    const cardSnapshot: CardType = { ...currentCard }
+    
+    // 提交复习结果并获取日志ID
+    const reviewLogId = await cardRepository.submitReview(currentCard.id, rating)
+    
+    // 保存到撤销栈（最多10条）
+    setUndoStack(prev => [
+      ...prev.slice(-9),
+      { cardSnapshot, reviewLogId, previousIndex: currentIndex }
+    ])
     
     // 更新进度
     setCompleted(prev => prev + 1)
@@ -82,6 +103,63 @@ export function ReviewPage() {
     } else {
       // 重新加载卡片（可能有新的到期卡片）
       await loadCards()
+    }
+  }
+  
+  // 撤销上一次评分
+  const handleUndo = async () => {
+    if (undoStack.length === 0) return
+    
+    const lastUndo = undoStack[undoStack.length - 1]
+    const { cardSnapshot, reviewLogId, previousIndex } = lastUndo
+    
+    try {
+      // 删除复习日志
+      await reviewLogRepo.delete(reviewLogId)
+      
+      // 恢复卡片状态
+      await db.cards.update(cardSnapshot.id, {
+        state: cardSnapshot.state,
+        queue: cardSnapshot.queue,
+        interval: cardSnapshot.interval,
+        easeFactor: cardSnapshot.easeFactor,
+        due: cardSnapshot.due,
+        reps: cardSnapshot.reps,
+        lapses: cardSnapshot.lapses,
+        lastReview: cardSnapshot.lastReview,
+      })
+      
+      // 重新加载卡片数据（获取更新后的状态）
+      const restoredCard = await db.cards.get(cardSnapshot.id)
+      if (restoredCard) {
+        const note = await db.notes.get(restoredCard.noteId)
+        if (note) {
+          const noteModel = await db.noteModels.get(note.noteModelId)
+          const template = await db.cardTemplates.get(restoredCard.cardTemplateId)
+          
+          if (noteModel && template) {
+            // 更新卡片列表
+            const updatedCards = [...cards]
+            updatedCards[previousIndex] = {
+              ...restoredCard,
+              note,
+              noteModel,
+              template,
+            }
+            setCards(updatedCards)
+          }
+        }
+      }
+      
+      // 恢复状态
+      setCurrentIndex(previousIndex)
+      setCompleted(prev => Math.max(0, prev - 1))
+      setShowAnswer(false)
+      
+      // 从撤销栈移除
+      setUndoStack(prev => prev.slice(0, -1))
+    } catch (error) {
+      console.error('Failed to undo:', error)
     }
   }
 
@@ -165,7 +243,20 @@ export function ReviewPage() {
         {/* Progress */}
         <div className="max-w-2xl mx-auto mb-6">
           <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>进度</span>
+            <div className="flex items-center gap-2">
+              <span>进度</span>
+              {canUndo && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 px-2 text-xs"
+                  onClick={handleUndo}
+                >
+                  <Undo2 className="h-3 w-3 mr-1" />
+                  撤销
+                </Button>
+              )}
+            </div>
             <span>{completed} / {total}</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">

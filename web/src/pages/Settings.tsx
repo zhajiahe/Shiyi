@@ -1,0 +1,633 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { 
+  ChevronRight, Home, Settings as SettingsIcon, Save, Loader2,
+  Download, Upload, Trash2, HardDrive, AlertTriangle
+} from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { db, getStorageEstimate } from '@/db'
+
+interface UserSettings {
+  scheduler: 'sm2' | 'fsrs_v4' | 'fsrs_v5'
+  newCardsPerDay: number
+  maxReviewsPerDay: number
+  learningSteps: number[]
+  graduatingInterval: number
+  easyInterval: number
+  theme: 'light' | 'dark' | 'system'
+}
+
+const DEFAULT_SETTINGS: UserSettings = {
+  scheduler: 'sm2',
+  newCardsPerDay: 20,
+  maxReviewsPerDay: 200,
+  learningSteps: [1, 10],
+  graduatingInterval: 1,
+  easyInterval: 4,
+  theme: 'system',
+}
+
+const STORAGE_KEY = 'anki-web-settings'
+
+export function SettingsPage() {
+  const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  
+  // 存储相关状态
+  const [storageInfo, setStorageInfo] = useState<{
+    usage: number
+    quota: number
+    usagePercent: number
+  } | null>(null)
+  const [dataStats, setDataStats] = useState({
+    decks: 0,
+    notes: 0,
+    cards: 0,
+    reviewLogs: 0,
+  })
+  const [exporting, setExporting] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const [clearing, setClearing] = useState(false)
+
+  useEffect(() => {
+    // 从 localStorage 加载设置
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      try {
+        setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) })
+      } catch {
+        // 忽略解析错误
+      }
+    }
+    
+    // 加载存储信息
+    loadStorageInfo()
+    loadDataStats()
+  }, [])
+  
+  const loadStorageInfo = async () => {
+    const info = await getStorageEstimate()
+    setStorageInfo(info)
+  }
+  
+  const loadDataStats = async () => {
+    const decks = await db.decks.filter(d => !d.deletedAt).count()
+    const notes = await db.notes.filter(n => !n.deletedAt).count()
+    const cards = await db.cards.filter(c => !c.deletedAt).count()
+    const reviewLogs = await db.reviewLogs.count()
+    setDataStats({ decks, notes, cards, reviewLogs })
+  }
+  
+  // 格式化存储大小
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B'
+    const k = 1024
+    const sizes = ['B', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+  
+  // 导出全部数据
+  const handleExportAll = async () => {
+    try {
+      setExporting(true)
+      
+      const exportData = {
+        version: 1,
+        exportDate: new Date().toISOString(),
+        settings: settings,
+        data: {
+          noteModels: await db.noteModels.toArray(),
+          cardTemplates: await db.cardTemplates.toArray(),
+          decks: await db.decks.toArray(),
+          notes: await db.notes.toArray(),
+          cards: await db.cards.toArray(),
+          reviewLogs: await db.reviewLogs.toArray(),
+        }
+      }
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `anki-web-backup-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('导出失败，请重试')
+    } finally {
+      setExporting(false)
+    }
+  }
+  
+  // 导入数据
+  const handleImportAll = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      
+      try {
+        setImporting(true)
+        const text = await file.text()
+        const importData = JSON.parse(text)
+        
+        if (!importData.version || !importData.data) {
+          throw new Error('无效的备份文件格式')
+        }
+        
+        if (!confirm(`确定要导入备份数据吗？\n\n这将覆盖现有数据：\n- ${importData.data.decks?.length || 0} 个牌组\n- ${importData.data.notes?.length || 0} 条笔记\n- ${importData.data.cards?.length || 0} 张卡片`)) {
+          return
+        }
+        
+        // 清空现有数据
+        await db.noteModels.clear()
+        await db.cardTemplates.clear()
+        await db.decks.clear()
+        await db.notes.clear()
+        await db.cards.clear()
+        await db.reviewLogs.clear()
+        
+        // 导入新数据
+        if (importData.data.noteModels?.length) {
+          await db.noteModels.bulkAdd(importData.data.noteModels)
+        }
+        if (importData.data.cardTemplates?.length) {
+          await db.cardTemplates.bulkAdd(importData.data.cardTemplates)
+        }
+        if (importData.data.decks?.length) {
+          await db.decks.bulkAdd(importData.data.decks)
+        }
+        if (importData.data.notes?.length) {
+          await db.notes.bulkAdd(importData.data.notes)
+        }
+        if (importData.data.cards?.length) {
+          await db.cards.bulkAdd(importData.data.cards)
+        }
+        if (importData.data.reviewLogs?.length) {
+          await db.reviewLogs.bulkAdd(importData.data.reviewLogs)
+        }
+        
+        // 导入设置
+        if (importData.settings) {
+          setSettings(importData.settings)
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(importData.settings))
+        }
+        
+        alert('导入成功！')
+        loadStorageInfo()
+        loadDataStats()
+      } catch (error) {
+        console.error('Import failed:', error)
+        alert('导入失败：' + (error instanceof Error ? error.message : '未知错误'))
+      } finally {
+        setImporting(false)
+      }
+    }
+    input.click()
+  }
+  
+  // 清空所有数据
+  const handleClearAll = async () => {
+    if (!confirm('⚠️ 确定要清空所有数据吗？\n\n此操作不可撤销！\n\n建议先导出备份。')) return
+    if (!confirm('再次确认：删除所有牌组、笔记、卡片和复习记录？')) return
+    
+    try {
+      setClearing(true)
+      await db.noteModels.clear()
+      await db.cardTemplates.clear()
+      await db.decks.clear()
+      await db.notes.clear()
+      await db.cards.clear()
+      await db.reviewLogs.clear()
+      
+      alert('数据已清空')
+      loadStorageInfo()
+      loadDataStats()
+    } catch (error) {
+      console.error('Clear failed:', error)
+      alert('清空失败，请重试')
+    } finally {
+      setClearing(false)
+    }
+  }
+
+  const handleSave = () => {
+    setSaving(true)
+    // 保存到 localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+    
+    setTimeout(() => {
+      setSaving(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    }, 300)
+  }
+
+  const handleReset = () => {
+    if (confirm('确定要恢复默认设置吗？')) {
+      setSettings(DEFAULT_SETTINGS)
+      localStorage.removeItem(STORAGE_KEY)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto px-4 py-8 max-w-3xl">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Link to="/" className="hover:text-foreground flex items-center gap-1">
+            <Home className="h-4 w-4" />
+            首页
+          </Link>
+          <ChevronRight className="h-4 w-4" />
+          <span className="text-foreground">设置</span>
+        </nav>
+
+        {/* Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+            <SettingsIcon className="h-8 w-8" />
+            设置
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            自定义您的学习体验
+          </p>
+        </header>
+
+        {/* 调度算法 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>调度算法</CardTitle>
+            <CardDescription>
+              选择卡片复习间隔的计算方式
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-3">
+              {[
+                { value: 'sm2', label: 'SM-2', desc: '经典算法' },
+                { value: 'fsrs_v4', label: 'FSRS v4', desc: '现代算法' },
+                { value: 'fsrs_v5', label: 'FSRS v5', desc: '最新版本' },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setSettings(s => ({ ...s, scheduler: opt.value as UserSettings['scheduler'] }))}
+                  className={`flex-1 p-4 rounded-lg border-2 transition-all text-left ${
+                    settings.scheduler === opt.value
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="font-medium">{opt.label}</div>
+                  <div className="text-sm text-muted-foreground">{opt.desc}</div>
+                </button>
+              ))}
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              <strong>SM-2</strong>: SuperMemo 经典算法，简单可靠。
+              <br />
+              <strong>FSRS</strong>: 基于机器学习的现代算法，更精准预测遗忘曲线。
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* 每日限制 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>每日学习限制</CardTitle>
+            <CardDescription>
+              控制每天学习的卡片数量
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                每日新卡片数量
+              </label>
+              <div className="flex items-center gap-4">
+                <Input
+                  type="number"
+                  min={0}
+                  max={999}
+                  value={settings.newCardsPerDay}
+                  onChange={e => setSettings(s => ({ ...s, newCardsPerDay: parseInt(e.target.value) || 0 }))}
+                  className="w-24"
+                />
+                <span className="text-sm text-muted-foreground">张/天</span>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                建议：初学者 10-20 张，进阶用户 30-50 张
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                每日最大复习数量
+              </label>
+              <div className="flex items-center gap-4">
+                <Input
+                  type="number"
+                  min={0}
+                  max={9999}
+                  value={settings.maxReviewsPerDay}
+                  onChange={e => setSettings(s => ({ ...s, maxReviewsPerDay: parseInt(e.target.value) || 0 }))}
+                  className="w-24"
+                />
+                <span className="text-sm text-muted-foreground">张/天</span>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                建议：100-300 张，根据可用时间调整
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 学习步骤 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>学习步骤</CardTitle>
+            <CardDescription>
+              新卡片进入复习队列前的学习间隔（分钟）
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                学习步骤
+              </label>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={settings.learningSteps.join(', ')}
+                  onChange={e => {
+                    const steps = e.target.value.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0)
+                    if (steps.length > 0) {
+                      setSettings(s => ({ ...s, learningSteps: steps }))
+                    }
+                  }}
+                  placeholder="1, 10"
+                  className="w-48"
+                />
+                <span className="text-sm text-muted-foreground">分钟</span>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                用逗号分隔多个步骤，如：1, 10 表示 1分钟后、10分钟后各复习一次
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  毕业间隔
+                </label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={settings.graduatingInterval}
+                    onChange={e => setSettings(s => ({ ...s, graduatingInterval: parseInt(e.target.value) || 1 }))}
+                    className="w-20"
+                  />
+                  <span className="text-sm text-muted-foreground">天</span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  点击"良好"后的首次复习间隔
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  简单间隔
+                </label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={settings.easyInterval}
+                    onChange={e => setSettings(s => ({ ...s, easyInterval: parseInt(e.target.value) || 1 }))}
+                    className="w-20"
+                  />
+                  <span className="text-sm text-muted-foreground">天</span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  点击"简单"后的首次复习间隔
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 外观 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>外观</CardTitle>
+            <CardDescription>
+              自定义界面显示
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                主题
+              </label>
+              <div className="flex gap-3">
+                {[
+                  { value: 'light', label: '浅色' },
+                  { value: 'dark', label: '深色' },
+                  { value: 'system', label: '跟随系统' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setSettings(s => ({ ...s, theme: opt.value as UserSettings['theme'] }))}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                      settings.theme === opt.value
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 数据管理 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HardDrive className="h-5 w-5" />
+              数据管理
+            </CardTitle>
+            <CardDescription>
+              备份、恢复和管理您的学习数据
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* 存储空间 */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                存储空间
+              </label>
+              {storageInfo ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">已使用</span>
+                    <span>{formatBytes(storageInfo.usage)} / {formatBytes(storageInfo.quota)}</span>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all ${
+                        storageInfo.usagePercent > 80 ? 'bg-destructive' : 'bg-primary'
+                      }`}
+                      style={{ width: `${Math.min(storageInfo.usagePercent, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {storageInfo.usagePercent.toFixed(1)}% 已使用
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">无法获取存储信息</p>
+              )}
+            </div>
+
+            {/* 数据统计 */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                数据统计
+              </label>
+              <div className="grid grid-cols-4 gap-4">
+                <div className="p-3 bg-muted/50 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{dataStats.decks}</div>
+                  <div className="text-xs text-muted-foreground">牌组</div>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{dataStats.notes}</div>
+                  <div className="text-xs text-muted-foreground">笔记</div>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{dataStats.cards}</div>
+                  <div className="text-xs text-muted-foreground">卡片</div>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{dataStats.reviewLogs}</div>
+                  <div className="text-xs text-muted-foreground">复习记录</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 导出/导入 */}
+            <div className="flex gap-4">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={handleExportAll}
+                disabled={exporting}
+              >
+                {exporting ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4 mr-2" />
+                )}
+                导出全部数据
+              </Button>
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={handleImportAll}
+                disabled={importing}
+              >
+                {importing ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Upload className="h-4 w-4 mr-2" />
+                )}
+                导入数据
+              </Button>
+            </div>
+
+            {/* 清空数据 */}
+            <div className="pt-4 border-t">
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg">
+                <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="font-medium text-destructive">危险区域</h4>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    清空所有数据将删除您的牌组、笔记、卡片和复习记录。此操作不可撤销。
+                  </p>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    className="mt-3"
+                    onClick={handleClearAll}
+                    disabled={clearing}
+                  >
+                    {clearing ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4 mr-2" />
+                    )}
+                    清空所有数据
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 操作按钮 */}
+        <div className="flex justify-between items-center">
+          <Button variant="outline" onClick={handleReset}>
+            恢复默认
+          </Button>
+          <div className="flex items-center gap-4">
+            {saved && (
+              <Badge variant="secondary" className="animate-pulse">
+                ✓ 已保存
+              </Badge>
+            )}
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  保存中...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  保存设置
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* 关于 */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>关于</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground space-y-2">
+            <p><strong>Anki Web</strong> - 现代化间隔重复记忆系统</p>
+            <p>Local-First 架构，数据存储在本地浏览器</p>
+            <p>支持 SM-2 和 FSRS 调度算法</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+

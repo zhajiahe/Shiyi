@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, Library, ShoppingBag, Loader2 } from 'lucide-react'
+import { BookOpen, Library, ShoppingBag, Loader2, Settings, BarChart3 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cardRepository } from '@/db/repositories'
@@ -152,6 +152,44 @@ export function Dashboard() {
               <CardContent>
                 <Button variant="outline" className="w-full">
                   浏览市场
+                </Button>
+              </CardContent>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link to="/stats">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  学习统计
+                </CardTitle>
+                <CardDescription>
+                  查看学习进度和数据分析
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full">
+                  查看统计
+                </Button>
+              </CardContent>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link to="/settings">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  设置
+                </CardTitle>
+                <CardDescription>
+                  调整学习参数和偏好
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full">
+                  打开设置
                 </Button>
               </CardContent>
             </Link>

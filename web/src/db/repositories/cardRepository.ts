@@ -58,8 +58,9 @@ export const cardRepository = {
 
   /**
    * 提交复习结果
+   * @returns reviewLogId 用于撤销功能
    */
-  async submitReview(cardId: string, rating: Rating): Promise<Card> {
+  async submitReview(cardId: string, rating: Rating): Promise<string> {
     const card = await db.cards.get(cardId)
     if (!card) throw new Error('Card not found')
 
@@ -68,8 +69,9 @@ export const cardRepository = {
     const now = Date.now()
 
     // 创建复习日志
+    const reviewLogId = nanoid()
     const reviewLog: ReviewLog = {
-      id: nanoid(),
+      id: reviewLogId,
       userId: card.userId,
       cardId: card.id,
       reviewTime: now,
@@ -102,7 +104,7 @@ export const cardRepository = {
     }
     await db.cards.put(updatedCard)
 
-    return updatedCard
+    return reviewLogId
   },
 
   /**

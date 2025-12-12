@@ -20,6 +20,7 @@ export const reviewLogRepo = {
 
   /**
    * 创建复习日志
+   * @returns 日志的 ID
    */
   async create(
     userId: string,
@@ -41,7 +42,7 @@ export const reviewLogRepo = {
       newDifficulty?: number
       durationMs?: number
     }
-  ): Promise<ReviewLog> {
+  ): Promise<string> {
     const log: ReviewLog = {
       id: nanoid(),
       userId,
@@ -52,7 +53,14 @@ export const reviewLogRepo = {
     }
 
     await db.reviewLogs.add(log)
-    return log
+    return log.id
+  },
+
+  /**
+   * 删除复习日志（用于撤销功能）
+   */
+  async delete(id: string): Promise<void> {
+    await db.reviewLogs.delete(id)
   },
 
   /**

@@ -74,10 +74,36 @@ export async function getSharedDeckDetail(slug: string): Promise<SharedDeckDetai
 }
 
 /**
- * 导入共享牌组到本地
+ * 检查本地是否已有同名牌组
  */
-export async function importSharedDeck(slug: string): Promise<{
+export async function checkDeckNameExists(name: string): Promise<boolean> {
+  const decks = await db.decks.filter(d => !d.deletedAt && d.name === name).toArray()
+  return decks.length > 0
+}
+
+/**
+ * 获取不冲突的牌组名称（自动添加后缀）
+ */
+export async function getUniqueDeckName(baseName: string): Promise<string> {
+  let name = baseName
+  let counter = 1
+  
+  while (await checkDeckNameExists(name)) {
+    name = `${baseName} (${counter})`
+    counter++
+  }
+  
+  return name
+}
+
+/**
+ * 导入共享牌组到本地
+ * @param slug 共享牌组的 URL 标识
+ * @param customDeckName 自定义牌组名称（可选，默认使用共享牌组名称）
+ */
+export async function importSharedDeck(slug: string, customDeckName?: string): Promise<{
   deckId: string
+  deckName: string
   noteCount: number
   cardCount: number
 }> {
@@ -161,11 +187,12 @@ export async function importSharedDeck(slug: string): Promise<{
     }
   }
 
-  // 4. 创建本地牌组
+  // 4. 创建本地牌组（使用自定义名称或默认名称）
+  const deckName = customDeckName || exportData.deck.name
   const deck: Deck = {
     id: localDeckId,
     userId: 'local',
-    name: exportData.deck.name,
+    name: deckName,
     description: exportData.deck.description,
     noteModelId: exportData.note_models[0]?.id,
     config: {
@@ -233,6 +260,7 @@ export async function importSharedDeck(slug: string): Promise<{
 
   return {
     deckId: localDeckId,
+    deckName: deckName,
     noteCount: exportData.notes.length,
     cardCount: exportData.cards.length,
   }
