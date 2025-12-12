@@ -67,9 +67,10 @@ export function MarketDetailPage() {
       // 获取导出数据（包含笔记内容）
       const response = await fetch(`${API_BASE}/shared-decks/${deckSlug}/export`)
       const result = await response.json()
-      if (result.success) {
-        setExportData(result.data)
+      if (!result.success) {
+        throw new Error(result.msg || '获取牌组内容失败')
       }
+      setExportData(result.data)
     } catch (err) {
       setError(err instanceof Error ? err.message : '加载失败')
     } finally {
