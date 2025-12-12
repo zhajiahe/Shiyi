@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { CardRenderer } from '@/components/CardRenderer'
 import { getSharedDeckDetail, importSharedDeck, checkDeckNameExists, getUniqueDeckName } from '@/api/sharedDecks'
 import type { SharedDeck } from '@/types'
 
@@ -414,7 +415,7 @@ export function MarketDetailPage() {
               </div>
             )}
 
-            {/* Card Preview - 实际卡片效果 */}
+            {/* Card Preview - 使用 daisyUI 渲染 */}
             {selectedNote && currentTemplate && (
               <div className="mt-6 border rounded-lg overflow-hidden">
                 {/* 预览标题栏 */}
@@ -456,28 +457,26 @@ export function MarketDetailPage() {
                   </Button>
                 </div>
 
-                {/* 卡片渲染区域 */}
-                <div className="p-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 min-h-[300px]">
-                  {/* 注入 CSS */}
-                  {cardCss && (
-                    <style dangerouslySetInnerHTML={{ __html: cardCss }} />
-                  )}
-                  
-                  {/* 卡片容器 */}
-                  <div className="max-w-lg mx-auto">
+                {/* 卡片渲染区域 - 使用 CardRenderer */}
+                <div className="p-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+                  <div className="max-w-xl mx-auto">
                     {/* 正面 */}
-                    <div 
-                      className="card-preview"
-                      dangerouslySetInnerHTML={{ __html: renderedQuestion }}
+                    <CardRenderer 
+                      html={renderedQuestion}
+                      css={cardCss}
+                      theme="cupcake"
+                      minHeight={150}
                     />
                     
                     {/* 答案区域 */}
                     {showAnswer ? (
                       <>
                         <div className="my-4 h-px bg-gradient-to-r from-transparent via-slate-400 to-transparent" />
-                        <div 
-                          className="card-preview"
-                          dangerouslySetInnerHTML={{ __html: renderedAnswer }}
+                        <CardRenderer 
+                          html={renderedAnswer}
+                          css={cardCss}
+                          theme="cupcake"
+                          minHeight={150}
                         />
                       </>
                     ) : (

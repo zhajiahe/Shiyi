@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronRight, Home, CheckCircle, Loader2, Undo2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { CardRenderer } from '@/components/CardRenderer'
 import { cardRepository } from '@/db/repositories'
 import { reviewLogRepo } from '@/db/repositories/reviewLog'
 import { db } from '@/db'
@@ -267,36 +268,29 @@ export function ReviewPage() {
           </div>
         </div>
 
-        {/* Card */}
-        <Card className="max-w-2xl mx-auto overflow-hidden">
-          {/* 注入 CSS */}
-          {noteModel.css && (
-            <style dangerouslySetInnerHTML={{ __html: noteModel.css }} />
-          )}
-          
-          <CardContent className="p-0">
-            {/* 问题面 */}
-            <div 
-              className="min-h-[200px] p-8"
-              dangerouslySetInnerHTML={{ 
-                __html: renderContent(template.questionTemplate, note.fields) 
-              }}
-            />
+        {/* Card - 使用 daisyUI 渲染 */}
+        <div className="max-w-2xl mx-auto">
+          {/* 问题面 */}
+          <CardRenderer 
+            html={renderContent(template.questionTemplate, note.fields)}
+            css={noteModel.css || ''}
+            theme="cupcake"
+            minHeight={200}
+          />
 
-            {showAnswer && (
-              <>
-                <hr />
-                {/* 答案面 */}
-                <div 
-                  className="min-h-[200px] p-8"
-                  dangerouslySetInnerHTML={{ 
-                    __html: renderContent(template.answerTemplate, note.fields) 
-                  }}
-                />
-              </>
-            )}
-          </CardContent>
-        </Card>
+          {showAnswer && (
+            <>
+              <div className="my-4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+              {/* 答案面 */}
+              <CardRenderer 
+                html={renderContent(template.answerTemplate, note.fields)}
+                css={noteModel.css || ''}
+                theme="cupcake"
+                minHeight={200}
+              />
+            </>
+          )}
+        </div>
 
         {/* Actions */}
         <div className="max-w-2xl mx-auto mt-6">
