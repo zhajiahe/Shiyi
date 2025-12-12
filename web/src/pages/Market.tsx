@@ -1,34 +1,41 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight, Home, Download, Star, Users, BookOpen, Loader2 } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Home, Download, Star, Users, BookOpen, Loader2, Eye } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getSharedDecks, importSharedDeck } from '@/api/sharedDecks'
 import type { SharedDeck } from '@/types'
 
+const PAGE_SIZE = 6
+
 export function MarketPage() {
   const [decks, setDecks] = useState<SharedDeck[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [importing, setImporting] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
-    loadDecks()
-  }, [])
+    loadDecks(page)
+  }, [page])
 
-  const loadDecks = async () => {
+  const loadDecks = async (pageNum: number) => {
     try {
       setLoading(true)
       setError(null)
-      const result = await getSharedDecks({ isFeatured: true })
+      const result = await getSharedDecks({ page: pageNum, pageSize: PAGE_SIZE })
       setDecks(result.items)
+      setTotal(result.total)
     } catch (err) {
       setError(err instanceof Error ? err.message : '加载失败')
     } finally {
       setLoading(false)
     }
   }
+
+  const totalPages = Math.ceil(total / PAGE_SIZE)
 
   const handleImport = async (deck: SharedDeck) => {
     try {
@@ -74,7 +81,7 @@ export function MarketPage() {
           <Card className="text-center py-16">
             <CardContent>
               <p className="text-destructive mb-4">{error}</p>
-              <Button onClick={loadDecks}>重试</Button>
+              <Button onClick={() => loadDecks(page)}>重试</Button>
             </CardContent>
           </Card>
         ) : decks.length === 0 ? (
@@ -133,26 +140,65 @@ export function MarketPage() {
                   </div>
 
                   {/* Actions */}
-                  <Button
-                    className="w-full"
-                    onClick={() => handleImport(deck)}
-                    disabled={importing === deck.id}
-                  >
-                    {importing === deck.id ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        导入中...
-                      </>
-                    ) : (
-                      <>
-                        <Download className="h-4 w-4 mr-2" />
-                        导入到本地
-                      </>
-                    )}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      asChild
+                    >
+                      <Link to={`/market/${deck.slug}`}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        查看内容
+                      </Link>
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={() => handleImport(deck)}
+                      disabled={importing === deck.id}
+                    >
+                      {importing === deck.id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          导入中...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4 mr-2" />
+                          导入
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              上一页
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              第 {page} / {totalPages} 页 (共 {total} 个牌组)
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              下一页
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
           </div>
         )}
       </div>

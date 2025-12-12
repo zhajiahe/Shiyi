@@ -3,6 +3,7 @@ import { Dashboard } from './pages/Dashboard'
 import { DecksPage } from './pages/Decks'
 import { ReviewPage } from './pages/Review'
 import { MarketPage } from './pages/Market'
+import { MarketDetailPage } from './pages/MarketDetail'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/decks" element={<DecksPage />} />
         <Route path="/review" element={<ReviewPage />} />
         <Route path="/market" element={<MarketPage />} />
+        <Route path="/market/:slug" element={<MarketDetailPage />} />
       </Routes>
     </BrowserRouter>
   )
