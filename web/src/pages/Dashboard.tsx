@@ -1,9 +1,38 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, Library, ShoppingBag } from 'lucide-react'
+import { BookOpen, Library, ShoppingBag, Loader2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { cardRepository } from '@/db/repositories'
 
 export function Dashboard() {
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({
+    dueReview: 0,
+    newCards: 0,
+    learning: 0,
+    total: 0,
+  })
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadStats = async () => {
+    try {
+      setLoading(true)
+      const globalStats = await cardRepository.getGlobalStats()
+      setStats({
+        dueReview: globalStats.review,
+        newCards: globalStats.new,
+        learning: globalStats.learning,
+        total: globalStats.total,
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto px-4 py-8">
@@ -25,7 +54,9 @@ export function Dashboard() {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">
+                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : stats.dueReview}
+              </div>
               <p className="text-xs text-muted-foreground">张卡片</p>
             </CardContent>
           </Card>
@@ -35,7 +66,9 @@ export function Dashboard() {
               <Library className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">
+                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : stats.newCards}
+              </div>
               <p className="text-xs text-muted-foreground">待学习</p>
             </CardContent>
           </Card>
@@ -45,17 +78,21 @@ export function Dashboard() {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">
+                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : stats.learning}
+              </div>
               <p className="text-xs text-muted-foreground">进行中</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">已掌握</CardTitle>
+              <CardTitle className="text-sm font-medium">总卡片数</CardTitle>
               <Library className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">
+                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : stats.total}
+              </div>
               <p className="text-xs text-muted-foreground">张卡片</p>
             </CardContent>
           </Card>
@@ -124,4 +161,3 @@ export function Dashboard() {
     </div>
   )
 }
-

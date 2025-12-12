@@ -129,6 +129,27 @@ async def get_shared_deck_download(slug: str, db: DBSession):
     )
 
 
+@router.get("/{slug}/export")
+async def export_shared_deck(slug: str, db: DBSession):
+    """
+    导出共享牌组数据（公开接口，无需登录）
+    
+    返回完整的牌组导出数据，包括：
+    - 笔记类型（note_models）
+    - 牌组配置（deck）
+    - 笔记（notes）
+    - 卡片（cards）
+    """
+    service = SharedDeckService(db)
+    export_data = await service.export_shared_deck(slug)
+    return BaseResponse(
+        success=True,
+        code=200,
+        msg="导出共享牌组成功",
+        data=export_data,
+    )
+
+
 # ==================== 共享牌组管理接口 ====================
 
 

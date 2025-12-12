@@ -1,0 +1,148 @@
+/**
+ * 卡片数据仓库
+ */
+
+import { db } from '@/db'
+import type { Card, ReviewLog, Rating } from '@/types'
+import { scheduleSM2 } from '@/scheduler/sm2'
+import { nanoid } from 'nanoid'
+
+export const cardRepository = {
+  /**
+   * 获取待复习的卡片（按优先级排序）
+   */
+  async getDueCards(deckId?: string, limit = 100): Promise<Card[]> {
+    const now = Date.now()
+    
+    let cards: Card[]
+    if (deckId) {
+      cards = await db.cards
+        .where('deckId')
+        .equals(deckId)
+        .filter(c => !c.deletedAt)
+        .toArray()
+    } else {
+      cards = await db.cards.filter(c => !c.deletedAt).toArray()
+    }
+
+    // 筛选待复习卡片
+    const dueCards = cards.filter(card => {
+      if (card.state === 'new') return true
+      if (card.state === 'learning' || card.state === 'relearning') {
+        return card.due <= now
+      }
+      if (card.state === 'review') {
+        return card.due <= now
+      }
+      return false
+    })
+
+    // 排序：学习中 > 新卡片 > 复习
+    dueCards.sort((a, b) => {
+      const order = { learning: 0, relearning: 0, new: 1, review: 2 }
+      const orderA = order[a.state] ?? 3
+      const orderB = order[b.state] ?? 3
+      if (orderA !== orderB) return orderA - orderB
+      return a.due - b.due
+    })
+
+    return dueCards.slice(0, limit)
+  },
+
+  /**
+   * 根据 ID 获取卡片
+   */
+  async getById(id: string): Promise<Card | undefined> {
+    return db.cards.get(id)
+  },
+
+  /**
+   * 提交复习结果
+   */
+  async submitReview(cardId: string, rating: Rating): Promise<Card> {
+    const card = await db.cards.get(cardId)
+    if (!card) throw new Error('Card not found')
+
+    // 计算新的调度参数
+    const result = scheduleSM2(card, rating)
+    const now = Date.now()
+
+    // 创建复习日志
+    const reviewLog: ReviewLog = {
+      id: nanoid(),
+      userId: card.userId,
+      cardId: card.id,
+      reviewTime: now,
+      rating,
+      prevState: card.state,
+      newState: result.state,
+      prevInterval: card.interval,
+      newInterval: result.interval,
+      prevEaseFactor: card.easeFactor,
+      newEaseFactor: result.easeFactor,
+      prevDue: card.due,
+      newDue: result.due,
+      createdAt: now,
+    }
+    await db.reviewLogs.add(reviewLog)
+
+    // 更新卡片
+    const updatedCard: Card = {
+      ...card,
+      state: result.state,
+      queue: result.queue,
+      due: result.due,
+      interval: result.interval,
+      easeFactor: result.easeFactor,
+      reps: card.reps + 1,
+      lapses: rating === 1 ? card.lapses + 1 : card.lapses,
+      lastReview: now,
+      updatedAt: now,
+      dirty: 1,
+    }
+    await db.cards.put(updatedCard)
+
+    return updatedCard
+  },
+
+  /**
+   * 获取笔记的所有卡片
+   */
+  async getByNoteId(noteId: string): Promise<Card[]> {
+    return db.cards
+      .where('noteId')
+      .equals(noteId)
+      .filter(c => !c.deletedAt)
+      .toArray()
+  },
+
+  /**
+   * 批量创建卡片
+   */
+  async bulkCreate(cards: Card[]): Promise<void> {
+    await db.cards.bulkAdd(cards)
+  },
+
+  /**
+   * 获取全局统计
+   */
+  async getGlobalStats(): Promise<{
+    total: number
+    new: number
+    learning: number
+    review: number
+    suspended: number
+  }> {
+    const cards = await db.cards.filter(c => !c.deletedAt).toArray()
+    const now = Date.now()
+    
+    return {
+      total: cards.length,
+      new: cards.filter(c => c.state === 'new').length,
+      learning: cards.filter(c => c.state === 'learning' || c.state === 'relearning').length,
+      review: cards.filter(c => c.state === 'review' && c.due <= now).length,
+      suspended: cards.filter(c => c.queue === 'suspended').length,
+    }
+  },
+}
+
