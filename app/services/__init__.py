@@ -5,13 +5,11 @@ Service 层
 """
 
 from app.services.auth import AuthService
-from app.services.card import CardService
 from app.services.deck import DeckService
-from app.services.note import NoteService
+from app.services.note import CardService, NoteService
 from app.services.note_model import NoteModelService
-from app.services.review import ReviewService
-from app.services.shared_deck import SharedDeckService
-from app.services.sync import SyncService
+from app.services.review_log import ReviewLogService
+from app.services.shared_deck import SharedDeckService, TemplateSetService
 from app.services.user import UserService
 
 __all__ = [
@@ -21,7 +19,7 @@ __all__ = [
     "DeckService",
     "NoteService",
     "CardService",
-    "ReviewService",
-    "SyncService",
+    "ReviewLogService",
+    "TemplateSetService",
     "SharedDeckService",
 ]

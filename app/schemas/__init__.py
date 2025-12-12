@@ -4,14 +4,8 @@ Pydantic Schema 模块
 用于 API 请求和响应的数据验证和序列化
 """
 
-from app.schemas.card import (
-    CardDetailResponse,
-    CardListQuery,
-    CardResponse,
-    CardScheduleUpdate,
-    DueCardsQuery,
-)
 from app.schemas.deck import (
+    DeckConfig,
     DeckCreate,
     DeckListQuery,
     DeckResponse,
@@ -19,7 +13,9 @@ from app.schemas.deck import (
     DeckUpdate,
 )
 from app.schemas.note import (
-    NoteBatchCreate,
+    CardListQuery,
+    CardResponse,
+    CardUpdate,
     NoteCreate,
     NoteListQuery,
     NoteResponse,
@@ -28,38 +24,28 @@ from app.schemas.note import (
 from app.schemas.note_model import (
     CardTemplateCreate,
     CardTemplateResponse,
+    CardTemplateUpdate,
+    FieldDefinition,
     NoteModelCreate,
-    NoteModelDetailResponse,
     NoteModelListQuery,
     NoteModelResponse,
     NoteModelUpdate,
 )
-from app.schemas.review import (
-    ReviewBatchSubmit,
+from app.schemas.review_log import (
+    ReviewLogCreate,
+    ReviewLogListQuery,
     ReviewLogResponse,
     ReviewStats,
-    ReviewStatsQuery,
-    ReviewSubmit,
 )
 from app.schemas.shared_deck import (
     SharedDeckCreate,
     SharedDeckDetailResponse,
-    SharedDeckImportRequest,
     SharedDeckListQuery,
     SharedDeckResponse,
+    SharedDeckSnapshotResponse,
     SharedDeckUpdate,
-)
-from app.schemas.sync import (
-    FullSyncRequest,
-    FullSyncResponse,
-    SyncChange,
-    SyncConflict,
-    SyncPullRequest,
-    SyncPullResponse,
-    SyncPushRequest,
-    SyncPushResponse,
-    SyncStatus,
-    TableSyncData,
+    TemplateSetCreate,
+    TemplateSetResponse,
 )
 from app.schemas.user import (
     LoginRequest,
@@ -81,14 +67,16 @@ __all__ = [
     "LoginRequest",
     "RefreshTokenRequest",
     # NoteModel
+    "FieldDefinition",
     "NoteModelCreate",
     "NoteModelUpdate",
     "NoteModelResponse",
-    "NoteModelDetailResponse",
     "NoteModelListQuery",
     "CardTemplateCreate",
+    "CardTemplateUpdate",
     "CardTemplateResponse",
     # Deck
+    "DeckConfig",
     "DeckCreate",
     "DeckUpdate",
     "DeckResponse",
@@ -99,35 +87,22 @@ __all__ = [
     "NoteUpdate",
     "NoteResponse",
     "NoteListQuery",
-    "NoteBatchCreate",
     # Card
     "CardResponse",
-    "CardDetailResponse",
+    "CardUpdate",
     "CardListQuery",
-    "DueCardsQuery",
-    "CardScheduleUpdate",
-    # Review
-    "ReviewSubmit",
+    # ReviewLog
+    "ReviewLogCreate",
     "ReviewLogResponse",
-    "ReviewBatchSubmit",
-    "ReviewStatsQuery",
+    "ReviewLogListQuery",
     "ReviewStats",
-    # Sync
-    "SyncChange",
-    "SyncPushRequest",
-    "SyncPushResponse",
-    "SyncConflict",
-    "SyncPullRequest",
-    "SyncPullResponse",
-    "TableSyncData",
-    "FullSyncRequest",
-    "FullSyncResponse",
-    "SyncStatus",
     # SharedDeck
+    "TemplateSetCreate",
+    "TemplateSetResponse",
     "SharedDeckCreate",
     "SharedDeckUpdate",
     "SharedDeckResponse",
     "SharedDeckDetailResponse",
     "SharedDeckListQuery",
-    "SharedDeckImportRequest",
+    "SharedDeckSnapshotResponse",
 ]
