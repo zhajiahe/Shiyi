@@ -20,10 +20,7 @@ export const deckRepository = {
    */
   async getAll(): Promise<Deck[]> {
     return db.decks
-      .where('deletedAt')
-      .equals(0)
-      .or('deletedAt')
-      .equals(undefined as unknown as number)
+      .filter(deck => !deck.deletedAt)
       .toArray()
   },
 
