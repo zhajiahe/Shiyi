@@ -1,4 +1,4 @@
-# 现代化 Web Anki 技术方案（完整版 v2）
+# 现代化 Web Anki 技术方案（完整版 v3）
 
 ## 🧭 1. 项目概述
 
@@ -16,15 +16,15 @@
 - **市场模式：去中心化分发**
   - 无需登录即可浏览共享牌组市场。
   - 下载共享牌组 → 导入到本地 IndexedDB → 之后完全私有。
-  - 后端只提供“只读的牌组索引 + 牌组文件分发”。
+  - 后端只提供"只读的牌组索引 + 牌组文件分发"。
 
-- **演进路线：从离线单机到多端同步**
-  - 阶段 1：纯本地 + 只读牌组市场。
-  - 阶段 2：可选云同步，多设备互通，仍不强依赖云端。
+- **简洁架构**
+  - 纯本地 + 只读牌组市场，无云同步。
+  - 后端仅提供共享牌组服务，前端完全自治。
 
-### 1.2 产品阶段规划
+### 1.2 产品定位
 
-**阶段 1：本地优先 MVP**
+**本地优先应用（当前版本）**
 
 - **后端**
   - 仅作为静态资源与元数据服务器：
@@ -34,19 +34,11 @@
 - **前端**
   - Web + PWA，全功能离线应用：
     - 本地 Deck/Note/Card 管理；
-    - FSRS / SM-2 双算法调度；
+    - FSRS / SM-2 双算法调度（前端实现）；
     - 支持自家格式导入导出；
-    - 自动/手动本地备份。
+    - 手动本地备份与数据管理。
 
-**阶段 2：云端增强**
-
-- **后端**
-  - 启用用户系统 + 鉴权；
-  - 提供增量同步接口（基于 `updated_at` + LWW/冲突策略）；
-  - 支持同步设置/排版偏好等。
-- **前端**
-  - 多端同步：Web + 可能的移动 App；
-  - 设置界面可开启/关闭同步，不影响本地数据。
+> **注意**：本项目不实现云同步功能。所有用户数据完全存储在本地 IndexedDB，用户对数据拥有完全控制权。
 
 ---
 
@@ -58,28 +50,28 @@
 |------|----------|------|
 | **前端** | React + Vite + TypeScript + shadcn/ui | 现代开发栈，支持组件化与设计系统 |
 | **离线存储** | IndexedDB + Dexie.js | Dexie 作为 ORM，配合 `dexie-export-import` |
-| **ID 生成** | NanoID（前端生成） | 避免自增 ID，同步无冲突 |
-| **调度算法** | ts-fsrs + 自研 SM-2 | FSRS v4/v5 + Classic 模式 |
+| **ID 生成** | NanoID（前端生成） | 避免自增 ID，便于数据导入导出 |
+| **调度算法** | ts-fsrs + 自研 SM-2 | FSRS v4/v5 + Classic 模式（前端实现） |
 | **后端框架** | FastAPI + Async SQLAlchemy | 异步 IO，易开发、性能足够 |
-| **数据库** | PostgreSQL | 存储 SharedDeck 元数据与未来同步信息 |
+| **数据库** | PostgreSQL | 存储 SharedDeck 元数据 |
 | **API 风格** | RESTful + JSON (Gzip/Brotli) | 简洁易调试，可走 CDN |
 
 ### 2.2 架构原则
 
 - **Local-First：本地优先**
   - UI 永远以本地 IndexedDB 为真源。
-  - 同步只是“把本地变更抄到云端，再把云端增量拉回”。
+  - 后端仅提供共享牌组服务，不存储用户学习数据。
 
 - **ID 前置生成**
-  - 所有核心实体（Deck, Note, Card, ReviewLog, SharedDeck 等）ID 均由前端生成 NanoID。
-  - 后端只做“upsert 存储”，不负责分配 ID。
+  - 所有核心实体（Deck, Note, Card, ReviewLog 等）ID 均由前端生成 NanoID。
+  - 便于数据导入导出，无 ID 冲突问题。
 
 - **不可变性 + 软删除**
   - 数据默认不物理删除，只标记 `deleted_at`。
-  - ReviewLog、历史快照尽量保留，为未来的数据分析与回溯做准备。
+  - ReviewLog、历史数据保留，为数据分析与回溯做准备。
 
 - **模型与表现适度解耦**
-  - NoteModel 定义字段与“卡片类型”；
+  - NoteModel 定义字段与"卡片类型"；
   - Template/TemplateSet 定义布局与样式；
   - 实现上可以放在一起存，但逻辑上保持边界，方便后期换皮升级。
 
@@ -88,13 +80,6 @@
 ## 🧩 3. 领域模型（Schema）
 
 ### 3.1 本地核心实体
-
-#### User（未来同步用，可选）
-
-- `id`: UUID
-- `created_at`, `updated_at`
-
-> 阶段 1 主要用于“共享牌组作者”。普通用户不一定需要账号。
 
 #### Deck（牌组）
 
@@ -159,7 +144,6 @@
 - `tags`: string[]
 - `deck_id`: NanoID（归属牌组）
 - `updated_at`: timestamp
-- `dirty`: int（0/1，是否有待同步变更）
 - `deleted_at`: timestamp \| null
 
 #### Card（卡片）
@@ -178,14 +162,14 @@
   - `reps`: int
   - `lapses`: int
   - `last_review`: timestamp
-- `updated_at`, `dirty`, `deleted_at`
+- `updated_at`, `deleted_at`
 
 #### ReviewLog（复习日志）
 
 - `id`: NanoID
 - `cid`: NanoID（Card.id）
 - `review_time`: timestamp
-- `rating`: int（0~3/4，映射“再来一次、困难、良好、简单”等）
+- `rating`: int（0~3/4，映射"再来一次、困难、良好、简单"等）
 - `state_before`, `state_after`
 - `stability_before`, `stability_after`
 - `elapsed_days`
@@ -196,7 +180,7 @@
 
 ---
 
-### 3.2 共享牌组相关实体
+### 3.2 共享牌组相关实体（后端存储）
 
 #### SharedDeck（共享牌组元数据）
 
@@ -214,6 +198,7 @@
 - `content_hash`: string（某个版本内容的哈希）
 - `is_featured`: boolean
 - `is_official`: boolean
+- `download_count`: int（下载次数）
 - `created_at`, `updated_at`, `deleted_at`
 
 #### SharedDeckSnapshot（内容快照）
@@ -230,7 +215,7 @@
 
 ### 3.3 SharedDeckExport（共享牌组导出格式）
 
-> 这是共享牌组的“自有格式”（不强兼容外部 AnkiShare），用于导出/分发/导入。
+> 这是共享牌组的"自有格式"，用于导出/分发/导入。
 
 示例结构（JSON）：
 
@@ -302,7 +287,7 @@
 
 特点：
 
-- 对前端导入来说，几乎就是“Note/Card/Model/Deck 的快照”；
+- 对前端导入来说，几乎就是"Note/Card/Model/Deck 的快照"；
 - `guid` 是关键，用于后续版本更新时 diff；
 - 不包含用户相关数据：无 ReviewLog，无个人笔记/标记。
 
@@ -325,8 +310,7 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
     deck_id: deckId,
     fields,
     tags: [],
-    updated_at: now,
-    dirty: 1
+    updated_at: now
   };
 
   const cards = model.templates.map(tpl => ({
@@ -341,8 +325,7 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
     reps: 0,
     lapses: 0,
     last_review: null,
-    updated_at: now,
-    dirty: 1
+    updated_at: now
   }));
 
   return { note, cards };
@@ -353,29 +336,28 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 
 1. 前端生成 Note ID / Card ID（NanoID）。
 2. `guid` 用于跨牌组版本的内容匹配。
-3. `dirty` 标记本条记录有待同步变更。
 
 ### 4.2 调度算法（FSRS + SM-2 双引擎）
 
-**调度模式在 Deck 层配置：**
+**调度模式在设置中配置：**
 
 - `scheduler = "sm2"`：Classic 模式；
 - `scheduler = "fsrs_v4"` / `"fsrs_v5"`：使用 ts-fsrs。
 
 **复习流程（前端逻辑）：**
 
-1. 用户从“今日待复习队列”中抽取 Card（由本地算法计算）。
+1. 用户从"今日待复习队列"中抽取 Card（由本地算法计算）。
 2. 用户给出评分：`Again / Hard / Good / Easy` → 映射到 `rating`（0~3/4）。
-3. 根据当前 Deck 设置选择算法：
+3. 根据设置选择算法：
    - SM-2：计算下一次间隔、ease factor 等；
    - FSRS：更新 `stability` / `difficulty` / `due` 等。
 4. 更新 Card 字段，写入 ReviewLog。
-5. 标记 Card、Note 的 `updated_at` 与 `dirty=1`。
+5. 更新 Card、Note 的 `updated_at`。
 
 **优化点：**
 
-- 批量调度（如大量导入后初始化）放入 Web Worker。
-- FSRS 参数可在 Deck 或全局设置中调整（进阶用户使用）。
+- 批量调度（如大量导入后初始化）可放入 Web Worker。
+- FSRS 参数可在设置中调整（进阶用户使用）。
 
 ### 4.3 数据持久化与备份策略
 
@@ -388,22 +370,18 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
        navigator.storage.persist();
      }
      ```
-   - 请求浏览器将存储标记为“持久化”，降低被清理风险。
+   - 请求浏览器将存储标记为"持久化"，降低被清理风险。
 
-2. **自动备份**
-   - 触发条件：
-     - 每完成 N 次复习（例如 500 次）；或
-     - 每隔 7 天；
-   - 备份行为：
-     - 使用 `dexie-export-import` 导出为 JSON/二进制；
-     - 生成 Blob：
-       - 提示用户“下载备份文件”；或
-       - 写入 OPFS（Origin Private File System）。
-
-3. **手动导出/导入**
+2. **手动导出/导入**
    - 支持：
-     - 本项目原生 `.json` / `.zip` 格式；
+     - 本项目原生 `.json` 格式全量导出；
+     - 单牌组导出备份；
      - 可选支持 Anki `.apkg` 导入（内部转换为本项目结构）。
+
+3. **数据管理**
+   - 存储空间显示；
+   - 数据统计（牌组数、笔记数、卡片数、复习记录数）；
+   - 清空所有数据功能（危险操作，需确认）。
 
 ---
 
@@ -417,8 +395,8 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 
 **2）下载 SharedDeckExport**
 
-- 从 `snapshot.file_url` 下载 `SharedDeckExport` JSON/压缩包。
-- 前端解压/解析后处理。
+- 从 `GET /shared-decks/{slug}/export` 获取 `SharedDeckExport` JSON。
+- 前端解析后处理。
 
 **3）导入策略**
 
@@ -428,12 +406,10 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 
 - NoteModel：
   - 本地无对应 `id` → 直接创建；
-  - 本地有同 `id`：
-    - 若为官方模型，可以按 `updated_at` / 明确 `version` 进行升级；
-    - 否则可保留用户已有版本，导入时生成一个新的 `id`（避免冲突）。
+  - 本地有同 `id`：保留用户已有版本，导入时生成一个新的 `id`（避免冲突）。
 
 - Deck：
-  - 创建本地 Deck 记录，挂在用户选定的父牌组下面。
+  - 创建本地 Deck 记录，允许用户自定义名称。
 
 - Note & Card：
   - 按导出内容创建；
@@ -455,37 +431,6 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 3. 模版与主题：
    - NoteModel 若是官方模型，可以按策略更新；
    - TemplateSet 若版本更新，可替换 CSS，实现全局视觉改进。
-
----
-
-### 4.6 用户创建共享牌组（阶段 2）
-
-**1）从本地 Deck 发起“发布共享牌组”**
-
-- 用户在某 Deck 上点击“发布为共享牌组”：
-  - 填写：
-    - 标题、简介、语言、标签；
-    - 选定使用的 TemplateSet（官方主题列表）。
-  - 系统进行导出打包：
-    1. 读取该 Deck 及其 Notes、Cards；
-    2. 剔除：
-       - ReviewLog；
-       - 用户特有 Tag（或按规则过滤）；
-    3. 将 NoteModel/Deck/Note/Card 序列化为 `SharedDeckExport`；
-    4. 计算 `content_hash`。
-
-- 上传：
-  - `POST /shared-decks/drafts`，附上 JSON/压缩包。
-
-**2）后端处理**
-
-- 自动校验：
-  - 模板中禁止 `<script>` 等危险标签；
-  - 简单敏感词过滤。
-- 管理端审核通过后：
-  - 生成/更新 SharedDeck 记录；
-  - 创建新 `SharedDeckSnapshot`（`version + 1`）；
-  - 公开在市场列表。
 
 ---
 
@@ -515,61 +460,22 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 - `GET /shared-decks/{slug}`
   - 返回：`SharedDeck` 元数据 + 最新版本号 + 预览信息。
 
-- `GET /shared-decks/{slug}/download`
-  - 返回：`SharedDeckExport` JSON 或压缩文件。
+- `GET /shared-decks/{slug}/export`
+  - 返回：`SharedDeckExport` JSON。
+
+- `POST /shared-decks/{slug}/download`
+  - 增加下载计数。
 
 - 管理端（作者用）：
   - `POST /admin/shared-decks`
   - `PUT /admin/shared-decks/{id}`
   - `POST /admin/shared-decks/{id}/snapshots`
 
-### 5.3 同步接口（阶段 2）
-
-采用 **Pull-Merge-Push** 模式，以 `updated_at` 为主锚点。
-
-- `POST /sync/collection`
-  - Request：
-    ```jsonc
-    {
-      "last_sync_time": 1700000000,
-      "changes": {
-        "decks": [...],
-        "note_models": [...],
-        "notes": [...],
-        "cards": [...],
-        "review_logs": [...]
-      }
-    }
-    ```
-  - 逻辑：
-    1. **Push**：服务端接收并 upsert 更新本地变更：
-       - 按 `id` 匹配；
-       - 如果服务端 `updated_at` > 客户端 → LWW 策略可选择忽略客户端或记录冲突。
-    2. **Pull**：查询 `updated_at > last_sync_time` 的所有变更记录。
-  - Response：
-    ```jsonc
-    {
-      "new_last_sync_time": 1702296000,
-      "updates": {
-        "decks": [...],
-        "note_models": [...],
-        "notes": [...],
-        "cards": [...],
-        "review_logs": [...]
-      }
-    }
-    ```
-
 ---
 
 ## 🔐 6. 安全与性能
 
 ### 6.1 安全设计
-
-- **鉴权与会话**
-  - 若启用登录，同步接口使用：
-    - JWT（Access Token）+ Refresh Token；
-    - Access Token 存在 `HttpOnly Cookie`，防止 XSS 窃取。
 
 - **共享牌组数据脱敏**
   - 导出共享牌组时：
@@ -580,7 +486,7 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 - **内容安全**
   - 预览与渲染模板时，可使用：
     - 安全模板引擎（转义 HTML）；
-    - 或对模板语法进行限制，只允许 `{ {Field} }` 这种占位符。
+    - 或对模板语法进行限制，只允许 `{{Field}}` 这种占位符。
 
 ### 6.2 性能优化
 
@@ -607,7 +513,7 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 1. **Local-First + NanoID：**
    - 所有核心行为都在本地完成；
    - 不依赖网络，不惧服务停机；
-   - 多设备未来同步也不会有 ID 冲突。
+   - 数据完全属于用户，无隐私泄露风险。
 
 2. **共享牌组自有格式 + 内置好看模板：**
    - 不被 AnkiShare 历史包袱束缚；
@@ -618,9 +524,9 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
    - 对新手保留经典体验（SM-2）；
    - 对重度用户提供更高效的 FSRS，长期减少无效复习。
 
-4. **可渐进演化的架构：**
-   - 阶段 1：完全本地 + 只读市场，后端压力极小；
-   - 阶段 2：加入同步与账号，协议已预埋；
-   - NoteModel/Template 的分层设计为未来“换皮、可视化编辑器、多主题”留足空间。
+4. **简洁可维护的架构：**
+   - 完全本地 + 只读市场，后端压力极小；
+   - 无云同步复杂性，代码更简洁；
+   - NoteModel/Template 的分层设计为未来"换皮、可视化编辑器、多主题"留足空间。
 
-整体上，这是一个**以本地为中心、以共享牌组为入口、以 FSRS 为技术差异点、以模板系统为审美保证**的方案。技术上不难落地，但在长期演化上非常友好，既能快速做出 MVP，又能平滑长线迭代。
+整体上，这是一个**以本地为中心、以共享牌组为入口、以 FSRS 为技术差异点、以模板系统为审美保证**的方案。技术上不难落地，架构简洁，专注于核心价值——帮助用户高效学习。
