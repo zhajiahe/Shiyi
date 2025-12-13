@@ -1,18 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight, Home, Download, Star, BookOpen, Loader2, Eye, ArrowUpDown } from 'lucide-react'
+import { ChevronRight, Home, Download, Star, BookOpen, Loader2, Eye, ArrowUpDown, Search, X } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   useReactTable,
   type ColumnDef,
   type SortingState,
+  type ColumnFiltersState,
 } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -37,6 +40,24 @@ export function MarketPage() {
   const [error, setError] = useState<string | null>(null)
   const [importing, setImporting] = useState<string | null>(null)
   const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+
+  // 收集所有标签
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>()
+    decks.forEach(deck => {
+      deck.tags.forEach(tag => tagSet.add(tag))
+    })
+    return Array.from(tagSet).sort()
+  }, [decks])
+
+  // 根据选中标签过滤数据
+  const filteredDecks = useMemo(() => {
+    if (!selectedTag) return decks
+    return decks.filter(deck => deck.tags.includes(selectedTag))
+  }, [decks, selectedTag])
 
   useEffect(() => {
     loadDecks()
@@ -209,14 +230,28 @@ export function MarketPage() {
   ]
 
   const table = useReactTable({
-    data: decks,
+    data: filteredDecks,
     columns,
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: (row, _columnId, filterValue) => {
+      const deck = row.original
+      const searchLower = filterValue.toLowerCase()
+      return (
+        deck.title.toLowerCase().includes(searchLower) ||
+        (deck.description?.toLowerCase().includes(searchLower) ?? false) ||
+        deck.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      )
+    },
     state: {
       sorting,
+      columnFilters,
+      globalFilter,
     },
     initialState: {
       pagination: {
@@ -247,6 +282,56 @@ export function MarketPage() {
             浏览和导入高质量的学习内容
           </p>
         </header>
+
+        {/* Search and Filter */}
+        {!loading && !error && decks.length > 0 && (
+          <div className="mb-6 space-y-4">
+            {/* Search */}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="搜索牌组名称、描述或标签..."
+                value={globalFilter}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                className="pl-9 pr-9"
+              />
+              {globalFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  onClick={() => setGlobalFilter('')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            {/* Tags Filter */}
+            {allTags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground">标签筛选：</span>
+                <Button
+                  variant={selectedTag === null ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedTag(null)}
+                >
+                  全部
+                </Button>
+                {allTags.map(tag => (
+                  <Button
+                    key={tag}
+                    variant={selectedTag === tag ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Content */}
         {loading ? (
