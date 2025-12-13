@@ -99,15 +99,20 @@ export function CardRenderer({
               window.parent.postMessage({ type: 'resize', height: height }, '*');
             }
             
-            // 监听内容变化
-            const observer = new ResizeObserver(updateHeight);
-            observer.observe(document.body);
+            // 监听内容变化 - 使用 IIFE 避免重复声明
+            (function() {
+              if (window._ankiObserver) {
+                window._ankiObserver.disconnect();
+              }
+              window._ankiObserver = new ResizeObserver(updateHeight);
+              window._ankiObserver.observe(document.body);
+            })();
             
             // 初始高度
             setTimeout(updateHeight, 100);
             
             // 图片加载后更新高度
-            document.querySelectorAll('img').forEach(img => {
+            document.querySelectorAll('img').forEach(function(img) {
               img.onload = updateHeight;
             });
           </script>

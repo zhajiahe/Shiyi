@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronRight, Home, CheckCircle, Loader2, Undo2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { CardRenderer } from '@/components/CardRenderer'
+import { FlipCard } from '@/components/FlipCard'
 import { cardRepository } from '@/db/repositories'
 import { reviewLogRepo } from '@/db/repositories/reviewLog'
 import { db } from '@/db'
@@ -183,7 +183,7 @@ export function ReviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
@@ -191,7 +191,7 @@ export function ReviewPage() {
 
   if (cards.length === 0 || !currentCard) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -229,7 +229,7 @@ export function ReviewPage() {
   const { note, noteModel, template } = currentCard
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -268,28 +268,16 @@ export function ReviewPage() {
           </div>
         </div>
 
-        {/* Card - 使用 daisyUI 渲染 */}
+        {/* Card - 翻转卡片 */}
         <div className="max-w-2xl mx-auto">
-          {/* 问题面 */}
-          <CardRenderer 
-            html={renderContent(template.questionTemplate, note.fields)}
+          <FlipCard
+            questionHtml={renderContent(template.questionTemplate, note.fields)}
+            answerHtml={renderContent(template.answerTemplate, note.fields)}
             css={noteModel.css || ''}
             theme="cupcake"
+            isFlipped={showAnswer}
             minHeight={200}
           />
-
-          {showAnswer && (
-            <>
-              <div className="my-4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
-              {/* 答案面 */}
-              <CardRenderer 
-                html={renderContent(template.answerTemplate, note.fields)}
-                css={noteModel.css || ''}
-                theme="cupcake"
-                minHeight={200}
-              />
-            </>
-          )}
         </div>
 
         {/* Actions */}

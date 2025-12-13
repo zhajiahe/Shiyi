@@ -240,7 +240,7 @@ export function MarketDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
@@ -248,7 +248,7 @@ export function MarketDetailPage() {
 
   if (error || !deck) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <Card className="text-center py-16">
             <CardContent>
@@ -264,7 +264,7 @@ export function MarketDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -458,7 +458,7 @@ export function MarketDetailPage() {
                 </div>
 
                 {/* 卡片渲染区域 - 使用 CardRenderer */}
-                <div className="p-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+                <div className="p-6 bg-muted/50">
                   <div className="max-w-xl mx-auto">
                     {/* 正面 */}
                     <CardRenderer 
@@ -471,7 +471,7 @@ export function MarketDetailPage() {
                     {/* 答案区域 */}
                     {showAnswer ? (
                       <>
-                        <div className="my-4 h-px bg-gradient-to-r from-transparent via-slate-400 to-transparent" />
+                        <div className="my-4 h-px bg-border" />
                         <CardRenderer 
                           html={renderedAnswer}
                           css={cardCss}

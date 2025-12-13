@@ -11,7 +11,7 @@ import type { ReviewLog } from '@/types'
 
 // 颜色强度等级
 const HEAT_COLORS = [
-  'bg-slate-100 dark:bg-slate-800',
+  'bg-muted',
   'bg-green-200 dark:bg-green-900/50',
   'bg-green-300 dark:bg-green-800/60',
   'bg-green-400 dark:bg-green-700/70',
@@ -167,14 +167,14 @@ export function StatsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -188,7 +188,7 @@ export function StatsPage() {
 
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
             <BarChart3 className="h-8 w-8" />
             学习统计
           </h1>

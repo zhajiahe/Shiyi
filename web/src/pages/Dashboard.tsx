@@ -34,14 +34,14 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <header className="mb-10">
+          <h1 className="text-3xl font-bold tracking-tight">
             Anki Web
           </h1>
-          <p className="mt-2 text-lg text-slate-600 dark:text-slate-400">
+          <p className="mt-2 text-muted-foreground">
             现代化间隔重复记忆系统
           </p>
         </header>
@@ -99,11 +99,11 @@ export function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="transition-colors hover:bg-muted/50">
             <Link to="/decks">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Library className="h-5 w-5" />
                   我的牌组
                 </CardTitle>
@@ -119,10 +119,10 @@ export function Dashboard() {
             </Link>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="transition-colors hover:bg-muted/50">
             <Link to="/review">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <BookOpen className="h-5 w-5" />
                   开始复习
                 </CardTitle>
@@ -138,10 +138,10 @@ export function Dashboard() {
             </Link>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="transition-colors hover:bg-muted/50">
             <Link to="/market">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <ShoppingBag className="h-5 w-5" />
                   牌组市场
                 </CardTitle>
@@ -157,10 +157,10 @@ export function Dashboard() {
             </Link>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="transition-colors hover:bg-muted/50">
             <Link to="/stats">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <BarChart3 className="h-5 w-5" />
                   学习统计
                 </CardTitle>
@@ -176,10 +176,10 @@ export function Dashboard() {
             </Link>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="transition-colors hover:bg-muted/50">
             <Link to="/settings">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Settings className="h-5 w-5" />
                   设置
                 </CardTitle>

@@ -185,7 +185,7 @@ export function DecksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -200,7 +200,7 @@ export function DecksPage() {
         {/* Header */}
         <header className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
               我的牌组
             </h1>
             <p className="text-muted-foreground">
@@ -278,7 +278,7 @@ export function DecksPage() {
               return (
                 <Card 
                   key={deck.id} 
-                  className="hover:shadow-lg transition-shadow cursor-pointer group"
+                  className="transition-colors hover:bg-muted/50 group"
                   onClick={() => handleStudyDeck(deck.id)}
                 >
                   <CardHeader className="pb-2">

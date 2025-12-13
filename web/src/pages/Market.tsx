@@ -50,7 +50,7 @@ export function MarketPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -64,7 +64,7 @@ export function MarketPage() {
 
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
             共享牌组市场
           </h1>
           <p className="text-muted-foreground">
@@ -94,7 +94,7 @@ export function MarketPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {decks.map(deck => (
-              <Card key={deck.id} className="hover:shadow-lg transition-shadow">
+              <Card key={deck.id} className="transition-colors hover:bg-muted/50">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
