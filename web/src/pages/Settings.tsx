@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { useTheme } from '@/components/theme-provider'
 import { db, getStorageEstimate } from '@/db'
 
 interface UserSettings {
@@ -29,7 +30,6 @@ interface UserSettings {
   learningSteps: number[]
   graduatingInterval: number
   easyInterval: number
-  theme: 'light' | 'dark' | 'system'
 }
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -39,12 +39,12 @@ const DEFAULT_SETTINGS: UserSettings = {
   learningSteps: [1, 10],
   graduatingInterval: 1,
   easyInterval: 4,
-  theme: 'system',
 }
 
 const STORAGE_KEY = 'anki-web-settings'
 
 export function SettingsPage() {
+  const { theme, setTheme } = useTheme()
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -513,9 +513,9 @@ export function SettingsPage() {
                 ].map(opt => (
                   <button
                     key={opt.value}
-                    onClick={() => setSettings(s => ({ ...s, theme: opt.value as UserSettings['theme'] }))}
+                    onClick={() => setTheme(opt.value as 'light' | 'dark' | 'system')}
                     className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                      settings.theme === opt.value
+                      theme === opt.value
                         ? 'border-primary bg-primary/5'
                         : 'border-border hover:border-primary/50'
                     }`}

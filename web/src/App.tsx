@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from '@/components/theme-provider'
 import { Dashboard } from './pages/Dashboard'
 import { DecksPage } from './pages/Decks'
 import { ReviewPage } from './pages/Review'
@@ -9,17 +10,19 @@ import { StatsPage } from './pages/Stats'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/decks" element={<DecksPage />} />
-        <Route path="/review" element={<ReviewPage />} />
-        <Route path="/market" element={<MarketPage />} />
-        <Route path="/market/:slug" element={<MarketDetailPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/stats" element={<StatsPage />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider defaultTheme="system" storageKey="anki-web-theme">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/decks" element={<DecksPage />} />
+          <Route path="/review" element={<ReviewPage />} />
+          <Route path="/market" element={<MarketPage />} />
+          <Route path="/market/:slug" element={<MarketDetailPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/stats" element={<StatsPage />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 
