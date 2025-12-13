@@ -32,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { CardRenderer } from '@/components/CardRenderer'
+import { FlipCard } from '@/components/FlipCard'
 import { getSharedDeckDetail, importSharedDeck, checkDeckNameExists, getUniqueDeckName } from '@/api/sharedDecks'
 import type { SharedDeck } from '@/types'
 
@@ -525,42 +525,26 @@ export function MarketDetailPage() {
 
           {selectedNote && currentTemplate && (
             <div className="space-y-4">
-              {/* 卡片渲染区域 */}
-              <div className="rounded-lg overflow-hidden border">
-                {/* 问题面 */}
-                <div className="bg-muted/30">
-                  <CardRenderer 
-                    html={renderedQuestion}
-                    css={cardCss}
-                    theme="cupcake"
-                    minHeight={120}
-                  />
-                </div>
-                
-                {/* 答案区域 */}
-                {showAnswer ? (
-                  <>
-                    <div className="h-px bg-border" />
-                    <div className="bg-muted/30">
-                      <CardRenderer 
-                        html={renderedAnswer}
-                        css={cardCss}
-                        theme="cupcake"
-                        minHeight={120}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <div className="py-4 text-center border-t">
-                    <Button 
-                      onClick={() => setShowAnswer(true)}
-                      className="gap-2"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                      显示答案
-                    </Button>
-                  </div>
-                )}
+              {/* 翻转卡片区域 */}
+              <FlipCard
+                questionHtml={renderedQuestion}
+                answerHtml={renderedAnswer}
+                css={cardCss}
+                theme="cupcake"
+                isFlipped={showAnswer}
+                minHeight={150}
+              />
+
+              {/* 翻转按钮 */}
+              <div className="text-center">
+                <Button 
+                  onClick={() => setShowAnswer(!showAnswer)}
+                  variant={showAnswer ? "outline" : "default"}
+                  className="gap-2"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  {showAnswer ? '显示问题' : '显示答案'}
+                </Button>
               </div>
 
               {/* 底部信息 */}
