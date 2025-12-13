@@ -15,7 +15,22 @@ import { cardRepository } from '@/db/repositories'
 import { reviewLogRepo } from '@/db/repositories/reviewLog'
 import { db } from '@/db'
 import type { Card as CardType, Note, NoteModel, CardTemplate, Rating } from '@/types'
-import { getButtonIntervals } from '@/scheduler/sm2'
+import { getButtonIntervals } from '@/scheduler'
+import type { SchedulerType } from '@/types'
+
+// 获取用户设置的调度器
+function getSchedulerFromSettings(): SchedulerType {
+  try {
+    const settings = localStorage.getItem('shiyi-settings')
+    if (settings) {
+      const parsed = JSON.parse(settings)
+      return parsed.scheduler || 'sm2'
+    }
+  } catch {
+    // 忽略解析错误
+  }
+  return 'sm2'
+}
 
 interface ReviewCard extends CardType {
   note: Note
@@ -236,7 +251,8 @@ export function ReviewPage() {
     )
   }
 
-  const intervals = getButtonIntervals(currentCard)
+  const scheduler = getSchedulerFromSettings()
+  const intervals = getButtonIntervals(currentCard, scheduler)
   const { note, noteModel, template } = currentCard
 
   return (

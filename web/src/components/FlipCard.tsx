@@ -61,7 +61,7 @@ export function FlipCard({
             justify-content: center;
             align-items: flex-start;
           }
-          .anki-card-wrapper {
+          .shiyi-card-wrapper {
             width: 100%;
             padding: 1.5rem;
           }

@@ -2,12 +2,12 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { 
   ChevronRight, Home, BarChart3, Calendar, TrendingUp, 
-  Loader2, Target, Award, Clock, Brain
+  Loader2, Target, Award, Clock, Brain, Layers
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { db } from '@/db'
-import type { ReviewLog } from '@/types'
+import type { ReviewLog, Card as CardType } from '@/types'
 
 // 颜色强度等级
 const HEAT_COLORS = [
@@ -43,6 +43,7 @@ function getWeekDay(date: Date): number {
 export function StatsPage() {
   const [loading, setLoading] = useState(true)
   const [reviewLogs, setReviewLogs] = useState<ReviewLog[]>([])
+  const [cards, setCards] = useState<CardType[]>([])
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month')
 
   useEffect(() => {
@@ -52,12 +53,31 @@ export function StatsPage() {
   const loadData = async () => {
     try {
       setLoading(true)
-      const logs = await db.reviewLogs.toArray()
+      const [logs, allCards] = await Promise.all([
+        db.reviewLogs.toArray(),
+        db.cards.filter(c => !c.deletedAt).toArray(),
+      ])
       setReviewLogs(logs)
+      setCards(allCards)
     } finally {
       setLoading(false)
     }
   }
+
+  // 计算卡片状态分布
+  const cardStats = useMemo(() => {
+    const now = Date.now()
+    return {
+      total: cards.length,
+      new: cards.filter(c => c.state === 'new').length,
+      learning: cards.filter(c => c.state === 'learning' || c.state === 'relearning').length,
+      review: cards.filter(c => c.state === 'review').length,
+      due: cards.filter(c => 
+        (c.state === 'learning' || c.state === 'relearning' || c.state === 'review') && c.due <= now
+      ).length,
+      mature: cards.filter(c => c.state === 'review' && c.interval >= 21).length,
+    }
+  }, [cards])
 
   // 计算总体统计
   const overallStats = useMemo(() => {
@@ -244,6 +264,74 @@ export function StatsPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* 卡片状态分布 */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Layers className="h-5 w-5" />
+              卡片概览
+            </CardTitle>
+            <CardDescription>
+              学习进度总览
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+              <div className="text-center p-3 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold">{cardStats.total}</p>
+                <p className="text-xs text-muted-foreground">总卡片</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-blue-500/10">
+                <p className="text-2xl font-bold text-blue-600">{cardStats.new}</p>
+                <p className="text-xs text-muted-foreground">新卡片</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-orange-500/10">
+                <p className="text-2xl font-bold text-orange-600">{cardStats.learning}</p>
+                <p className="text-xs text-muted-foreground">学习中</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-green-500/10">
+                <p className="text-2xl font-bold text-green-600">{cardStats.review}</p>
+                <p className="text-xs text-muted-foreground">复习中</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-red-500/10">
+                <p className="text-2xl font-bold text-red-600">{cardStats.due}</p>
+                <p className="text-xs text-muted-foreground">待复习</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-purple-500/10">
+                <p className="text-2xl font-bold text-purple-600">{cardStats.mature}</p>
+                <p className="text-xs text-muted-foreground">成熟卡片</p>
+              </div>
+            </div>
+            {/* 进度条 */}
+            {cardStats.total > 0 && (
+              <div className="mt-4">
+                <div className="h-3 rounded-full overflow-hidden flex bg-muted">
+                  <div 
+                    className="bg-blue-500 transition-all"
+                    style={{ width: `${(cardStats.new / cardStats.total) * 100}%` }}
+                    title={`新卡片: ${cardStats.new}`}
+                  />
+                  <div 
+                    className="bg-orange-500 transition-all"
+                    style={{ width: `${(cardStats.learning / cardStats.total) * 100}%` }}
+                    title={`学习中: ${cardStats.learning}`}
+                  />
+                  <div 
+                    className="bg-green-500 transition-all"
+                    style={{ width: `${(cardStats.review / cardStats.total) * 100}%` }}
+                    title={`复习中: ${cardStats.review}`}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>新 {Math.round((cardStats.new / cardStats.total) * 100)}%</span>
+                  <span>学习 {Math.round((cardStats.learning / cardStats.total) * 100)}%</span>
+                  <span>复习 {Math.round((cardStats.review / cardStats.total) * 100)}%</span>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* 时间范围选择 */}
         <div className="flex gap-2 mb-6">

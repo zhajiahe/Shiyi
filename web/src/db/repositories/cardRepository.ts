@@ -3,9 +3,23 @@
  */
 
 import { db } from '@/db'
-import type { Card, ReviewLog, Rating } from '@/types'
-import { scheduleSM2 } from '@/scheduler/sm2'
+import type { Card, ReviewLog, Rating, SchedulerType } from '@/types'
+import { schedule } from '@/scheduler'
 import { nanoid } from 'nanoid'
+
+// 获取用户设置的调度器
+function getSchedulerFromSettings(): SchedulerType {
+  try {
+    const settings = localStorage.getItem('shiyi-settings')
+    if (settings) {
+      const parsed = JSON.parse(settings)
+      return parsed.scheduler || 'sm2'
+    }
+  } catch {
+    // 忽略解析错误
+  }
+  return 'sm2'
+}
 
 export const cardRepository = {
   /**
@@ -64,8 +78,11 @@ export const cardRepository = {
     const card = await db.cards.get(cardId)
     if (!card) throw new Error('Card not found')
 
+    // 根据用户设置选择调度器
+    const scheduler = getSchedulerFromSettings()
+    
     // 计算新的调度参数
-    const result = scheduleSM2(card, rating)
+    const result = schedule(card, rating, scheduler)
     const now = Date.now()
 
     // 创建复习日志
@@ -96,6 +113,8 @@ export const cardRepository = {
       due: result.due,
       interval: result.interval,
       easeFactor: result.easeFactor,
+      stability: result.stability ?? card.stability,
+      difficulty: result.difficulty ?? card.difficulty,
       reps: card.reps + 1,
       lapses: rating === 1 ? card.lapses + 1 : card.lapses,
       lastReview: now,
