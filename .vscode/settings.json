@@ -1,0 +1,58 @@
+{
+  // CSS 设置 - 禁用 Tailwind 指令警告
+  "css.validate": false,
+  "css.lint.unknownAtRules": "ignore",
+  
+  // 使用 Tailwind CSS IntelliSense 插件代替内置验证
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+
+  // Python 设置
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+
+  // TypeScript/React 设置
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ESLint 设置
+  "eslint.workingDirectories": ["./web"],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // 文件关联
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // 推荐安装的插件（在 extensions.json 中定义）
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}
