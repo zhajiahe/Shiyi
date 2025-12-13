@@ -1,14 +1,29 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { 
-  ChevronRight, ChevronLeft, Home, Download, Star, 
+  ChevronRight, Home, Download, Star, 
   BookOpen, Loader2, ArrowLeft, Eye, RotateCcw, AlertCircle, CheckCircle2
 } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+  type ColumnDef,
+} from '@tanstack/react-table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import {
   Dialog,
   DialogContent,
@@ -98,7 +113,6 @@ export function MarketDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [importing, setImporting] = useState(false)
-  const [page, setPage] = useState(1)
   
   // 卡片预览状态
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number | null>(null)
@@ -213,16 +227,53 @@ export function MarketDetailPage() {
     }
   }
 
-  // 分页笔记
-  const paginatedNotes = useMemo(() => {
-    if (!exportData) return []
-    const start = (page - 1) * PAGE_SIZE
-    return exportData.notes.slice(start, start + PAGE_SIZE)
-  }, [exportData, page])
-
-  const totalPages = exportData ? Math.ceil(exportData.notes.length / PAGE_SIZE) : 0
   const noteModel = exportData?.note_models[0]
   const fieldNames = noteModel?.fields_schema.map(f => f.name) || []
+
+  // 动态生成列定义
+  const columns: ColumnDef<NotePreview>[] = useMemo(() => {
+    const cols: ColumnDef<NotePreview>[] = fieldNames.slice(0, 3).map(fieldName => ({
+      id: fieldName,
+      header: fieldName,
+      cell: ({ row }) => {
+        const value = row.original.fields[fieldName] || '-'
+        return (
+          <div className="truncate max-w-[200px]" title={value}>
+            {value}
+          </div>
+        )
+      },
+    }))
+    
+    // 添加预览按钮列
+    cols.push({
+      id: 'preview',
+      header: () => <div className="text-center">预览</div>,
+      cell: ({ row }) => {
+        const globalIndex = exportData?.notes.findIndex(n => n.id === row.original.id) ?? -1
+        const isSelected = globalIndex === selectedNoteIndex
+        return (
+          <div className="flex justify-center">
+            <Eye className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+          </div>
+        )
+      },
+    })
+    
+    return cols
+  }, [fieldNames, exportData?.notes, selectedNoteIndex])
+
+  const table = useReactTable({
+    data: exportData?.notes || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: PAGE_SIZE,
+      },
+    },
+  })
 
   // 获取选中笔记的预览数据
   const selectedNote = selectedNoteIndex !== null ? exportData?.notes[selectedNoteIndex] : null
@@ -322,17 +373,17 @@ export function MarketDetailPage() {
                 ))}
               </div>
             )}
-            {/* Stats */}
+            {/* Stats - 兼容 snake_case 和 camelCase */}
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <BookOpen className="h-4 w-4" />
-                {deck.noteCount} 笔记
+                {(deck as SharedDeck & { note_count?: number }).noteCount ?? (deck as SharedDeck & { note_count?: number }).note_count ?? 0} 笔记
               </span>
               <span>
-                {deck.cardCount} 卡片
+                {(deck as SharedDeck & { card_count?: number }).cardCount ?? (deck as SharedDeck & { card_count?: number }).card_count ?? 0} 卡片
               </span>
               <span>
-                {deck.downloadCount} 次下载
+                {(deck as SharedDeck & { download_count?: number }).downloadCount ?? (deck as SharedDeck & { download_count?: number }).download_count ?? 0} 次下载
               </span>
             </div>
           </CardContent>
@@ -347,74 +398,86 @@ export function MarketDetailPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Table Header */}
+            {/* Data Table */}
             {fieldNames.length > 0 && (
-              <div className="border rounded-lg overflow-hidden">
-                <div className="grid bg-muted/50 font-medium text-sm" 
-                     style={{ gridTemplateColumns: `repeat(${Math.min(fieldNames.length, 3)}, 1fr) 60px` }}>
-                  {fieldNames.slice(0, 3).map(name => (
-                    <div key={name} className="px-4 py-3 border-b">{name}</div>
-                  ))}
-                  <div className="px-4 py-3 border-b text-center">预览</div>
-                </div>
-                
-                {/* Table Body */}
-                {paginatedNotes.map((note, index) => {
-                  const globalIndex = (page - 1) * PAGE_SIZE + index
-                  const isSelected = globalIndex === selectedNoteIndex
-                  return (
-                    <div 
-                      key={note.id}
-                      onClick={() => handleNoteClick(globalIndex)}
-                      className={`grid text-sm cursor-pointer transition-colors ${
-                        isSelected 
-                          ? 'bg-primary/10 hover:bg-primary/15' 
-                          : 'hover:bg-muted/30'
-                      }`}
-                      style={{ gridTemplateColumns: `repeat(${Math.min(fieldNames.length, 3)}, 1fr) 60px` }}
-                    >
-                      {fieldNames.slice(0, 3).map(name => (
-                        <div 
-                          key={name} 
-                          className="px-4 py-3 border-b truncate"
-                          title={note.fields[name] || ''}
-                        >
-                          {note.fields[name] || '-'}
-                        </div>
+              <div className="space-y-4">
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      {table.getHeaderGroups().map(headerGroup => (
+                        <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map(header => (
+                            <TableHead key={header.id}>
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </TableHead>
+                          ))}
+                        </TableRow>
                       ))}
-                      <div className="px-4 py-3 border-b flex items-center justify-center">
-                        <Eye className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+                    </TableHeader>
+                    <TableBody>
+                      {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map(row => {
+                          const globalIndex = exportData?.notes.findIndex(n => n.id === row.original.id) ?? -1
+                          const isSelected = globalIndex === selectedNoteIndex
+                          return (
+                            <TableRow
+                              key={row.id}
+                              onClick={() => handleNoteClick(globalIndex)}
+                              className={`cursor-pointer ${isSelected ? 'bg-primary/10 hover:bg-primary/15' : ''}`}
+                            >
+                              {row.getVisibleCells().map(cell => (
+                                <TableCell key={cell.id}>
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          )
+                        })
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={columns.length} className="h-24 text-center">
+                            暂无笔记
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  上一页
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  第 {page} / {totalPages} 页
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                >
-                  下一页
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
+                {/* Pagination */}
+                {table.getPageCount() > 1 && (
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      第 {table.getState().pagination.pageIndex + 1} / {table.getPageCount()} 页
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                      >
+                        上一页
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                      >
+                        下一页
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -559,11 +622,11 @@ export function MarketDetailPage() {
                 <div className="mt-4 p-3 bg-muted/50 rounded-lg text-sm">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">笔记数量</span>
-                    <span>{deck?.noteCount || 0} 条</span>
+                    <span>{(deck as SharedDeck & { note_count?: number })?.noteCount ?? (deck as SharedDeck & { note_count?: number })?.note_count ?? 0} 条</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">卡片数量</span>
-                    <span>{deck?.cardCount || 0} 张</span>
+                    <span>{(deck as SharedDeck & { card_count?: number })?.cardCount ?? (deck as SharedDeck & { card_count?: number })?.card_count ?? 0} 张</span>
                   </div>
                 </div>
               </div>
