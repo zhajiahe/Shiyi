@@ -4,6 +4,7 @@ import {
   ChevronRight, ChevronLeft, Home, Download, Star, 
   BookOpen, Loader2, ArrowLeft, Eye, RotateCcw, AlertCircle, CheckCircle2
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -187,7 +188,9 @@ export function MarketDetailPage() {
         cardCount: result.cardCount,
       })
     } catch (err) {
-      alert(err instanceof Error ? err.message : '导入失败')
+      toast.error('导入失败', {
+        description: err instanceof Error ? err.message : '请重试',
+      })
     } finally {
       setImporting(false)
     }

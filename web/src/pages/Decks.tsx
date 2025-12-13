@@ -4,6 +4,7 @@ import {
   ChevronRight, Home, Plus, Folder, BookOpen, Loader2, Trash2,
   MoreVertical, Edit, Download
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +25,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { deckRepository } from '@/db/repositories'
 import { db } from '@/db'
 import type { Deck } from '@/types'
@@ -42,6 +53,11 @@ export function DecksPage() {
   const [renameDeckId, setRenameDeckId] = useState<string | null>(null)
   const [renameDeckName, setRenameDeckName] = useState('')
   const [renaming, setRenaming] = useState(false)
+  
+  // 删除确认对话框状态
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteDeckId, setDeleteDeckId] = useState<string | null>(null)
+  const [deleteDeckName, setDeleteDeckName] = useState('')
 
   useEffect(() => {
     loadDecks()
@@ -78,10 +94,22 @@ export function DecksPage() {
     }
   }
 
-  const handleDeleteDeck = async (deckId: string) => {
-    if (!confirm('确定要删除这个牌组吗？所有关联的笔记和卡片也会被删除。')) return
+  // 打开删除确认对话框
+  const openDeleteDialog = (deck: Deck) => {
+    setDeleteDeckId(deck.id)
+    setDeleteDeckName(deck.name)
+    setDeleteDialogOpen(true)
+  }
+
+  // 执行删除
+  const handleDeleteDeck = async () => {
+    if (!deleteDeckId) return
     
-    await deckRepository.delete(deckId)
+    await deckRepository.delete(deleteDeckId)
+    setDeleteDialogOpen(false)
+    setDeleteDeckId(null)
+    setDeleteDeckName('')
+    toast.success('牌组已删除')
     await loadDecks()
   }
 
@@ -180,7 +208,9 @@ export function DecksPage() {
       URL.revokeObjectURL(url)
     } catch (error) {
       console.error('Export failed:', error)
-      alert('导出失败，请重试')
+      toast.error('导出失败', {
+        description: '请重试',
+      })
     }
   }
 
@@ -309,7 +339,7 @@ export function DecksPage() {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             className="text-destructive"
-                            onClick={() => handleDeleteDeck(deck.id)}
+                            onClick={() => openDeleteDialog(deck)}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             删除牌组
@@ -382,6 +412,29 @@ export function DecksPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 删除确认对话框 */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定要删除牌组吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              即将删除牌组 "<strong>{deleteDeckName}</strong>"。
+              <br /><br />
+              所有关联的笔记和卡片也会被删除。此操作不可撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteDeck}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              确认删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

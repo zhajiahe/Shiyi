@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronRight, ChevronLeft, Home, Download, Star, Users, BookOpen, Loader2, Eye } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -41,9 +42,13 @@ export function MarketPage() {
     try {
       setImporting(deck.id)
       const result = await importSharedDeck(deck.slug)
-      alert(`导入成功！${result.noteCount} 笔记，${result.cardCount} 卡片`)
+      toast.success('导入成功', {
+        description: `已导入 ${result.noteCount} 条笔记，${result.cardCount} 张卡片`,
+      })
     } catch (err) {
-      alert(err instanceof Error ? err.message : '导入失败')
+      toast.error('导入失败', {
+        description: err instanceof Error ? err.message : '请重试',
+      })
     } finally {
       setImporting(null)
     }

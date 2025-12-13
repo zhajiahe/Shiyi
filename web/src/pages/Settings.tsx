@@ -4,10 +4,22 @@ import {
   ChevronRight, Home, Settings as SettingsIcon, Save, Loader2,
   Download, Upload, Trash2, HardDrive, AlertTriangle
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { db, getStorageEstimate } from '@/db'
 
 interface UserSettings {
@@ -52,6 +64,15 @@ export function SettingsPage() {
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
   const [clearing, setClearing] = useState(false)
+  
+  // 导入确认对话框状态
+  const [importDialogOpen, setImportDialogOpen] = useState(false)
+  const [pendingImportData, setPendingImportData] = useState<{
+    data: unknown
+    deckCount: number
+    noteCount: number
+    cardCount: number
+  } | null>(null)
 
   useEffect(() => {
     // 从 localStorage 加载设置
@@ -119,15 +140,21 @@ export function SettingsPage() {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
+      
+      toast.success('导出成功', {
+        description: '备份文件已下载到本地',
+      })
     } catch (error) {
       console.error('Export failed:', error)
-      alert('导出失败，请重试')
+      toast.error('导出失败', {
+        description: '请重试或检查浏览器权限',
+      })
     } finally {
       setExporting(false)
     }
   }
   
-  // 导入数据
+  // 导入数据 - 第一步：选择文件
   const handleImportAll = async () => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -145,62 +172,95 @@ export function SettingsPage() {
           throw new Error('无效的备份文件格式')
         }
         
-        if (!confirm(`确定要导入备份数据吗？\n\n这将覆盖现有数据：\n- ${importData.data.decks?.length || 0} 个牌组\n- ${importData.data.notes?.length || 0} 条笔记\n- ${importData.data.cards?.length || 0} 张卡片`)) {
-          return
-        }
-        
-        // 清空现有数据
-        await db.noteModels.clear()
-        await db.cardTemplates.clear()
-        await db.decks.clear()
-        await db.notes.clear()
-        await db.cards.clear()
-        await db.reviewLogs.clear()
-        
-        // 导入新数据
-        if (importData.data.noteModels?.length) {
-          await db.noteModels.bulkAdd(importData.data.noteModels)
-        }
-        if (importData.data.cardTemplates?.length) {
-          await db.cardTemplates.bulkAdd(importData.data.cardTemplates)
-        }
-        if (importData.data.decks?.length) {
-          await db.decks.bulkAdd(importData.data.decks)
-        }
-        if (importData.data.notes?.length) {
-          await db.notes.bulkAdd(importData.data.notes)
-        }
-        if (importData.data.cards?.length) {
-          await db.cards.bulkAdd(importData.data.cards)
-        }
-        if (importData.data.reviewLogs?.length) {
-          await db.reviewLogs.bulkAdd(importData.data.reviewLogs)
-        }
-        
-        // 导入设置
-        if (importData.settings) {
-          setSettings(importData.settings)
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(importData.settings))
-        }
-        
-        alert('导入成功！')
-        loadStorageInfo()
-        loadDataStats()
+        // 设置待导入数据并打开确认对话框
+        setPendingImportData({
+          data: importData,
+          deckCount: importData.data.decks?.length || 0,
+          noteCount: importData.data.notes?.length || 0,
+          cardCount: importData.data.cards?.length || 0,
+        })
+        setImportDialogOpen(true)
       } catch (error) {
-        console.error('Import failed:', error)
-        alert('导入失败：' + (error instanceof Error ? error.message : '未知错误'))
-      } finally {
+        console.error('Import parse failed:', error)
+        toast.error('导入失败', {
+          description: error instanceof Error ? error.message : '文件格式无效',
+        })
         setImporting(false)
       }
     }
     input.click()
   }
   
+  // 导入数据 - 第二步：确认导入
+  const confirmImport = async () => {
+    if (!pendingImportData) return
+    
+    try {
+      const importData = pendingImportData.data as {
+        settings?: UserSettings
+        data: {
+          noteModels?: unknown[]
+          cardTemplates?: unknown[]
+          decks?: unknown[]
+          notes?: unknown[]
+          cards?: unknown[]
+          reviewLogs?: unknown[]
+        }
+      }
+      
+      // 清空现有数据
+      await db.noteModels.clear()
+      await db.cardTemplates.clear()
+      await db.decks.clear()
+      await db.notes.clear()
+      await db.cards.clear()
+      await db.reviewLogs.clear()
+      
+      // 导入新数据
+      if (importData.data.noteModels?.length) {
+        await db.noteModels.bulkAdd(importData.data.noteModels as never[])
+      }
+      if (importData.data.cardTemplates?.length) {
+        await db.cardTemplates.bulkAdd(importData.data.cardTemplates as never[])
+      }
+      if (importData.data.decks?.length) {
+        await db.decks.bulkAdd(importData.data.decks as never[])
+      }
+      if (importData.data.notes?.length) {
+        await db.notes.bulkAdd(importData.data.notes as never[])
+      }
+      if (importData.data.cards?.length) {
+        await db.cards.bulkAdd(importData.data.cards as never[])
+      }
+      if (importData.data.reviewLogs?.length) {
+        await db.reviewLogs.bulkAdd(importData.data.reviewLogs as never[])
+      }
+      
+      // 导入设置
+      if (importData.settings) {
+        setSettings(importData.settings)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(importData.settings))
+      }
+      
+      toast.success('导入成功', {
+        description: `已恢复 ${pendingImportData.deckCount} 个牌组、${pendingImportData.noteCount} 条笔记`,
+      })
+      loadStorageInfo()
+      loadDataStats()
+    } catch (error) {
+      console.error('Import failed:', error)
+      toast.error('导入失败', {
+        description: error instanceof Error ? error.message : '未知错误',
+      })
+    } finally {
+      setImporting(false)
+      setPendingImportData(null)
+      setImportDialogOpen(false)
+    }
+  }
+  
   // 清空所有数据
   const handleClearAll = async () => {
-    if (!confirm('⚠️ 确定要清空所有数据吗？\n\n此操作不可撤销！\n\n建议先导出备份。')) return
-    if (!confirm('再次确认：删除所有牌组、笔记、卡片和复习记录？')) return
-    
     try {
       setClearing(true)
       await db.noteModels.clear()
@@ -210,12 +270,16 @@ export function SettingsPage() {
       await db.cards.clear()
       await db.reviewLogs.clear()
       
-      alert('数据已清空')
+      toast.success('数据已清空', {
+        description: '所有学习数据已被删除',
+      })
       loadStorageInfo()
       loadDataStats()
     } catch (error) {
       console.error('Clear failed:', error)
-      alert('清空失败，请重试')
+      toast.error('清空失败', {
+        description: '请重试',
+      })
     } finally {
       setClearing(false)
     }
@@ -229,15 +293,15 @@ export function SettingsPage() {
     setTimeout(() => {
       setSaving(false)
       setSaved(true)
+      toast.success('设置已保存')
       setTimeout(() => setSaved(false), 2000)
     }, 300)
   }
 
   const handleReset = () => {
-    if (confirm('确定要恢复默认设置吗？')) {
-      setSettings(DEFAULT_SETTINGS)
-      localStorage.removeItem(STORAGE_KEY)
-    }
+    setSettings(DEFAULT_SETTINGS)
+    localStorage.removeItem(STORAGE_KEY)
+    toast.success('已恢复默认设置')
   }
 
   return (
@@ -568,20 +632,50 @@ export function SettingsPage() {
                   <p className="text-sm text-muted-foreground mt-1">
                     清空所有数据将删除您的牌组、笔记、卡片和复习记录。此操作不可撤销。
                   </p>
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    className="mt-3"
-                    onClick={handleClearAll}
-                    disabled={clearing}
-                  >
-                    {clearing ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-4 w-4 mr-2" />
-                    )}
-                    清空所有数据
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        className="mt-3"
+                        disabled={clearing}
+                      >
+                        {clearing ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 mr-2" />
+                        )}
+                        清空所有数据
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>确定要清空所有数据吗？</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          此操作将永久删除您的所有学习数据，包括：
+                          <br />
+                          • {dataStats.decks} 个牌组
+                          <br />
+                          • {dataStats.notes} 条笔记
+                          <br />
+                          • {dataStats.cards} 张卡片
+                          <br />
+                          • {dataStats.reviewLogs} 条复习记录
+                          <br /><br />
+                          <strong>此操作不可撤销！</strong>建议先导出备份。
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>取消</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleClearAll}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          确认清空
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>
@@ -590,9 +684,25 @@ export function SettingsPage() {
 
         {/* 操作按钮 */}
         <div className="flex justify-between items-center">
-          <Button variant="outline" onClick={handleReset}>
-            恢复默认
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline">恢复默认</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>恢复默认设置？</AlertDialogTitle>
+                <AlertDialogDescription>
+                  这将把所有设置恢复为默认值。您的学习数据不会受到影响。
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>取消</AlertDialogCancel>
+                <AlertDialogAction onClick={handleReset}>
+                  确认恢复
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <div className="flex items-center gap-4">
             {saved && (
               <Badge variant="secondary" className="animate-pulse">
@@ -627,7 +737,37 @@ export function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* 导入确认对话框 */}
+      <AlertDialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认导入数据？</AlertDialogTitle>
+            <AlertDialogDescription>
+              即将导入备份数据，这将覆盖现有数据：
+              <br />
+              • {pendingImportData?.deckCount || 0} 个牌组
+              <br />
+              • {pendingImportData?.noteCount || 0} 条笔记
+              <br />
+              • {pendingImportData?.cardCount || 0} 张卡片
+              <br /><br />
+              现有数据将被替换，建议先导出当前数据作为备份。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setImporting(false)
+              setPendingImportData(null)
+            }}>
+              取消
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmImport}>
+              确认导入
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
-

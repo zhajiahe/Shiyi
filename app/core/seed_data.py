@@ -14,21 +14,21 @@ BUILTIN_NOTE_MODELS = [
             {"name": "Front", "description": "正面内容（问题）"},
             {"name": "Back", "description": "背面内容（答案）"},
         ],
-        "css": "",  # 使用 daisyUI 默认主题
+        "css": "",
         "templates": [
             {
                 "name": "正向卡片",
                 "ord": 0,
-                "question_template": '''<div class="card bg-base-100 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl">{{Front}}</h2>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-10">
+    <p class="text-2xl font-medium text-base-content">{{Front}}</p>
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-base-100 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl">{{Front}}</h2>
-    <div class="divider"></div>
-    <p class="text-lg">{{Back}}</p>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <p class="text-xl text-base-content/70">{{Front}}</p>
+    <div class="divider my-3"></div>
+    <p class="text-2xl font-medium text-base-content">{{Back}}</p>
   </div>
 </div>''',
             },
@@ -46,32 +46,32 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "正向卡片",
                 "ord": 0,
-                "question_template": '''<div class="card bg-base-100 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl">{{Front}}</h2>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-10">
+    <p class="text-2xl font-medium text-base-content">{{Front}}</p>
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-base-100 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl">{{Front}}</h2>
-    <div class="divider"></div>
-    <p class="text-lg">{{Back}}</p>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <p class="text-xl text-base-content/70">{{Front}}</p>
+    <div class="divider my-3"></div>
+    <p class="text-2xl font-medium text-base-content">{{Back}}</p>
   </div>
 </div>''',
             },
             {
                 "name": "反向卡片",
                 "ord": 1,
-                "question_template": '''<div class="card bg-base-100 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl">{{Back}}</h2>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-10">
+    <p class="text-2xl font-medium text-base-content">{{Back}}</p>
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-base-100 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl">{{Back}}</h2>
-    <div class="divider"></div>
-    <p class="text-lg">{{Front}}</p>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <p class="text-xl text-base-content/70">{{Back}}</p>
+    <div class="divider my-3"></div>
+    <p class="text-2xl font-medium text-base-content">{{Front}}</p>
   </div>
 </div>''',
             },
@@ -93,25 +93,25 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "单词 → 释义",
                 "ord": 0,
-                "question_template": '''<div class="card bg-primary text-primary-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-3xl font-bold">{{Word}}</h2>
-    {{#Phonetic}}<p class="text-sm opacity-80">[{{Phonetic}}]</p>{{/Phonetic}}
-    {{#PartOfSpeech}}<div class="badge badge-secondary">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-8">
+    <h2 class="text-4xl font-bold text-base-content">{{Word}}</h2>
+    {{#Phonetic}}<p class="text-base text-base-content/70 mt-2">[{{Phonetic}}]</p>{{/Phonetic}}
+    {{#PartOfSpeech}}<div class="badge badge-outline badge-lg mt-3">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-primary text-primary-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-3xl font-bold">{{Word}}</h2>
-    {{#Phonetic}}<p class="text-sm opacity-80">[{{Phonetic}}]</p>{{/Phonetic}}
-    {{#PartOfSpeech}}<div class="badge badge-secondary">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
-    <div class="divider divider-neutral"></div>
-    <p class="text-xl">{{Meaning}}</p>
-    {{#Example}}<div class="alert shadow-lg mt-4">
-      <span class="text-sm italic">{{Example}}</span>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <h2 class="text-3xl font-bold text-base-content">{{Word}}</h2>
+    {{#Phonetic}}<p class="text-sm text-base-content/60">[{{Phonetic}}]</p>{{/Phonetic}}
+    {{#PartOfSpeech}}<div class="badge badge-outline mt-2">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
+    <div class="divider my-3"></div>
+    <p class="text-xl text-base-content font-medium">{{Meaning}}</p>
+    {{#Example}}<div class="bg-base-200 rounded-lg p-4 mt-4 w-full">
+      <p class="text-sm italic text-base-content/80">{{Example}}</p>
     </div>{{/Example}}
-    {{#Mnemonic}}<div class="alert alert-warning mt-2">
-      <span>💡 {{Mnemonic}}</span>
+    {{#Mnemonic}}<div class="bg-warning/20 rounded-lg p-3 mt-3 w-full">
+      <p class="text-sm text-warning-content">💡 {{Mnemonic}}</p>
     </div>{{/Mnemonic}}
   </div>
 </div>''',
@@ -119,24 +119,24 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "释义 → 单词",
                 "ord": 1,
-                "question_template": '''<div class="card bg-secondary text-secondary-content shadow-xl">
-  <div class="card-body items-center text-center">
-    {{#PartOfSpeech}}<div class="badge badge-primary mb-2">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
-    <p class="text-xl">{{Meaning}}</p>
-    {{#Example}}<div class="alert shadow-lg mt-4 opacity-50">
-      <span class="text-sm italic blur-sm">{{Example}}</span>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-8">
+    {{#PartOfSpeech}}<div class="badge badge-outline badge-lg mb-4">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
+    <p class="text-2xl font-medium text-base-content">{{Meaning}}</p>
+    {{#Example}}<div class="bg-base-200 rounded-lg p-4 mt-4 w-full">
+      <p class="text-sm italic text-base-content/60">提示: {{Example}}</p>
     </div>{{/Example}}
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-secondary text-secondary-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-3xl font-bold">{{Word}}</h2>
-    {{#Phonetic}}<p class="text-sm opacity-80">[{{Phonetic}}]</p>{{/Phonetic}}
-    {{#PartOfSpeech}}<div class="badge badge-primary">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
-    <div class="divider divider-neutral"></div>
-    <p class="text-xl">{{Meaning}}</p>
-    {{#Example}}<div class="alert shadow-lg mt-4">
-      <span class="text-sm italic">{{Example}}</span>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <h2 class="text-3xl font-bold text-primary">{{Word}}</h2>
+    {{#Phonetic}}<p class="text-sm text-base-content/60">[{{Phonetic}}]</p>{{/Phonetic}}
+    {{#PartOfSpeech}}<div class="badge badge-outline mt-2">{{PartOfSpeech}}</div>{{/PartOfSpeech}}
+    <div class="divider my-3"></div>
+    <p class="text-xl text-base-content font-medium">{{Meaning}}</p>
+    {{#Example}}<div class="bg-base-200 rounded-lg p-4 mt-4 w-full">
+      <p class="text-sm italic text-base-content/80">{{Example}}</p>
     </div>{{/Example}}
   </div>
 </div>''',
@@ -153,16 +153,16 @@ BUILTIN_NOTE_MODELS = [
         "css": """
 .cloze {
   font-weight: 700;
-  color: oklch(var(--er));
-  background: oklch(var(--er) / 0.1);
+  color: oklch(var(--p));
+  background: oklch(var(--p) / 0.1);
   padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
-  border-bottom: 2px solid oklch(var(--er));
+  border-bottom: 2px solid oklch(var(--p));
 }
 .cloze-blank {
   display: inline-block;
   min-width: 4rem;
-  border-bottom: 2px dashed oklch(var(--er));
+  border-bottom: 2px dashed oklch(var(--p));
   color: transparent;
 }
 """,
@@ -170,17 +170,17 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "填空卡片",
                 "ord": 0,
-                "question_template": '''<div class="card bg-warning text-warning-content shadow-xl">
-  <div class="card-body">
-    <div class="prose prose-lg max-w-none">{{cloze:Text}}</div>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body py-8">
+    <div class="prose prose-lg max-w-none text-base-content">{{cloze:Text}}</div>
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-warning text-warning-content shadow-xl">
-  <div class="card-body">
-    <div class="prose prose-lg max-w-none">{{cloze:Text}}</div>
-    {{#Extra}}<div class="divider"></div>
-    <div class="alert">
-      <span>{{Extra}}</span>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body py-6">
+    <div class="prose prose-lg max-w-none text-base-content">{{cloze:Text}}</div>
+    {{#Extra}}<div class="divider my-3"></div>
+    <div class="bg-base-200 rounded-lg p-4">
+      <p class="text-sm text-base-content/80">{{Extra}}</p>
     </div>{{/Extra}}
   </div>
 </div>''',
@@ -200,20 +200,20 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "问答卡片",
                 "ord": 0,
-                "question_template": '''<div class="card bg-neutral text-neutral-content shadow-xl">
-  <div class="card-body">
-    <div class="badge badge-info mb-2">❓ Question</div>
-    <h2 class="card-title text-xl">{{Question}}</h2>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body py-8">
+    <div class="badge badge-outline mb-3">❓ Question</div>
+    <p class="text-xl font-medium text-base-content">{{Question}}</p>
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-neutral text-neutral-content shadow-xl">
-  <div class="card-body">
-    <div class="badge badge-info mb-2">❓ Question</div>
-    <h2 class="card-title text-xl">{{Question}}</h2>
-    <div class="divider"></div>
-    <div class="badge badge-success mb-2">💡 Answer</div>
-    <p class="text-lg">{{Answer}}</p>
-    {{#Source}}<div class="text-sm opacity-60 mt-4">📖 {{Source}}</div>{{/Source}}
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body py-6">
+    <div class="badge badge-outline mb-2">❓ Question</div>
+    <p class="text-lg text-base-content/80">{{Question}}</p>
+    <div class="divider my-3"></div>
+    <div class="badge badge-primary mb-2">💡 Answer</div>
+    <p class="text-xl font-medium text-base-content">{{Answer}}</p>
+    {{#Source}}<p class="text-sm text-base-content/50 mt-4">📖 {{Source}}</p>{{/Source}}
   </div>
 </div>''',
             },
@@ -234,23 +234,23 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "外语 → 母语",
                 "ord": 0,
-                "question_template": '''<div class="card bg-accent text-accent-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl font-bold">{{Phrase}}</h2>
-    {{#Pronunciation}}<p class="text-sm opacity-80">{{Pronunciation}}</p>{{/Pronunciation}}
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-8">
+    <p class="text-2xl font-bold text-base-content">{{Phrase}}</p>
+    {{#Pronunciation}}<p class="text-sm text-base-content/60 mt-2">{{Pronunciation}}</p>{{/Pronunciation}}
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-accent text-accent-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl font-bold">{{Phrase}}</h2>
-    {{#Pronunciation}}<p class="text-sm opacity-80">{{Pronunciation}}</p>{{/Pronunciation}}
-    <div class="divider"></div>
-    <p class="text-xl">{{Translation}}</p>
-    {{#Context}}<div class="alert mt-4">
-      <span class="text-sm">{{Context}}</span>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <p class="text-xl font-bold text-base-content">{{Phrase}}</p>
+    {{#Pronunciation}}<p class="text-sm text-base-content/60">{{Pronunciation}}</p>{{/Pronunciation}}
+    <div class="divider my-3"></div>
+    <p class="text-xl font-medium text-primary">{{Translation}}</p>
+    {{#Context}}<div class="bg-base-200 rounded-lg p-4 mt-4 w-full">
+      <p class="text-sm text-base-content/80">{{Context}}</p>
     </div>{{/Context}}
-    {{#Notes}}<div class="alert alert-info mt-2">
-      <span>📝 {{Notes}}</span>
+    {{#Notes}}<div class="bg-info/10 rounded-lg p-3 mt-3 w-full">
+      <p class="text-sm text-base-content">📝 {{Notes}}</p>
     </div>{{/Notes}}
   </div>
 </div>''',
@@ -258,19 +258,19 @@ BUILTIN_NOTE_MODELS = [
             {
                 "name": "母语 → 外语",
                 "ord": 1,
-                "question_template": '''<div class="card bg-info text-info-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <p class="text-xl">{{Translation}}</p>
+                "question_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-8">
+    <p class="text-2xl font-medium text-base-content">{{Translation}}</p>
   </div>
 </div>''',
-                "answer_template": '''<div class="card bg-info text-info-content shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title text-2xl font-bold">{{Phrase}}</h2>
-    {{#Pronunciation}}<p class="text-sm opacity-80">{{Pronunciation}}</p>{{/Pronunciation}}
-    <div class="divider"></div>
-    <p class="text-xl">{{Translation}}</p>
-    {{#Context}}<div class="alert mt-4">
-      <span class="text-sm">{{Context}}</span>
+                "answer_template": '''<div class="card bg-base-100 shadow-lg border border-base-300">
+  <div class="card-body items-center text-center py-6">
+    <p class="text-2xl font-bold text-primary">{{Phrase}}</p>
+    {{#Pronunciation}}<p class="text-sm text-base-content/60">{{Pronunciation}}</p>{{/Pronunciation}}
+    <div class="divider my-3"></div>
+    <p class="text-lg text-base-content">{{Translation}}</p>
+    {{#Context}}<div class="bg-base-200 rounded-lg p-4 mt-4 w-full">
+      <p class="text-sm text-base-content/80">{{Context}}</p>
     </div>{{/Context}}
   </div>
 </div>''',
