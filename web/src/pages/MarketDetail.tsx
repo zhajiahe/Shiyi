@@ -116,7 +116,8 @@ export function MarketDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [importing, setImporting] = useState(false)
   
-  // 卡片预览状态
+  // 卡片预览弹窗状态
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number | null>(null)
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
@@ -225,15 +226,12 @@ export function MarketDetailPage() {
     navigate('/decks')
   }
 
-  // 点击笔记行时
+  // 点击笔记行时打开预览弹窗
   const handleNoteClick = (globalIndex: number) => {
-    if (globalIndex === selectedNoteIndex) {
-      setSelectedNoteIndex(null)
-    } else {
-      setSelectedNoteIndex(globalIndex)
-      setSelectedTemplateIndex(0)
-      setShowAnswer(false)
-    }
+    setSelectedNoteIndex(globalIndex)
+    setSelectedTemplateIndex(0)
+    setShowAnswer(false)
+    setPreviewDialogOpen(true)
   }
 
   const noteModel = exportData?.note_models[0]
@@ -258,19 +256,15 @@ export function MarketDetailPage() {
     cols.push({
       id: 'preview',
       header: () => <div className="text-center">预览</div>,
-      cell: ({ row }) => {
-        const globalIndex = exportData?.notes.findIndex(n => n.id === row.original.id) ?? -1
-        const isSelected = globalIndex === selectedNoteIndex
-        return (
-          <div className="flex justify-center">
-            <Eye className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
-          </div>
-        )
-      },
+      cell: () => (
+        <div className="flex justify-center">
+          <Eye className="h-4 w-4 text-muted-foreground" />
+        </div>
+      ),
     })
     
     return cols
-  }, [fieldNames, exportData?.notes, selectedNoteIndex])
+  }, [fieldNames])
 
   const table = useReactTable({
     data: exportData?.notes || [],
@@ -432,12 +426,11 @@ export function MarketDetailPage() {
                       {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map(row => {
                           const globalIndex = exportData?.notes.findIndex(n => n.id === row.original.id) ?? -1
-                          const isSelected = globalIndex === selectedNoteIndex
                           return (
                             <TableRow
                               key={row.id}
                               onClick={() => handleNoteClick(globalIndex)}
-                              className={`cursor-pointer ${isSelected ? 'bg-primary/10 hover:bg-primary/15' : ''}`}
+                              className="cursor-pointer hover:bg-muted/50"
                             >
                               {row.getVisibleCells().map(cell => (
                                 <TableCell key={cell.id}>
@@ -490,105 +483,99 @@ export function MarketDetailPage() {
               </div>
             )}
 
-            {/* Card Preview - 使用 daisyUI 渲染 */}
-            {selectedNote && currentTemplate && (
-              <div className="mt-6 border rounded-lg overflow-hidden">
-                {/* 预览标题栏 */}
-                <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b">
-                  <div className="flex items-center gap-4">
-                    <h4 className="font-medium flex items-center gap-2">
-                      <Eye className="h-4 w-4" />
-                      卡片预览
-                    </h4>
-                    {selectedTemplates.length > 1 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">模板:</span>
-                        <div className="flex gap-1">
-                          {selectedTemplates.map((tpl, idx) => (
-                            <Button
-                              key={tpl.id}
-                              variant={idx === selectedTemplateIndex ? "default" : "outline"}
-                              size="sm"
-                              className="h-7 text-xs"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setSelectedTemplateIndex(idx)
-                                setShowAnswer(false)
-                              }}
-                            >
-                              {tpl.name || `卡片 ${idx + 1}`}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setSelectedNoteIndex(null)}
-                  >
-                    关闭
-                  </Button>
-                </div>
-
-                {/* 卡片渲染区域 - 使用 CardRenderer */}
-                <div className="p-6 bg-muted/50">
-                  <div className="max-w-xl mx-auto">
-                    {/* 正面 */}
-                    <CardRenderer 
-                      html={renderedQuestion}
-                      css={cardCss}
-                      theme="cupcake"
-                      minHeight={150}
-                    />
-                    
-                    {/* 答案区域 */}
-                    {showAnswer ? (
-                      <>
-                        <div className="my-4 h-px bg-border" />
-                        <CardRenderer 
-                          html={renderedAnswer}
-                          css={cardCss}
-                          theme="cupcake"
-                          minHeight={150}
-                        />
-                      </>
-                    ) : (
-                      <div className="mt-6 text-center">
-                        <Button 
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setShowAnswer(true)
-                          }}
-                          className="gap-2"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                          显示答案
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* 底部信息 */}
-                <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground flex items-center justify-between">
-                  <span>
-                    笔记类型: {selectedNoteModel?.name || '未知'}
-                  </span>
-                  <span>
-                    此笔记共 {selectedTemplates.length} 张卡片
-                  </span>
-                </div>
-              </div>
-            )}
-
             <p className="text-xs text-muted-foreground mt-4">
               💡 点击表格中的笔记可以预览实际学习时的卡片效果
             </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* 卡片预览弹窗 */}
+      <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              卡片预览
+            </DialogTitle>
+            {selectedTemplates.length > 1 && (
+              <DialogDescription>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-sm text-muted-foreground">模板:</span>
+                  <div className="flex gap-1">
+                    {selectedTemplates.map((tpl, idx) => (
+                      <Button
+                        key={tpl.id}
+                        variant={idx === selectedTemplateIndex ? "default" : "outline"}
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          setSelectedTemplateIndex(idx)
+                          setShowAnswer(false)
+                        }}
+                      >
+                        {tpl.name || `卡片 ${idx + 1}`}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </DialogDescription>
+            )}
+          </DialogHeader>
+
+          {selectedNote && currentTemplate && (
+            <div className="space-y-4">
+              {/* 卡片渲染区域 */}
+              <div className="rounded-lg overflow-hidden border">
+                {/* 问题面 */}
+                <div className="bg-muted/30">
+                  <CardRenderer 
+                    html={renderedQuestion}
+                    css={cardCss}
+                    theme="cupcake"
+                    minHeight={120}
+                  />
+                </div>
+                
+                {/* 答案区域 */}
+                {showAnswer ? (
+                  <>
+                    <div className="h-px bg-border" />
+                    <div className="bg-muted/30">
+                      <CardRenderer 
+                        html={renderedAnswer}
+                        css={cardCss}
+                        theme="cupcake"
+                        minHeight={120}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="py-4 text-center border-t">
+                    <Button 
+                      onClick={() => setShowAnswer(true)}
+                      className="gap-2"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      显示答案
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* 底部信息 */}
+              <div className="text-xs text-muted-foreground flex items-center justify-between">
+                <span>
+                  笔记类型: {selectedNoteModel?.name || '未知'}
+                </span>
+                <span>
+                  此笔记共 {selectedTemplates.length} 张卡片
+                </span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* 导入对话框 */}
       <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>

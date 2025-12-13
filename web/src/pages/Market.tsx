@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ChevronRight, Home, Download, Star, BookOpen, Loader2, Eye, ArrowUpDown, Search, X } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   flexRender,
   getCoreRowModel,
@@ -30,7 +31,16 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { getSharedDecks } from '@/api/sharedDecks'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { getSharedDecks, importSharedDeck } from '@/api/sharedDecks'
+import { deckRepository } from '@/db/repositories'
 import type { SharedDeck } from '@/types'
 
 export function MarketPage() {
@@ -42,6 +52,12 @@ export function MarketPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  
+  // 导入对话框状态
+  const [importDialogOpen, setImportDialogOpen] = useState(false)
+  const [selectedDeck, setSelectedDeck] = useState<SharedDeck | null>(null)
+  const [deckName, setDeckName] = useState('')
+  const [importing, setImporting] = useState(false)
 
   // 收集所有标签
   const allTags = useMemo(() => {
@@ -76,9 +92,43 @@ export function MarketPage() {
     }
   }
 
-  const handleImport = (deck: SharedDeck) => {
-    // 跳转到详情页进行导入（可自定义牌组名称）
-    navigate(`/market/${deck.slug}?import=true`)
+  // 打开导入对话框
+  const openImportDialog = async (deck: SharedDeck) => {
+    setSelectedDeck(deck)
+    // 检查名称是否已存在并建议唯一名称
+    const existingDecks = await deckRepository.getAll()
+    const existingNames = new Set(existingDecks.map(d => d.name))
+    let suggestedName = deck.title
+    let counter = 1
+    while (existingNames.has(suggestedName)) {
+      suggestedName = `${deck.title} (${counter})`
+      counter++
+    }
+    setDeckName(suggestedName)
+    setImportDialogOpen(true)
+  }
+
+  // 确认导入
+  const confirmImport = async () => {
+    if (!selectedDeck || !deckName.trim()) return
+    
+    try {
+      setImporting(true)
+      const result = await importSharedDeck(selectedDeck.slug, deckName.trim())
+      toast.success('导入成功', {
+        description: `已导入 ${result.noteCount} 条笔记，${result.cardCount} 张卡片`,
+      })
+      setImportDialogOpen(false)
+      setSelectedDeck(null)
+      // 询问是否跳转到学习
+      navigate('/decks')
+    } catch (err) {
+      toast.error('导入失败', {
+        description: err instanceof Error ? err.message : '请重试',
+      })
+    } finally {
+      setImporting(false)
+    }
   }
 
   const columns: ColumnDef<SharedDeck>[] = [
@@ -199,7 +249,7 @@ export function MarketPage() {
             </Button>
             <Button
               size="sm"
-              onClick={() => handleImport(deck)}
+              onClick={() => openImportDialog(deck)}
             >
               <Download className="h-4 w-4 mr-1" />
               导入
@@ -412,6 +462,34 @@ export function MarketPage() {
           </div>
         )}
       </div>
+
+      {/* 导入对话框 */}
+      <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>导入牌组</DialogTitle>
+            <DialogDescription>
+              {selectedDeck?.title} - 请输入牌组名称
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="输入牌组名称"
+              value={deckName}
+              onChange={(e) => setDeckName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && confirmImport()}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportDialogOpen(false)}>
+              取消
+            </Button>
+            <Button onClick={confirmImport} disabled={importing || !deckName.trim()}>
+              {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : '确认导入'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
