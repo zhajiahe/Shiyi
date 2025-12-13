@@ -122,6 +122,3 @@ class SharedDeckListQuery(BaseModel):
     q: str | None = Field(default=None, description="搜索关键词")
     is_featured: bool | None = Field(default=None, description="是否精选")
     is_official: bool | None = Field(default=None, description="是否官方")
-
-
-

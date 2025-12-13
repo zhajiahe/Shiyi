@@ -29,9 +29,7 @@ class DeckRepository(BaseRepository[Deck]):
             Deck 实例或 None
         """
         result = await self.db.execute(
-            select(Deck)
-            .options(selectinload(Deck.children))
-            .where(Deck.id == id, Deck.deleted_at.is_(None))
+            select(Deck).options(selectinload(Deck.children)).where(Deck.id == id, Deck.deleted_at.is_(None))
         )
         return result.scalar_one_or_none()
 
@@ -59,9 +57,7 @@ class DeckRepository(BaseRepository[Deck]):
         """
         # 基础查询
         query = select(Deck).where(Deck.user_id == user_id, Deck.deleted_at.is_(None))
-        count_query = select(func.count()).select_from(Deck).where(
-            Deck.user_id == user_id, Deck.deleted_at.is_(None)
-        )
+        count_query = select(func.count()).select_from(Deck).where(Deck.user_id == user_id, Deck.deleted_at.is_(None))
 
         # 关键词搜索
         if keyword:
@@ -165,6 +161,3 @@ class DeckRepository(BaseRepository[Deck]):
             return False
 
         return await self.is_descendant(parent_id, deck.parent_id)
-
-
-

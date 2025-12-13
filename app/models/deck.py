@@ -40,12 +40,7 @@ class Deck(Base, BaseTableMixin):
     parent: Mapped["Deck | None"] = relationship(
         "Deck", remote_side="Deck.id", back_populates="children", lazy="selectin"
     )
-    children: Mapped[list["Deck"]] = relationship(
-        "Deck", back_populates="parent", lazy="selectin"
-    )
+    children: Mapped[list["Deck"]] = relationship("Deck", back_populates="parent", lazy="selectin")
 
     def __repr__(self) -> str:
         return f"<Deck(id={self.id}, name={self.name})>"
-
-
-

@@ -150,7 +150,9 @@ class NoteModelService:
         # 更新数据
         update_data = data.model_dump(exclude_unset=True)
         if "fields_schema" in update_data and update_data["fields_schema"] is not None:
-            update_data["fields_schema"] = [f.model_dump() if hasattr(f, "model_dump") else f for f in update_data["fields_schema"]]
+            update_data["fields_schema"] = [
+                f.model_dump() if hasattr(f, "model_dump") else f for f in update_data["fields_schema"]
+            ]
 
         await self.note_model_repo.update(note_model, update_data)
         return await self.note_model_repo.get_by_id_with_templates(note_model_id)  # type: ignore
@@ -282,6 +284,3 @@ class NoteModelService:
         """
         await self.get_card_template(note_model_id, template_id, user_id)  # 验证权限
         await self.card_template_repo.delete(template_id, soft_delete=True)
-
-
-

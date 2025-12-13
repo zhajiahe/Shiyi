@@ -133,7 +133,7 @@ async def get_shared_deck_download(slug: str, db: DBSession):
 async def export_shared_deck(slug: str, db: DBSession):
     """
     导出共享牌组数据（公开接口，无需登录）
-    
+
     返回完整的牌组导出数据，包括：
     - 笔记类型（note_models）
     - 牌组配置（deck）
@@ -198,6 +198,3 @@ async def delete_shared_deck(
     service = SharedDeckService(db)
     await service.delete_shared_deck(shared_deck_id, current_user.id)
     return BaseResponse(success=True, code=200, msg="删除共享牌组成功", data=None)
-
-
-

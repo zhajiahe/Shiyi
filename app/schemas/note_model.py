@@ -110,6 +110,3 @@ class NoteModelListQuery(BaseModel):
     """笔记类型列表查询参数"""
 
     keyword: str | None = Field(default=None, description="搜索关键词（名称）")
-
-
-

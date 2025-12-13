@@ -46,9 +46,7 @@ class CardTemplate(Base, BaseTableMixin):
     )
     name: Mapped[str] = mapped_column(String(100), nullable=False, comment="模板名称")
     ord: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="模板序号（从0开始）")
-    question_template: Mapped[str] = mapped_column(
-        Text, nullable=False, default="{{Front}}", comment="问题侧HTML模板"
-    )
+    question_template: Mapped[str] = mapped_column(Text, nullable=False, default="{{Front}}", comment="问题侧HTML模板")
     answer_template: Mapped[str] = mapped_column(
         Text, nullable=False, default="{{FrontSide}}<hr>{{Back}}", comment="答案侧HTML模板"
     )
@@ -58,6 +56,3 @@ class CardTemplate(Base, BaseTableMixin):
 
     def __repr__(self) -> str:
         return f"<CardTemplate(id={self.id}, name={self.name}, ord={self.ord})>"
-
-
-

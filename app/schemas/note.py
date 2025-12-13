@@ -15,12 +15,8 @@ from pydantic import BaseModel, Field
 class CardBase(BaseModel):
     """卡片基础字段"""
 
-    state: Literal["new", "learning", "review", "relearning"] = Field(
-        default="new", description="状态"
-    )
-    queue: Literal["new", "learning", "review", "suspended"] = Field(
-        default="new", description="队列"
-    )
+    state: Literal["new", "learning", "review", "relearning"] = Field(default="new", description="状态")
+    queue: Literal["new", "learning", "review", "suspended"] = Field(default="new", description="队列")
     due: int = Field(default=0, description="下次复习时间戳或天编号")
     interval: int = Field(default=0, ge=0, description="当前间隔（天）")
     ease_factor: int = Field(default=2500, ge=1300, description="难度系数（2500=2.5）")
@@ -49,12 +45,8 @@ class CardResponse(CardBase):
 class CardUpdate(BaseModel):
     """更新卡片请求（主要用于调度状态更新）"""
 
-    state: Literal["new", "learning", "review", "relearning"] | None = Field(
-        default=None, description="状态"
-    )
-    queue: Literal["new", "learning", "review", "suspended"] | None = Field(
-        default=None, description="队列"
-    )
+    state: Literal["new", "learning", "review", "relearning"] | None = Field(default=None, description="状态")
+    queue: Literal["new", "learning", "review", "suspended"] | None = Field(default=None, description="队列")
     due: int | None = Field(default=None, description="下次复习时间戳")
     interval: int | None = Field(default=None, ge=0, description="当前间隔（天）")
     ease_factor: int | None = Field(default=None, ge=1300, description="难度系数")
@@ -80,9 +72,7 @@ class NoteBase(BaseModel):
 class NoteCreate(NoteBase):
     """创建笔记请求"""
 
-    source_type: Literal["manual", "ai", "import"] = Field(
-        default="manual", description="来源类型"
-    )
+    source_type: Literal["manual", "ai", "import"] = Field(default="manual", description="来源类型")
     source_meta: dict | None = Field(default=None, description="来源元数据")
 
 
@@ -121,13 +111,6 @@ class CardListQuery(BaseModel):
     """卡片列表查询参数"""
 
     deck_id: str | None = Field(default=None, description="牌组ID")
-    state: Literal["new", "learning", "review", "relearning"] | None = Field(
-        default=None, description="状态过滤"
-    )
-    queue: Literal["new", "learning", "review", "suspended"] | None = Field(
-        default=None, description="队列过滤"
-    )
+    state: Literal["new", "learning", "review", "relearning"] | None = Field(default=None, description="状态过滤")
+    queue: Literal["new", "learning", "review", "suspended"] | None = Field(default=None, description="队列过滤")
     due_before: int | None = Field(default=None, description="到期时间之前")
-
-
-

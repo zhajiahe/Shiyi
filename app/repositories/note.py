@@ -31,9 +31,7 @@ class NoteRepository(BaseRepository[Note]):
             Note 实例或 None
         """
         result = await self.db.execute(
-            select(Note)
-            .options(selectinload(Note.cards))
-            .where(Note.id == id, Note.deleted_at.is_(None))
+            select(Note).options(selectinload(Note.cards)).where(Note.id == id, Note.deleted_at.is_(None))
         )
         return result.scalar_one_or_none()
 
@@ -62,14 +60,8 @@ class NoteRepository(BaseRepository[Note]):
             (笔记列表, 总数) 元组
         """
         # 基础查询
-        query = (
-            select(Note)
-            .options(selectinload(Note.cards))
-            .where(Note.user_id == user_id, Note.deleted_at.is_(None))
-        )
-        count_query = select(func.count()).select_from(Note).where(
-            Note.user_id == user_id, Note.deleted_at.is_(None)
-        )
+        query = select(Note).options(selectinload(Note.cards)).where(Note.user_id == user_id, Note.deleted_at.is_(None))
+        count_query = select(func.count()).select_from(Note).where(Note.user_id == user_id, Note.deleted_at.is_(None))
 
         # 牌组过滤
         if deck_id:
@@ -178,9 +170,7 @@ class CardRepository(BaseRepository[Card]):
         """
         # 基础查询
         query = select(Card).where(Card.user_id == user_id, Card.deleted_at.is_(None))
-        count_query = select(func.count()).select_from(Card).where(
-            Card.user_id == user_id, Card.deleted_at.is_(None)
-        )
+        count_query = select(func.count()).select_from(Card).where(Card.user_id == user_id, Card.deleted_at.is_(None))
 
         # 牌组过滤
         if deck_id:
@@ -260,9 +250,7 @@ class CardRepository(BaseRepository[Card]):
             卡片列表
         """
         result = await self.db.execute(
-            select(Card)
-            .where(Card.note_id == note_id, Card.deleted_at.is_(None))
-            .order_by(Card.ord)
+            select(Card).where(Card.note_id == note_id, Card.deleted_at.is_(None)).order_by(Card.ord)
         )
         return list(result.scalars().all())
 
@@ -287,6 +275,3 @@ class CardRepository(BaseRepository[Card]):
         query = query.group_by(Card.state)
         result = await self.db.execute(query)
         return {row[0]: row[1] for row in result.all()}
-
-
-

@@ -61,8 +61,10 @@ class NoteModelRepository(BaseRepository[NoteModel]):
             .options(selectinload(NoteModel.templates))
             .where(NoteModel.user_id == user_id, NoteModel.deleted_at.is_(None))
         )
-        count_query = select(func.count()).select_from(NoteModel).where(
-            NoteModel.user_id == user_id, NoteModel.deleted_at.is_(None)
+        count_query = (
+            select(func.count())
+            .select_from(NoteModel)
+            .where(NoteModel.user_id == user_id, NoteModel.deleted_at.is_(None))
         )
 
         # 关键词搜索
@@ -146,6 +148,3 @@ class CardTemplateRepository(BaseRepository[CardTemplate]):
         )
         max_ord = result.scalar()
         return max_ord if max_ord is not None else -1
-
-
-

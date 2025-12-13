@@ -109,6 +109,3 @@ async def delete_note(
     service = NoteService(db)
     await service.delete_note(note_id, current_user.id)
     return BaseResponse(success=True, code=200, msg="删除笔记成功", data=None)
-
-
-

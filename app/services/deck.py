@@ -160,15 +160,17 @@ class DeckService:
         # 检查同一父牌组下名称是否已存在
         new_name = data.name if data.name is not None else deck.name
         if data.name is not None or data.parent_id is not None:
-            if await self.deck_repo.name_exists_in_parent(
-                user_id, new_name, new_parent_id, exclude_id=deck_id
-            ):
+            if await self.deck_repo.name_exists_in_parent(user_id, new_name, new_parent_id, exclude_id=deck_id):
                 raise BadRequestException(msg="同一层级下牌组名称已存在")
 
         # 更新数据
         update_data = data.model_dump(exclude_unset=True)
         if "config" in update_data and update_data["config"] is not None:
-            update_data["config"] = update_data["config"].model_dump() if hasattr(update_data["config"], "model_dump") else update_data["config"]
+            update_data["config"] = (
+                update_data["config"].model_dump()
+                if hasattr(update_data["config"], "model_dump")
+                else update_data["config"]
+            )
 
         return await self.deck_repo.update(deck, update_data)
 
@@ -186,6 +188,3 @@ class DeckService:
         """
         await self.get_deck(deck_id, user_id)  # 验证权限
         await self.deck_repo.delete(deck_id, soft_delete=True)
-
-
-

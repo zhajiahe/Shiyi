@@ -33,18 +33,12 @@ class Note(Base, BaseTableMixin):
         default=dict,
         comment="字段内容，如 {'Front': 'apple', 'Back': '苹果'}",
     )
-    tags: Mapped[list] = mapped_column(
-        JSON, nullable=False, default=list, comment="标签列表"
-    )
+    tags: Mapped[list] = mapped_column(JSON, nullable=False, default=list, comment="标签列表")
     source_type: Mapped[str] = mapped_column(
         String(20), nullable=False, default="manual", comment="来源类型: manual, ai, import"
     )
-    source_meta: Mapped[dict | None] = mapped_column(
-        JSON, nullable=True, comment="来源元数据（AI 提示词、导入来源等）"
-    )
-    dirty: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="是否有待同步变更: 0=否, 1=是"
-    )
+    source_meta: Mapped[dict | None] = mapped_column(JSON, nullable=True, comment="来源元数据（AI 提示词、导入来源等）")
+    dirty: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="是否有待同步变更: 0=否, 1=是")
 
     # 关系
     cards: Mapped[list["Card"]] = relationship(
@@ -72,9 +66,7 @@ class Card(Base, BaseTableMixin):
     card_template_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("card_templates.id"), nullable=False, index=True, comment="卡片模板ID"
     )
-    ord: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="模板序号（冗余字段）"
-    )
+    ord: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="模板序号（冗余字段）")
 
     # 调度状态
     state: Mapped[str] = mapped_column(
@@ -83,42 +75,21 @@ class Card(Base, BaseTableMixin):
     queue: Mapped[str] = mapped_column(
         String(20), nullable=False, default="new", comment="队列: new, learning, review, suspended"
     )
-    due: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="下次复习时间戳或天编号"
-    )
-    interval: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="当前间隔（天）"
-    )
-    ease_factor: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=2500, comment="难度系数（2500=2.5）"
-    )
-    reps: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="复习次数"
-    )
-    lapses: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="遗忘次数"
-    )
-    last_review: Mapped[int | None] = mapped_column(
-        Integer, nullable=True, comment="上次复习时间戳"
-    )
+    due: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="下次复习时间戳或天编号")
+    interval: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="当前间隔（天）")
+    ease_factor: Mapped[int] = mapped_column(Integer, nullable=False, default=2500, comment="难度系数（2500=2.5）")
+    reps: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="复习次数")
+    lapses: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="遗忘次数")
+    last_review: Mapped[int | None] = mapped_column(Integer, nullable=True, comment="上次复习时间戳")
 
     # FSRS 专用字段
-    stability: Mapped[float] = mapped_column(
-        nullable=False, default=0.0, comment="FSRS 稳定性"
-    )
-    difficulty: Mapped[float] = mapped_column(
-        nullable=False, default=0.0, comment="FSRS 难度"
-    )
+    stability: Mapped[float] = mapped_column(nullable=False, default=0.0, comment="FSRS 稳定性")
+    difficulty: Mapped[float] = mapped_column(nullable=False, default=0.0, comment="FSRS 难度")
 
-    dirty: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0, comment="是否有待同步变更: 0=否, 1=是"
-    )
+    dirty: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="是否有待同步变更: 0=否, 1=是")
 
     # 关系
     note: Mapped["Note"] = relationship("Note", back_populates="cards")
 
     def __repr__(self) -> str:
         return f"<Card(id={self.id}, state={self.state}, due={self.due})>"
-
-
-

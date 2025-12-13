@@ -48,9 +48,13 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
             ReviewLog.user_id == user_id,
             ReviewLog.deleted_at.is_(None),
         )
-        count_query = select(func.count()).select_from(ReviewLog).where(
-            ReviewLog.user_id == user_id,
-            ReviewLog.deleted_at.is_(None),
+        count_query = (
+            select(func.count())
+            .select_from(ReviewLog)
+            .where(
+                ReviewLog.user_id == user_id,
+                ReviewLog.deleted_at.is_(None),
+            )
         )
 
         # 卡片过滤
@@ -87,18 +91,19 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
         Returns:
             统计数据
         """
-        today_start = int(
-            datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000
-        )
+        today_start = int(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000)
         week_start = int(
-            (datetime.now() - timedelta(days=datetime.now().weekday())).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            ).timestamp() * 1000
+            (datetime.now() - timedelta(days=datetime.now().weekday()))
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+            .timestamp()
+            * 1000
         )
 
         # 总复习次数
         total_result = await self.db.execute(
-            select(func.count()).select_from(ReviewLog).where(
+            select(func.count())
+            .select_from(ReviewLog)
+            .where(
                 ReviewLog.user_id == user_id,
                 ReviewLog.deleted_at.is_(None),
             )
@@ -107,7 +112,9 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
 
         # 今日复习次数
         today_result = await self.db.execute(
-            select(func.count()).select_from(ReviewLog).where(
+            select(func.count())
+            .select_from(ReviewLog)
+            .where(
                 ReviewLog.user_id == user_id,
                 ReviewLog.deleted_at.is_(None),
                 ReviewLog.review_time >= today_start,
@@ -117,7 +124,9 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
 
         # 本周复习次数
         week_result = await self.db.execute(
-            select(func.count()).select_from(ReviewLog).where(
+            select(func.count())
+            .select_from(ReviewLog)
+            .where(
                 ReviewLog.user_id == user_id,
                 ReviewLog.deleted_at.is_(None),
                 ReviewLog.review_time >= week_start,
@@ -136,7 +145,9 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
 
         # 记忆保持率（Good/Easy 比例）
         good_easy_result = await self.db.execute(
-            select(func.count()).select_from(ReviewLog).where(
+            select(func.count())
+            .select_from(ReviewLog)
+            .where(
                 ReviewLog.user_id == user_id,
                 ReviewLog.deleted_at.is_(None),
                 ReviewLog.rating >= 3,
@@ -152,6 +163,3 @@ class ReviewLogRepository(BaseRepository[ReviewLog]):
             "average_rating": round(float(average_rating), 2),
             "retention_rate": round(retention_rate, 2),
         }
-
-
-

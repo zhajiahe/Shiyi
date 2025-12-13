@@ -106,9 +106,13 @@ class SharedDeckRepository(BaseRepository[SharedDeck]):
             SharedDeck.deleted_at.is_(None),
             SharedDeck.is_active == True,  # noqa: E712
         )
-        count_query = select(func.count()).select_from(SharedDeck).where(
-            SharedDeck.deleted_at.is_(None),
-            SharedDeck.is_active == True,  # noqa: E712
+        count_query = (
+            select(func.count())
+            .select_from(SharedDeck)
+            .where(
+                SharedDeck.deleted_at.is_(None),
+                SharedDeck.is_active == True,  # noqa: E712
+            )
         )
 
         # 语言过滤
@@ -151,12 +155,16 @@ class SharedDeckRepository(BaseRepository[SharedDeck]):
         total = count_result.scalar() or 0
 
         # 分页查询 - 按精选、官方、下载量排序
-        query = query.order_by(
-            SharedDeck.is_featured.desc(),
-            SharedDeck.is_official.desc(),
-            SharedDeck.download_count.desc(),
-            SharedDeck.created_at.desc(),
-        ).offset(skip).limit(limit)
+        query = (
+            query.order_by(
+                SharedDeck.is_featured.desc(),
+                SharedDeck.is_official.desc(),
+                SharedDeck.download_count.desc(),
+                SharedDeck.created_at.desc(),
+            )
+            .offset(skip)
+            .limit(limit)
+        )
         result = await self.db.execute(query)
         items = list(result.scalars().all())
 
@@ -222,9 +230,7 @@ class SharedDeckSnapshotRepository(BaseRepository[SharedDeckSnapshot]):
         )
         return result.scalar_one_or_none()
 
-    async def get_by_deck_and_version(
-        self, shared_deck_id: str, version: int
-    ) -> SharedDeckSnapshot | None:
+    async def get_by_deck_and_version(self, shared_deck_id: str, version: int) -> SharedDeckSnapshot | None:
         """
         获取特定版本的快照
 
@@ -243,6 +249,3 @@ class SharedDeckSnapshotRepository(BaseRepository[SharedDeckSnapshot]):
             )
         )
         return result.scalar_one_or_none()
-
-
-

@@ -357,6 +357,3 @@ class CardService:
             状态 -> 数量 字典
         """
         return await self.card_repo.count_by_state(user_id, deck_id)
-
-
-

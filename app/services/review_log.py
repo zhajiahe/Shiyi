@@ -120,6 +120,3 @@ class ReviewLogService:
             统计数据
         """
         return await self.review_log_repo.get_stats(user_id)
-
-
-

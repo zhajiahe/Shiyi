@@ -5,7 +5,7 @@
  */
 
 import { createEmptyCard, fsrs, generatorParameters, Rating as FSRSRating, State } from 'ts-fsrs'
-import type { FSRS, RecordLog, Card as FSRSCard } from 'ts-fsrs'
+import type { FSRS, RecordLogItem, Card as FSRSCard, Grade } from 'ts-fsrs'
 import type { Card, Rating } from '@/types'
 
 export interface FSRSResult {
@@ -38,9 +38,9 @@ function getFSRS(version: 'fsrs_v4' | 'fsrs_v5'): FSRS {
 }
 
 /**
- * 将应用的 Rating 转换为 FSRS Rating
+ * 将应用的 Rating 转换为 FSRS Grade（不包含 Manual）
  */
-function mapRating(rating: Rating): FSRSRating {
+function mapRating(rating: Rating): Grade {
   switch (rating) {
     case 1: return FSRSRating.Again
     case 2: return FSRSRating.Hard
@@ -78,6 +78,7 @@ function toFSRSCard(card: Card): FSRSCard {
     difficulty: card.difficulty || 0,
     elapsed_days: 0,
     scheduled_days: card.interval,
+    learning_steps: 0,
     reps: card.reps,
     lapses: card.lapses,
     state: card.state === 'learning' ? State.Learning :
@@ -105,8 +106,9 @@ export function scheduleFSRS(
   const fsrsRating = mapRating(rating)
   const now = new Date()
   
-  // 执行调度
-  const result: RecordLog = f.repeat(fsrsCard, now)[fsrsRating]
+  // 执行调度 - f.repeat 返回 IPreview，通过 grade 索引获取 RecordLogItem
+  const preview = f.repeat(fsrsCard, now)
+  const result: RecordLogItem = preview[fsrsRating]
   const newCard = result.card
   
   return {

@@ -237,6 +237,7 @@ class SharedDeckService:
             包含笔记类型、牌组、笔记、卡片的完整数据
         """
         from sqlalchemy import select
+
         from app.models.deck import Deck
         from app.models.note import Card, Note
         from app.models.note_model import CardTemplate, NoteModel
@@ -245,9 +246,7 @@ class SharedDeckService:
 
         # 获取关联的本地牌组（通过 slug 匹配）
         deck_id = f"deck-{slug}"
-        deck_result = await self.db.execute(
-            select(Deck).where(Deck.id == deck_id, Deck.deleted_at.is_(None))
-        )
+        deck_result = await self.db.execute(select(Deck).where(Deck.id == deck_id, Deck.deleted_at.is_(None)))
         deck = deck_result.scalar_one_or_none()
 
         if not deck:
@@ -255,9 +254,7 @@ class SharedDeckService:
 
         # 获取笔记类型
         note_model_ids = set()
-        notes_result = await self.db.execute(
-            select(Note).where(Note.deck_id == deck_id, Note.deleted_at.is_(None))
-        )
+        notes_result = await self.db.execute(select(Note).where(Note.deck_id == deck_id, Note.deleted_at.is_(None)))
         notes = list(notes_result.scalars().all())
 
         for note in notes:
@@ -273,34 +270,36 @@ class SharedDeckService:
             if nm:
                 # 获取模板
                 tpl_result = await self.db.execute(
-                    select(CardTemplate).where(
+                    select(CardTemplate)
+                    .where(
                         CardTemplate.note_model_id == nm_id,
                         CardTemplate.deleted_at.is_(None),
-                    ).order_by(CardTemplate.ord)
+                    )
+                    .order_by(CardTemplate.ord)
                 )
                 templates = list(tpl_result.scalars().all())
 
-                note_models_data.append({
-                    "id": nm.id,
-                    "name": nm.name,
-                    "fields_schema": nm.fields_schema,
-                    "css": nm.css,
-                    "templates": [
-                        {
-                            "id": t.id,
-                            "name": t.name,
-                            "ord": t.ord,
-                            "question_template": t.question_template,
-                            "answer_template": t.answer_template,
-                        }
-                        for t in templates
-                    ],
-                })
+                note_models_data.append(
+                    {
+                        "id": nm.id,
+                        "name": nm.name,
+                        "fields_schema": nm.fields_schema,
+                        "css": nm.css,
+                        "templates": [
+                            {
+                                "id": t.id,
+                                "name": t.name,
+                                "ord": t.ord,
+                                "question_template": t.question_template,
+                                "answer_template": t.answer_template,
+                            }
+                            for t in templates
+                        ],
+                    }
+                )
 
         # 获取卡片
-        cards_result = await self.db.execute(
-            select(Card).where(Card.deck_id == deck_id, Card.deleted_at.is_(None))
-        )
+        cards_result = await self.db.execute(select(Card).where(Card.deck_id == deck_id, Card.deleted_at.is_(None)))
         cards = list(cards_result.scalars().all())
 
         # 增加下载计数
@@ -335,6 +334,3 @@ class SharedDeckService:
                 for c in cards
             ],
         }
-
-
-

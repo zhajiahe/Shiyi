@@ -80,6 +80,3 @@ class ReviewStats(BaseModel):
     reviews_this_week: int = Field(..., description="本周复习次数")
     average_rating: float = Field(..., description="平均评分")
     retention_rate: float = Field(..., description="记忆保持率（Good/Easy 比例）")
-
-
-

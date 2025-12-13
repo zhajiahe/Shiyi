@@ -199,6 +199,3 @@ async def delete_card_template(
     service = NoteModelService(db)
     await service.delete_card_template(note_model_id, template_id, current_user.id)
     return BaseResponse(success=True, code=200, msg="删除卡片模板成功", data=None)
-
-
-

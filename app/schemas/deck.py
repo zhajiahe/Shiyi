@@ -17,9 +17,7 @@ class DeckConfig(BaseModel):
 
     new_per_day: int = Field(default=20, ge=0, description="每日新卡数量")
     max_reviews_per_day: int = Field(default=200, ge=0, description="每日最大复习数量")
-    learning_steps: list[int] = Field(
-        default_factory=lambda: [1, 10], description="学习步骤（分钟）"
-    )
+    learning_steps: list[int] = Field(default_factory=lambda: [1, 10], description="学习步骤（分钟）")
     graduating_interval: int = Field(default=1, ge=1, description="毕业间隔（天）")
     easy_interval: int = Field(default=4, ge=1, description="简单间隔（天）")
 
@@ -34,9 +32,7 @@ class DeckBase(BaseModel):
     parent_id: str | None = Field(default=None, description="父牌组ID")
     note_model_id: str | None = Field(default=None, description="绑定的笔记类型ID")
     config: DeckConfig = Field(default_factory=DeckConfig, description="牌组配置")
-    scheduler: Literal["sm2", "fsrs_v4", "fsrs_v5"] = Field(
-        default="sm2", description="调度算法"
-    )
+    scheduler: Literal["sm2", "fsrs_v4", "fsrs_v5"] = Field(default="sm2", description="调度算法")
     description: str | None = Field(default=None, max_length=500, description="牌组描述")
 
 
@@ -53,9 +49,7 @@ class DeckUpdate(BaseModel):
     parent_id: str | None = Field(default=None, description="父牌组ID")
     note_model_id: str | None = Field(default=None, description="绑定的笔记类型ID")
     config: DeckConfig | None = Field(default=None, description="牌组配置")
-    scheduler: Literal["sm2", "fsrs_v4", "fsrs_v5"] | None = Field(
-        default=None, description="调度算法"
-    )
+    scheduler: Literal["sm2", "fsrs_v4", "fsrs_v5"] | None = Field(default=None, description="调度算法")
     description: str | None = Field(default=None, max_length=500, description="牌组描述")
 
 
@@ -87,6 +81,3 @@ class DeckListQuery(BaseModel):
 
     keyword: str | None = Field(default=None, description="搜索关键词（名称）")
     parent_id: str | None = Field(default=None, description="父牌组ID（为空查询根牌组）")
-
-
-
