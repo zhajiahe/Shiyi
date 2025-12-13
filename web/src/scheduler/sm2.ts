@@ -26,7 +26,8 @@ const INITIAL_EASE_FACTOR = 2500
  */
 export function scheduleSM2(card: Card, rating: Rating): SM2Result {
   const now = Date.now()
-  let { interval, easeFactor, state } = card
+  const { interval, state } = card
+  let { easeFactor } = card
 
   // 初始化默认值
   if (!easeFactor) easeFactor = INITIAL_EASE_FACTOR

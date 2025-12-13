@@ -195,7 +195,7 @@ export const cardRepo = {
     }
   ): Promise<Card[]> {
     const now = options?.dueBefore ?? Date.now()
-    let query = db.cards
+    const query = db.cards
       .where('userId')
       .equals(userId)
       .and((c) => !c.deletedAt && c.queue !== 'suspended' && c.due <= now)
