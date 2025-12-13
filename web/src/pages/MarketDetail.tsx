@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { 
   ChevronRight, Home, Download, Star, 
   BookOpen, Loader2, ArrowLeft, Eye, RotateCcw, AlertCircle, CheckCircle2
@@ -106,7 +106,9 @@ function renderTemplate(template: string, fields: Record<string, string>): strin
 
 export function MarketDetailPage() {
   const { slug } = useParams<{ slug: string }>()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const shouldOpenImport = searchParams.get('import') === 'true'
   
   const [deck, setDeck] = useState<SharedDeck | null>(null)
   const [exportData, setExportData] = useState<ExportData | null>(null)
@@ -135,6 +137,13 @@ export function MarketDetailPage() {
       loadDeck(slug)
     }
   }, [slug])
+
+  // 如果 URL 参数包含 import=true，自动打开导入对话框
+  useEffect(() => {
+    if (shouldOpenImport && deck && !loading) {
+      openImportDialog()
+    }
+  }, [shouldOpenImport, deck, loading])
 
   const loadDeck = async (deckSlug: string) => {
     try {

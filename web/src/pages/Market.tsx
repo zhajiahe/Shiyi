@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ChevronRight, Home, Download, Star, BookOpen, Loader2, Eye, ArrowUpDown, Search, X } from 'lucide-react'
-import { toast } from 'sonner'
 import {
   flexRender,
   getCoreRowModel,
@@ -31,14 +30,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { getSharedDecks, importSharedDeck } from '@/api/sharedDecks'
+import { getSharedDecks } from '@/api/sharedDecks'
 import type { SharedDeck } from '@/types'
 
 export function MarketPage() {
+  const navigate = useNavigate()
   const [decks, setDecks] = useState<SharedDeck[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [importing, setImporting] = useState<string | null>(null)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -77,20 +76,9 @@ export function MarketPage() {
     }
   }
 
-  const handleImport = async (deck: SharedDeck) => {
-    try {
-      setImporting(deck.id)
-      const result = await importSharedDeck(deck.slug)
-      toast.success('导入成功', {
-        description: `已导入 ${result.noteCount} 条笔记，${result.cardCount} 张卡片`,
-      })
-    } catch (err) {
-      toast.error('导入失败', {
-        description: err instanceof Error ? err.message : '请重试',
-      })
-    } finally {
-      setImporting(null)
-    }
+  const handleImport = (deck: SharedDeck) => {
+    // 跳转到详情页进行导入（可自定义牌组名称）
+    navigate(`/market/${deck.slug}?import=true`)
   }
 
   const columns: ColumnDef<SharedDeck>[] = [
@@ -212,16 +200,9 @@ export function MarketPage() {
             <Button
               size="sm"
               onClick={() => handleImport(deck)}
-              disabled={importing === deck.id}
             >
-              {importing === deck.id ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-1" />
-                  导入
-                </>
-              )}
+              <Download className="h-4 w-4 mr-1" />
+              导入
             </Button>
           </div>
         )
