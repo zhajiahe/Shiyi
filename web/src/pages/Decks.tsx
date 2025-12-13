@@ -43,7 +43,6 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { deckRepository } from '@/db/repositories'
-import { db } from '@/db'
 import type { Deck } from '@/types'
 
 export function DecksPage() {
@@ -130,80 +129,6 @@ export function DecksPage() {
     }
   }
   
-  // 导出牌组为 JSON 文件
-  const handleExportDeck = async (deck: Deck) => {
-    try {
-      // 收集牌组相关的所有数据
-      const notes = await db.notes.where('deckId').equals(deck.id).filter(n => !n.deletedAt).toArray()
-      const cards = await db.cards.where('deckId').equals(deck.id).filter(c => !c.deletedAt).toArray()
-      
-      // 收集笔记类型
-      const noteModelIds = new Set(notes.map(n => n.noteModelId))
-      const noteModels = []
-      const cardTemplates = []
-      
-      for (const nmId of noteModelIds) {
-        const nm = await db.noteModels.get(nmId)
-        if (nm) {
-          noteModels.push(nm)
-          const templates = await db.cardTemplates.where('noteModelId').equals(nmId).toArray()
-          cardTemplates.push(...templates)
-        }
-      }
-      
-      // 构建导出数据
-      const exportData = {
-        version: 1,
-        exportDate: new Date().toISOString(),
-        deck: {
-          id: deck.id,
-          name: deck.name,
-          description: deck.description,
-          config: deck.config,
-          scheduler: deck.scheduler,
-        },
-        noteModels,
-        cardTemplates,
-        notes: notes.map(n => ({
-          id: n.id,
-          noteModelId: n.noteModelId,
-          guid: n.guid,
-          fields: n.fields,
-          tags: n.tags,
-        })),
-        cards: cards.map(c => ({
-          id: c.id,
-          noteId: c.noteId,
-          cardTemplateId: c.cardTemplateId,
-          ord: c.ord,
-          state: c.state,
-          queue: c.queue,
-          due: c.due,
-          interval: c.interval,
-          easeFactor: c.easeFactor,
-          reps: c.reps,
-          lapses: c.lapses,
-        })),
-      }
-      
-      // 创建并下载文件
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${deck.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}_backup.json`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Export failed:', error)
-      toast.error('导出失败', {
-        description: '请重试',
-      })
-    }
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -293,10 +218,6 @@ export function DecksPage() {
                           <DropdownMenuItem onClick={() => openRenameDialog(deck)}>
                             <Edit className="h-4 w-4 mr-2" />
                             重命名
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleExportDeck(deck)}>
-                            <Download className="h-4 w-4 mr-2" />
-                            导出备份
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
