@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import { 
-  ChevronRight, Home, BarChart3, Calendar, TrendingUp, 
+  BarChart3, Calendar, TrendingUp, 
   Loader2, Target, Award, Clock, Brain, Layers
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -187,37 +186,24 @@ export function StatsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            首页
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">学习统计</span>
-        </nav>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <BarChart3 className="h-6 w-6" />
+          学习统计
+        </h1>
+        <p className="text-muted-foreground">追踪您的学习进度和记忆表现</p>
+      </div>
 
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-            <BarChart3 className="h-8 w-8" />
-            学习统计
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            追踪您的学习进度和记忆表现
-          </p>
-        </header>
-
-        {/* 概览卡片 */}
+      {/* 概览卡片 */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardContent className="pt-6">
@@ -518,7 +504,6 @@ export function StatsPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
   )
 }

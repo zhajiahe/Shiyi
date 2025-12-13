@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { 
-  ChevronRight, Home, Settings as SettingsIcon, Save, Loader2,
+  Settings as SettingsIcon, Save, Loader2,
   Download, Upload, Trash2, HardDrive, AlertTriangle
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -305,30 +304,17 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            首页
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">设置</span>
-        </nav>
+    <div className="space-y-6 max-w-3xl">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <SettingsIcon className="h-6 w-6" />
+          设置
+        </h1>
+        <p className="text-muted-foreground">自定义您的学习体验</p>
+      </div>
 
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-            <SettingsIcon className="h-8 w-8" />
-            设置
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            自定义您的学习体验
-          </p>
-        </header>
-
-        {/* 调度算法 */}
+      {/* 调度算法 */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>调度算法</CardTitle>
@@ -736,7 +722,6 @@ export function SettingsPage() {
             <p>支持 SM-2 和 FSRS 调度算法</p>
           </CardContent>
         </Card>
-      </div>
       
       {/* 导入确认对话框 */}
       <AlertDialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>

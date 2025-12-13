@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
-  ChevronRight, Home, Folder, BookOpen, Loader2, Trash2,
+  Folder, BookOpen, Loader2, Trash2,
   MoreVertical, Edit, Download
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -130,38 +130,22 @@ export function DecksPage() {
   }
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            首页
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">我的牌组</h1>
+          <p className="text-muted-foreground">管理您的学习内容</p>
+        </div>
+        <Button asChild>
+          <Link to="/market">
+            <Download className="h-4 w-4 mr-2" />
+            导入共享牌组
           </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">我的牌组</span>
-        </nav>
+        </Button>
+      </div>
 
-        {/* Header */}
-        <header className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
-              我的牌组
-            </h1>
-            <p className="text-muted-foreground">
-              管理您的学习内容
-            </p>
-          </div>
-          
-          <Button asChild>
-            <Link to="/market">
-              <Download className="h-4 w-4 mr-2" />
-              导入共享牌组
-            </Link>
-          </Button>
-        </header>
-
-        {/* Content */}
+      {/* Content */}
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -266,7 +250,6 @@ export function DecksPage() {
             })}
           </div>
         )}
-      </div>
 
       {/* 重命名对话框 */}
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>

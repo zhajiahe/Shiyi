@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronRight, Home, Download, Star, BookOpen, Loader2, Eye, ArrowUpDown, Search, X } from 'lucide-react'
+import { Download, Star, BookOpen, Loader2, Eye, ArrowUpDown, Search, X } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   flexRender,
@@ -292,29 +292,14 @@ export function MarketPage() {
   })
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            首页
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">牌组市场</span>
-        </nav>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">牌组市场</h1>
+        <p className="text-muted-foreground">浏览和导入高质量的学习内容</p>
+      </div>
 
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
-            共享牌组市场
-          </h1>
-          <p className="text-muted-foreground">
-            浏览和导入高质量的学习内容
-          </p>
-        </header>
-
-        {/* Search and Filter */}
+      {/* Search and Filter */}
         {!loading && !error && decks.length > 0 && (
           <div className="mb-6 space-y-4">
             {/* Search */}
@@ -461,7 +446,6 @@ export function MarketPage() {
             </div>
           </div>
         )}
-      </div>
 
       {/* 导入对话框 */}
       <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>

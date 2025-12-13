@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { 
-  ChevronRight, Home, Download, Star, 
+  Download, Star, 
   BookOpen, Loader2, ArrowLeft, Eye, RotateCcw, AlertCircle, CheckCircle2
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -301,7 +301,7 @@ export function MarketDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
@@ -309,45 +309,28 @@ export function MarketDetailPage() {
 
   if (error || !deck) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <Card className="text-center py-16">
-            <CardContent>
-              <p className="text-destructive mb-4">{error || '牌组不存在'}</p>
-              <Button asChild>
-                <Link to="/market">返回市场</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <Card className="text-center py-16">
+        <CardContent>
+          <p className="text-destructive mb-4">{error || '牌组不存在'}</p>
+          <Button asChild>
+            <Link to="/market">返回市场</Link>
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            首页
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to="/market" className="hover:text-foreground">牌组市场</Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">{deck.title}</span>
-        </nav>
+    <div className="space-y-6">
+      {/* Back button */}
+      <Button variant="ghost" size="sm" asChild>
+        <Link to="/market">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          返回市场
+        </Link>
+      </Button>
 
-        {/* Back button */}
-        <Button variant="ghost" size="sm" className="mb-4" asChild>
-          <Link to="/market">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            返回市场
-          </Link>
-        </Button>
-
-        {/* Deck Header */}
+      {/* Deck Header */}
         <Card className="mb-6">
           <CardHeader>
             <div className="flex items-start justify-between">
@@ -489,7 +472,6 @@ export function MarketDetailPage() {
 
           </CardContent>
         </Card>
-      </div>
 
       {/* 卡片预览弹窗 */}
       <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>

@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
+import { Layout } from '@/components/Layout'
 import { Dashboard } from './pages/Dashboard'
 import { DecksPage } from './pages/Decks'
 import { ReviewPage } from './pages/Review'
@@ -13,15 +15,28 @@ function App() {
     <ThemeProvider defaultTheme="system" storageKey="shiyi-theme">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/decks" element={<DecksPage />} />
+          {/* Review 页面保持全屏模式 */}
           <Route path="/review" element={<ReviewPage />} />
-          <Route path="/market" element={<MarketPage />} />
-          <Route path="/market/:slug" element={<MarketDetailPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/stats" element={<StatsPage />} />
+          
+          {/* 其他页面使用 sidebar 布局 */}
+          <Route
+            path="/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/decks" element={<DecksPage />} />
+                  <Route path="/market" element={<MarketPage />} />
+                  <Route path="/market/:slug" element={<MarketDetailPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/stats" element={<StatsPage />} />
+                </Routes>
+              </Layout>
+            }
+          />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </ThemeProvider>
   )
 }

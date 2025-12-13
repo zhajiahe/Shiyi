@@ -34,20 +34,15 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        {/* Header */}
-        <header className="mb-10">
-          <h1 className="text-3xl font-bold tracking-tight">
-            拾遗 Shiyi
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            现代化间隔重复记忆系统
-          </p>
-        </header>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">首页</h1>
+        <p className="text-muted-foreground">现代化间隔重复记忆系统</p>
+      </div>
 
-        {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-4 mb-8">
+      {/* Stats */}
+      <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">今日待复习</CardTitle>
@@ -95,11 +90,11 @@ export function Dashboard() {
               </div>
               <p className="text-xs text-muted-foreground">张卡片</p>
             </CardContent>
-          </Card>
-        </div>
+        </Card>
+      </div>
 
-        {/* Quick Actions */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card className="transition-colors hover:bg-muted/50">
             <Link to="/decks">
               <CardHeader>
@@ -194,7 +189,6 @@ export function Dashboard() {
               </CardContent>
             </Link>
           </Card>
-        </div>
       </div>
     </div>
   )
