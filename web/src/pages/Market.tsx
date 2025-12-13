@@ -5,6 +5,13 @@ import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { getSharedDecks, importSharedDeck } from '@/api/sharedDecks'
 import type { SharedDeck } from '@/types'
 
@@ -90,12 +97,17 @@ export function MarketPage() {
             </CardContent>
           </Card>
         ) : decks.length === 0 ? (
-          <Card className="text-center py-16">
-            <CardContent>
-              <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">暂无共享牌组</p>
-            </CardContent>
-          </Card>
+          <Empty className="border rounded-lg py-16">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <BookOpen className="h-6 w-6" />
+              </EmptyMedia>
+              <EmptyTitle>暂无共享牌组</EmptyTitle>
+              <EmptyDescription>
+                目前市场中没有可用的共享牌组
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {decks.map(deck => (

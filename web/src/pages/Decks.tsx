@@ -35,6 +35,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { deckRepository } from '@/db/repositories'
 import { db } from '@/db'
 import type { Deck } from '@/types'
@@ -281,14 +289,18 @@ export function DecksPage() {
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : decks.length === 0 ? (
-          <Card className="text-center py-16">
-            <CardContent>
-              <Folder className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">还没有牌组</h3>
-              <p className="text-muted-foreground mb-4">
+          <Empty className="border rounded-lg py-16">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Folder className="h-6 w-6" />
+              </EmptyMedia>
+              <EmptyTitle>还没有牌组</EmptyTitle>
+              <EmptyDescription>
                 创建一个新牌组或从市场导入共享牌组开始学习
-              </p>
-              <div className="flex gap-4 justify-center">
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <div className="flex gap-4">
                 <Button onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   新建牌组
@@ -297,8 +309,8 @@ export function DecksPage() {
                   <Link to="/market">浏览市场</Link>
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </EmptyContent>
+          </Empty>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {decks.map(deck => {

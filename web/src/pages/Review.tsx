@@ -1,8 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronRight, Home, CheckCircle, Loader2, Undo2 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { FlipCard } from '@/components/FlipCard'
 import { cardRepository } from '@/db/repositories'
 import { reviewLogRepo } from '@/db/repositories/reviewLog'
@@ -203,14 +210,18 @@ export function ReviewPage() {
             <span className="text-foreground">复习</span>
           </nav>
 
-          <Card className="max-w-2xl mx-auto text-center py-16">
-            <CardContent>
-              <CheckCircle className="h-16 w-16 mx-auto text-green-500 mb-4" />
-              <h2 className="text-2xl font-bold mb-2">恭喜！</h2>
-              <p className="text-muted-foreground mb-6">
+          <Empty className="border rounded-lg max-w-2xl mx-auto py-16">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <CheckCircle className="h-6 w-6 text-green-500" />
+              </EmptyMedia>
+              <EmptyTitle>恭喜！</EmptyTitle>
+              <EmptyDescription>
                 今日复习已完成，或暂无待复习的卡片
-              </p>
-              <div className="flex gap-4 justify-center">
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <div className="flex gap-4">
                 <Button asChild>
                   <Link to="/decks">查看牌组</Link>
                 </Button>
@@ -218,8 +229,8 @@ export function ReviewPage() {
                   <Link to="/market">浏览市场</Link>
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </EmptyContent>
+          </Empty>
         </div>
       </div>
     )
