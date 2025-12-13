@@ -1,15 +1,15 @@
 # =================================
-# FastAPI Template - Docker Compose
+# 拾遗 Shiyi - Docker Compose
 # =================================
 
 services:
-  # ========== 应用服务 ==========
-  app:
+  # ========== 后端服务 ==========
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
       target: runtime
-    container_name: fastapi-template-app
+    container_name: shiyi-backend
     ports:
       - "${PORT:-8000}:8000"
     environment:
@@ -33,15 +33,35 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - fastapi-network
+      - shiyi-network
 
-  # ========== 开发服务 ==========
-  app-dev:
+  # ========== 前端服务 ==========
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: shiyi-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - shiyi-network
+
+  # ========== 后端开发服务 ==========
+  backend-dev:
     build:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: fastapi-template-dev
+    container_name: shiyi-backend-dev
     ports:
       - "${PORT:-8000}:8000"
     environment:
@@ -58,12 +78,12 @@ services:
     profiles:
       - dev
     networks:
-      - fastapi-network
+      - shiyi-network
 
   # ========== PostgreSQL 数据库 (可选) ==========
   db:
     image: postgres:16-alpine
-    container_name: fastapi-template-db
+    container_name: shiyi-db
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-fastapi}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-fastapi}
@@ -81,12 +101,12 @@ services:
     profiles:
       - postgres
     networks:
-      - fastapi-network
+      - shiyi-network
 
   # ========== Redis 缓存 (可选) ==========
   redis:
     image: redis:7-alpine
-    container_name: fastapi-template-redis
+    container_name: shiyi-redis
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
@@ -100,11 +120,11 @@ services:
     profiles:
       - redis
     networks:
-      - fastapi-network
+      - shiyi-network
 
 # ========== 网络配置 ==========
 networks:
-  fastapi-network:
+  shiyi-network:
     driver: bridge
 
 # ========== 数据卷配置 ==========
