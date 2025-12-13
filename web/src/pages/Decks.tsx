@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
-  ChevronRight, Home, Plus, Folder, BookOpen, Loader2, Trash2,
+  ChevronRight, Home, Folder, BookOpen, Loader2, Trash2,
   MoreVertical, Edit, Download
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -16,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import {
   DropdownMenu,
@@ -52,9 +51,6 @@ export function DecksPage() {
   const [decks, setDecks] = useState<Deck[]>([])
   const [deckStats, setDeckStats] = useState<Record<string, { new: number; learning: number; review: number; total: number }>>({})
   const [loading, setLoading] = useState(true)
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [newDeckName, setNewDeckName] = useState('')
-  const [creating, setCreating] = useState(false)
   
   // 重命名对话框状态
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
@@ -85,20 +81,6 @@ export function DecksPage() {
       setDeckStats(stats)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleCreateDeck = async () => {
-    if (!newDeckName.trim()) return
-
-    try {
-      setCreating(true)
-      await deckRepository.create({ name: newDeckName.trim() })
-      setNewDeckName('')
-      setCreateDialogOpen(false)
-      await loadDecks()
-    } finally {
-      setCreating(false)
     }
   }
 
@@ -246,41 +228,12 @@ export function DecksPage() {
             </p>
           </div>
           
-          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                新建牌组
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>新建牌组</DialogTitle>
-                <DialogDescription>
-                  创建一个新的牌组来组织您的学习内容
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4 space-y-4">
-                <Input
-                  placeholder="输入牌组名称"
-                  value={newDeckName}
-                  onChange={e => setNewDeckName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleCreateDeck()}
-                />
-                <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-                  💡 提示：创建空牌组后，您可以从「牌组市场」导入共享牌组内容，或等待后续版本支持手动添加笔记。
-                </p>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
-                  取消
-                </Button>
-                <Button onClick={handleCreateDeck} disabled={creating || !newDeckName.trim()}>
-                  {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : '创建'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button asChild>
+            <Link to="/market">
+              <Download className="h-4 w-4 mr-2" />
+              导入共享牌组
+            </Link>
+          </Button>
         </header>
 
         {/* Content */}
@@ -296,19 +249,16 @@ export function DecksPage() {
               </EmptyMedia>
               <EmptyTitle>还没有牌组</EmptyTitle>
               <EmptyDescription>
-                创建一个新牌组或从市场导入共享牌组开始学习
+                从牌组市场导入共享牌组开始学习
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <div className="flex gap-4">
-                <Button onClick={() => setCreateDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  新建牌组
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link to="/market">浏览市场</Link>
-                </Button>
-              </div>
+              <Button asChild>
+                <Link to="/market">
+                  <Download className="h-4 w-4 mr-2" />
+                  浏览牌组市场
+                </Link>
+              </Button>
             </EmptyContent>
           </Empty>
         ) : (
