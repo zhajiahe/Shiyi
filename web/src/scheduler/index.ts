@@ -1,6 +1,6 @@
 /**
  * 调度器统一入口
- * 
+ *
  * 根据用户设置选择 SM-2 或 FSRS 算法
  */
 
@@ -20,15 +20,15 @@ export interface ScheduleResult {
 
 /**
  * 执行卡片调度
- * 
+ *
  * @param card 当前卡片
  * @param rating 用户评分
  * @param scheduler 调度器类型
  */
 export function schedule(
-  card: Card, 
-  rating: Rating, 
-  scheduler: SchedulerType = 'sm2'
+  card: Card,
+  rating: Rating,
+  scheduler: SchedulerType = 'sm2',
 ): ScheduleResult {
   if (scheduler === 'sm2') {
     const result = scheduleSM2(card, rating)
@@ -47,8 +47,8 @@ export function schedule(
  * 获取评分按钮预计间隔
  */
 export function getButtonIntervals(
-  card: Card, 
-  scheduler: SchedulerType = 'sm2'
+  card: Card,
+  scheduler: SchedulerType = 'sm2',
 ): {
   again: string
   hard: string

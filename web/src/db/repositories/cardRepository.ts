@@ -27,20 +27,20 @@ export const cardRepository = {
    */
   async getDueCards(deckId?: string, limit = 100): Promise<Card[]> {
     const now = Date.now()
-    
+
     let cards: Card[]
     if (deckId) {
       cards = await db.cards
         .where('deckId')
         .equals(deckId)
-        .filter(c => !c.deletedAt)
+        .filter((c) => !c.deletedAt)
         .toArray()
     } else {
-      cards = await db.cards.filter(c => !c.deletedAt).toArray()
+      cards = await db.cards.filter((c) => !c.deletedAt).toArray()
     }
 
     // 筛选待复习卡片
-    const dueCards = cards.filter(card => {
+    const dueCards = cards.filter((card) => {
       if (card.state === 'new') return true
       if (card.state === 'learning' || card.state === 'relearning') {
         return card.due <= now
@@ -80,7 +80,7 @@ export const cardRepository = {
 
     // 根据用户设置选择调度器
     const scheduler = getSchedulerFromSettings()
-    
+
     // 计算新的调度参数
     const result = schedule(card, rating, scheduler)
     const now = Date.now()
@@ -133,7 +133,7 @@ export const cardRepository = {
     return db.cards
       .where('noteId')
       .equals(noteId)
-      .filter(c => !c.deletedAt)
+      .filter((c) => !c.deletedAt)
       .toArray()
   },
 
@@ -154,16 +154,15 @@ export const cardRepository = {
     review: number
     suspended: number
   }> {
-    const cards = await db.cards.filter(c => !c.deletedAt).toArray()
+    const cards = await db.cards.filter((c) => !c.deletedAt).toArray()
     const now = Date.now()
-    
+
     return {
       total: cards.length,
-      new: cards.filter(c => c.state === 'new').length,
-      learning: cards.filter(c => c.state === 'learning' || c.state === 'relearning').length,
-      review: cards.filter(c => c.state === 'review' && c.due <= now).length,
-      suspended: cards.filter(c => c.queue === 'suspended').length,
+      new: cards.filter((c) => c.state === 'new').length,
+      learning: cards.filter((c) => c.state === 'learning' || c.state === 'relearning').length,
+      review: cards.filter((c) => c.state === 'review' && c.due <= now).length,
+      suspended: cards.filter((c) => c.queue === 'suspended').length,
     }
   },
 }
-

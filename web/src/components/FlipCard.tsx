@@ -31,7 +31,8 @@ export function FlipCard({
   // 统一高度：取正反面的最大高度
   const cardHeight = Math.max(questionHeight, answerHeight, minHeight)
 
-  const buildHtml = useCallback((html: string, side: 'question' | 'answer') => `
+  const buildHtml = useCallback(
+    (html: string, side: 'question' | 'answer') => `
     <!DOCTYPE html>
     <html data-theme="${theme}">
       <head>
@@ -88,7 +89,9 @@ export function FlipCard({
         </script>
       </body>
     </html>
-  `, [theme, css])
+  `,
+    [theme, css],
+  )
 
   // 渲染问题面
   useEffect(() => {
@@ -129,10 +132,7 @@ export function FlipCard({
   }, [])
 
   return (
-    <div 
-      className={`perspective-1000 ${className}`}
-      style={{ perspective: '1000px' }}
-    >
+    <div className={`perspective-1000 ${className}`} style={{ perspective: '1000px' }}>
       <div
         className="relative w-full transition-transform duration-500"
         style={{
@@ -157,7 +157,7 @@ export function FlipCard({
         {/* 答案面（背面） */}
         <div
           className="absolute inset-0 rounded-lg overflow-hidden shadow-sm border"
-          style={{ 
+          style={{
             backfaceVisibility: 'hidden',
             transform: 'rotateX(180deg)',
           }}

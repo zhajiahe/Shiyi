@@ -46,16 +46,18 @@ export async function getSharedDecks(params?: {
   if (params?.pageSize) searchParams.set('page_size', params.pageSize.toString())
   if (params?.tag) searchParams.set('tag', params.tag)
   if (params?.language) searchParams.set('language', params.language)
-  if (params?.isOfficial !== undefined) searchParams.set('is_official', params.isOfficial.toString())
-  if (params?.isFeatured !== undefined) searchParams.set('is_featured', params.isFeatured.toString())
+  if (params?.isOfficial !== undefined)
+    searchParams.set('is_official', params.isOfficial.toString())
+  if (params?.isFeatured !== undefined)
+    searchParams.set('is_featured', params.isFeatured.toString())
 
   const response = await fetch(`${API_BASE}/shared-decks?${searchParams}`)
   const result: ApiResponse<SharedDeckListResponse> = await response.json()
-  
+
   if (!result.success) {
     throw new Error(result.msg)
   }
-  
+
   return result.data
 }
 
@@ -65,11 +67,11 @@ export async function getSharedDecks(params?: {
 export async function getSharedDeckDetail(slug: string): Promise<SharedDeckDetailResponse> {
   const response = await fetch(`${API_BASE}/shared-decks/${slug}`)
   const result: ApiResponse<SharedDeckDetailResponse> = await response.json()
-  
+
   if (!result.success) {
     throw new Error(result.msg)
   }
-  
+
   return result.data
 }
 
@@ -77,7 +79,7 @@ export async function getSharedDeckDetail(slug: string): Promise<SharedDeckDetai
  * 检查本地是否已有同名牌组
  */
 export async function checkDeckNameExists(name: string): Promise<boolean> {
-  const decks = await db.decks.filter(d => !d.deletedAt && d.name === name).toArray()
+  const decks = await db.decks.filter((d) => !d.deletedAt && d.name === name).toArray()
   return decks.length > 0
 }
 
@@ -87,12 +89,12 @@ export async function checkDeckNameExists(name: string): Promise<boolean> {
 export async function getUniqueDeckName(baseName: string): Promise<string> {
   let name = baseName
   let counter = 1
-  
+
   while (await checkDeckNameExists(name)) {
     name = `${baseName} (${counter})`
     counter++
   }
-  
+
   return name
 }
 
@@ -101,7 +103,10 @@ export async function getUniqueDeckName(baseName: string): Promise<string> {
  * @param slug 共享牌组的 URL 标识
  * @param customDeckName 自定义牌组名称（可选，默认使用共享牌组名称）
  */
-export async function importSharedDeck(slug: string, customDeckName?: string): Promise<{
+export async function importSharedDeck(
+  slug: string,
+  customDeckName?: string,
+): Promise<{
   deckId: string
   deckName: string
   noteCount: number
@@ -110,7 +115,7 @@ export async function importSharedDeck(slug: string, customDeckName?: string): P
   // 获取后端的牌组数据（通过 API 获取笔记类型、笔记、卡片）
   const response = await fetch(`${API_BASE}/shared-decks/${slug}/export`)
   const result = await response.json()
-  
+
   if (!result.success) {
     throw new Error(result.msg)
   }
@@ -162,7 +167,7 @@ export async function importSharedDeck(slug: string, customDeckName?: string): P
         id: nm.id,
         userId: 'local',
         name: nm.name,
-        fieldsSchema: nm.fields_schema.map(f => ({ name: f.name, description: f.description })),
+        fieldsSchema: nm.fields_schema.map((f) => ({ name: f.name, description: f.description })),
         css: nm.css,
         templates: [],
         createdAt: now,
@@ -213,7 +218,7 @@ export async function importSharedDeck(slug: string, customDeckName?: string): P
   for (const n of exportData.notes) {
     const localNoteId = nanoid()
     noteIdMap.set(n.id, localNoteId)
-    
+
     const note: Note = {
       id: localNoteId,
       userId: 'local',
@@ -265,4 +270,3 @@ export async function importSharedDeck(slug: string, customDeckName?: string): P
     cardCount: exportData.cards.length,
   }
 }
-

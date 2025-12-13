@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
-import { 
-  Download, Star, 
-  BookOpen, Loader2, ArrowLeft, Eye, RotateCcw, AlertCircle, CheckCircle2
+import {
+  Download,
+  Star,
+  BookOpen,
+  Loader2,
+  ArrowLeft,
+  Eye,
+  RotateCcw,
+  AlertCircle,
+  CheckCircle2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -33,7 +40,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { FlipCard } from '@/components/FlipCard'
-import { getSharedDeckDetail, importSharedDeck, checkDeckNameExists, getUniqueDeckName } from '@/api/sharedDecks'
+import {
+  getSharedDeckDetail,
+  importSharedDeck,
+  checkDeckNameExists,
+  getUniqueDeckName,
+} from '@/api/sharedDecks'
 import type { SharedDeck } from '@/types'
 
 const API_BASE = 'http://localhost:8000/api/v1'
@@ -85,22 +97,22 @@ interface ExportData {
  */
 function renderTemplate(template: string, fields: Record<string, string>): string {
   let rendered = template
-  
+
   // 替换所有 {{FieldName}} 占位符
   for (const [fieldName, fieldValue] of Object.entries(fields)) {
     const regex = new RegExp(`\\{\\{${fieldName}\\}\\}`, 'g')
     rendered = rendered.replace(regex, fieldValue || '')
   }
-  
+
   // 处理 Cloze 删除（简单处理：将未替换的 {{c1::xxx}} 格式转换）
   // {{c1::answer::hint}} -> [...]
   rendered = rendered.replace(/\{\{c\d+::(.*?)(?:::(.*?))?\}\}/g, (_, answer) => {
     return `<span class="cloze">${answer}</span>`
   })
-  
+
   // 清理未匹配的占位符
   rendered = rendered.replace(/\{\{[^}]+\}\}/g, '')
-  
+
   return rendered
 }
 
@@ -109,19 +121,19 @@ export function MarketDetailPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const shouldOpenImport = searchParams.get('import') === 'true'
-  
+
   const [deck, setDeck] = useState<SharedDeck | null>(null)
   const [exportData, setExportData] = useState<ExportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [importing, setImporting] = useState(false)
-  
+
   // 卡片预览弹窗状态
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number | null>(null)
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
-  
+
   // 导入对话框状态
   const [showImportDialog, setShowImportDialog] = useState(false)
   const [importDeckName, setImportDeckName] = useState('')
@@ -151,11 +163,11 @@ export function MarketDetailPage() {
     try {
       setLoading(true)
       setError(null)
-      
+
       // 获取牌组详情
       const detail = await getSharedDeckDetail(deckSlug)
       setDeck(detail)
-      
+
       // 获取导出数据（包含笔记内容）
       const response = await fetch(`${API_BASE}/shared-decks/${deckSlug}/export`)
       const result = await response.json()
@@ -173,7 +185,7 @@ export function MarketDetailPage() {
   // 打开导入对话框
   const openImportDialog = async () => {
     if (!deck) return
-    
+
     // 获取不冲突的默认名称
     const suggestedName = await getUniqueDeckName(deck.title)
     setImportDeckName(suggestedName)
@@ -181,16 +193,16 @@ export function MarketDetailPage() {
     setImportSuccess(null)
     setShowImportDialog(true)
   }
-  
+
   // 检查名称是否冲突
   const handleNameChange = async (name: string) => {
     setImportDeckName(name)
-    
+
     if (!name.trim()) {
       setNameConflict(false)
       return
     }
-    
+
     setCheckingName(true)
     try {
       const exists = await checkDeckNameExists(name.trim())
@@ -199,11 +211,11 @@ export function MarketDetailPage() {
       setCheckingName(false)
     }
   }
-  
+
   // 执行导入
   const handleImport = async () => {
     if (!slug || !importDeckName.trim()) return
-    
+
     try {
       setImporting(true)
       const result = await importSharedDeck(slug, importDeckName.trim())
@@ -220,7 +232,7 @@ export function MarketDetailPage() {
       setImporting(false)
     }
   }
-  
+
   // 导入成功后跳转
   const handleGoToDecks = () => {
     setShowImportDialog(false)
@@ -236,14 +248,11 @@ export function MarketDetailPage() {
   }
 
   const noteModel = exportData?.note_models[0]
-  const fieldNames = useMemo(() => 
-    noteModel?.fields_schema.map(f => f.name) || [],
-    [noteModel]
-  )
+  const fieldNames = useMemo(() => noteModel?.fields_schema.map((f) => f.name) || [], [noteModel])
 
   // 动态生成列定义
   const columns: ColumnDef<NotePreview>[] = useMemo(() => {
-    const cols: ColumnDef<NotePreview>[] = fieldNames.slice(0, 3).map(fieldName => ({
+    const cols: ColumnDef<NotePreview>[] = fieldNames.slice(0, 3).map((fieldName) => ({
       id: fieldName,
       header: fieldName,
       cell: ({ row }) => {
@@ -255,7 +264,7 @@ export function MarketDetailPage() {
         )
       },
     }))
-    
+
     // 添加预览按钮列
     cols.push({
       id: 'preview',
@@ -266,7 +275,7 @@ export function MarketDetailPage() {
         </div>
       ),
     })
-    
+
     return cols
   }, [fieldNames])
 
@@ -284,19 +293,22 @@ export function MarketDetailPage() {
 
   // 获取选中笔记的预览数据
   const selectedNote = selectedNoteIndex !== null ? exportData?.notes[selectedNoteIndex] : null
-  const selectedNoteModel = selectedNote && exportData
-    ? exportData.note_models.find(nm => nm.id === selectedNote.note_model_id)
-    : null
+  const selectedNoteModel =
+    selectedNote && exportData
+      ? exportData.note_models.find((nm) => nm.id === selectedNote.note_model_id)
+      : null
   const selectedTemplates = selectedNoteModel?.templates || []
   const currentTemplate = selectedTemplates[selectedTemplateIndex]
 
   // 渲染当前卡片
-  const renderedQuestion = currentTemplate && selectedNote
-    ? renderTemplate(currentTemplate.question_template, selectedNote.fields)
-    : ''
-  const renderedAnswer = currentTemplate && selectedNote
-    ? renderTemplate(currentTemplate.answer_template, selectedNote.fields)
-    : ''
+  const renderedQuestion =
+    currentTemplate && selectedNote
+      ? renderTemplate(currentTemplate.question_template, selectedNote.fields)
+      : ''
+  const renderedAnswer =
+    currentTemplate && selectedNote
+      ? renderTemplate(currentTemplate.answer_template, selectedNote.fields)
+      : ''
   const cardCss = selectedNoteModel?.css || ''
 
   if (loading) {
@@ -331,147 +343,148 @@ export function MarketDetailPage() {
       </Button>
 
       {/* Deck Header */}
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  {deck.title}
-                  {deck.isOfficial && (
-                    <Badge variant="secondary">官方</Badge>
-                  )}
-                  {deck.isFeatured && (
-                    <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                  )}
-                </CardTitle>
-                <CardDescription className="mt-2 text-base">
-                  {deck.description || '暂无描述'}
-                </CardDescription>
-              </div>
-              <Button onClick={openImportDialog} size="lg">
-                <Download className="h-4 w-4 mr-2" />
-                导入到本地
-              </Button>
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                {deck.title}
+                {deck.isOfficial && <Badge variant="secondary">官方</Badge>}
+                {deck.isFeatured && <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />}
+              </CardTitle>
+              <CardDescription className="mt-2 text-base">
+                {deck.description || '暂无描述'}
+              </CardDescription>
             </div>
-          </CardHeader>
-          <CardContent>
-            {/* Tags */}
-            {deck.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {deck.tags.map(tag => (
-                  <Badge key={tag} variant="outline">{tag}</Badge>
-                ))}
-              </div>
-            )}
-            {/* Stats - 兼容 snake_case 和 camelCase */}
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <BookOpen className="h-4 w-4" />
-                {(deck as SharedDeck & { note_count?: number }).noteCount ?? (deck as SharedDeck & { note_count?: number }).note_count ?? 0} 笔记
-              </span>
-              <span>
-                {(deck as SharedDeck & { card_count?: number }).cardCount ?? (deck as SharedDeck & { card_count?: number }).card_count ?? 0} 卡片
-              </span>
-              <span>
-                {(deck as SharedDeck & { download_count?: number }).downloadCount ?? (deck as SharedDeck & { download_count?: number }).download_count ?? 0} 次下载
-              </span>
+            <Button onClick={openImportDialog} size="lg">
+              <Download className="h-4 w-4 mr-2" />
+              导入到本地
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Tags */}
+          {deck.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {deck.tags.map((tag) => (
+                <Badge key={tag} variant="outline">
+                  {tag}
+                </Badge>
+              ))}
             </div>
-          </CardContent>
-        </Card>
+          )}
+          {/* Stats - 兼容 snake_case 和 camelCase */}
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <BookOpen className="h-4 w-4" />
+              {(deck as SharedDeck & { note_count?: number }).noteCount ??
+                (deck as SharedDeck & { note_count?: number }).note_count ??
+                0}{' '}
+              笔记
+            </span>
+            <span>
+              {(deck as SharedDeck & { card_count?: number }).cardCount ??
+                (deck as SharedDeck & { card_count?: number }).card_count ??
+                0}{' '}
+              卡片
+            </span>
+            <span>
+              {(deck as SharedDeck & { download_count?: number }).downloadCount ??
+                (deck as SharedDeck & { download_count?: number }).download_count ??
+                0}{' '}
+              次下载
+            </span>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Notes Content */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">笔记内容预览</CardTitle>
-            <CardDescription>
-              共 {exportData?.notes.length || 0} 条笔记，点击查看卡片实际效果
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Data Table */}
-            {fieldNames.length > 0 && (
-              <div className="space-y-4">
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map(header => (
-                            <TableHead key={header.id}>
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                  )}
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => {
-                          const globalIndex = exportData?.notes.findIndex(n => n.id === row.original.id) ?? -1
-                          return (
-                            <TableRow
-                              key={row.id}
-                              onClick={() => handleNoteClick(globalIndex)}
-                              className="cursor-pointer hover:bg-muted/50"
-                            >
-                              {row.getVisibleCells().map(cell => (
-                                <TableCell key={cell.id}>
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          )
-                        })
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={columns.length} className="h-24 text-center">
-                            暂无笔记
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+      {/* Notes Content */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">笔记内容预览</CardTitle>
+          <CardDescription>
+            共 {exportData?.notes.length || 0} 条笔记，点击查看卡片实际效果
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Data Table */}
+          {fieldNames.length > 0 && (
+            <div className="space-y-4">
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(header.column.columnDef.header, header.getContext())}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => {
+                        const globalIndex =
+                          exportData?.notes.findIndex((n) => n.id === row.original.id) ?? -1
+                        return (
+                          <TableRow
+                            key={row.id}
+                            onClick={() => handleNoteClick(globalIndex)}
+                            className="cursor-pointer hover:bg-muted/50"
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <TableCell key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        )
+                      })
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                          暂无笔记
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
 
-                {/* Pagination */}
-                {table.getPageCount() > 1 && (
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
-                      第 {table.getState().pagination.pageIndex + 1} / {table.getPageCount()} 页
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                      >
-                        上一页
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                      >
-                        下一页
-                      </Button>
-                    </div>
+              {/* Pagination */}
+              {table.getPageCount() > 1 && (
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    第 {table.getState().pagination.pageIndex + 1} / {table.getPageCount()} 页
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                    >
+                      上一页
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.nextPage()}
+                      disabled={!table.getCanNextPage()}
+                    >
+                      下一页
+                    </Button>
                   </div>
-                )}
-              </div>
-            )}
-
-          </CardContent>
-        </Card>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* 卡片预览弹窗 */}
       <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
@@ -489,7 +502,7 @@ export function MarketDetailPage() {
                     {selectedTemplates.map((tpl, idx) => (
                       <Button
                         key={tpl.id}
-                        variant={idx === selectedTemplateIndex ? "default" : "outline"}
+                        variant={idx === selectedTemplateIndex ? 'default' : 'outline'}
                         size="sm"
                         className="h-7 text-xs"
                         onClick={() => {
@@ -520,9 +533,9 @@ export function MarketDetailPage() {
 
               {/* 翻转按钮 */}
               <div className="text-center">
-                <Button 
+                <Button
                   onClick={() => setShowAnswer(!showAnswer)}
-                  variant={showAnswer ? "outline" : "default"}
+                  variant={showAnswer ? 'outline' : 'default'}
                   className="gap-2"
                 >
                   <RotateCcw className="h-4 w-4" />
@@ -532,12 +545,8 @@ export function MarketDetailPage() {
 
               {/* 底部信息 */}
               <div className="text-xs text-muted-foreground flex items-center justify-between">
-                <span>
-                  笔记类型: {selectedNoteModel?.name || '未知'}
-                </span>
-                <span>
-                  此笔记共 {selectedTemplates.length} 张卡片
-                </span>
+                <span>笔记类型: {selectedNoteModel?.name || '未知'}</span>
+                <span>此笔记共 {selectedTemplates.length} 张卡片</span>
               </div>
             </div>
           )}
@@ -554,15 +563,11 @@ export function MarketDetailPage() {
                   <Download className="h-5 w-5" />
                   导入到本地
                 </DialogTitle>
-                <DialogDescription>
-                  将"{deck?.title}"导入到您的本地牌组库
-                </DialogDescription>
+                <DialogDescription>将"{deck?.title}"导入到您的本地牌组库</DialogDescription>
               </DialogHeader>
 
               <div className="py-4">
-                <label className="text-sm font-medium mb-2 block">
-                  牌组名称
-                </label>
+                <label className="text-sm font-medium mb-2 block">牌组名称</label>
                 <Input
                   value={importDeckName}
                   onChange={(e) => handleNameChange(e.target.value)}
@@ -581,15 +586,25 @@ export function MarketDetailPage() {
                     检查中...
                   </p>
                 )}
-                
+
                 <div className="mt-4 p-3 bg-muted/50 rounded-lg text-sm">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">笔记数量</span>
-                    <span>{(deck as SharedDeck & { note_count?: number })?.noteCount ?? (deck as SharedDeck & { note_count?: number })?.note_count ?? 0} 条</span>
+                    <span>
+                      {(deck as SharedDeck & { note_count?: number })?.noteCount ??
+                        (deck as SharedDeck & { note_count?: number })?.note_count ??
+                        0}{' '}
+                      条
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">卡片数量</span>
-                    <span>{(deck as SharedDeck & { card_count?: number })?.cardCount ?? (deck as SharedDeck & { card_count?: number })?.card_count ?? 0} 张</span>
+                    <span>
+                      {(deck as SharedDeck & { card_count?: number })?.cardCount ??
+                        (deck as SharedDeck & { card_count?: number })?.card_count ??
+                        0}{' '}
+                      张
+                    </span>
                   </div>
                 </div>
               </div>
@@ -598,10 +613,7 @@ export function MarketDetailPage() {
                 <Button variant="outline" onClick={() => setShowImportDialog(false)}>
                   取消
                 </Button>
-                <Button 
-                  onClick={handleImport} 
-                  disabled={importing || !importDeckName.trim()}
-                >
+                <Button onClick={handleImport} disabled={importing || !importDeckName.trim()}>
                   {importing ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -632,7 +644,7 @@ export function MarketDetailPage() {
                   </div>
                   <h3 className="text-lg font-medium">{importSuccess.deckName}</h3>
                 </div>
-                
+
                 <div className="p-3 bg-muted/50 rounded-lg text-sm">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">导入笔记</span>

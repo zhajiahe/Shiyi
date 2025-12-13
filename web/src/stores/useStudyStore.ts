@@ -1,6 +1,6 @@
 /**
  * 学习状态管理
- * 
+ *
  * 使用 Zustand 管理全局学习状态
  */
 
@@ -26,20 +26,20 @@ interface StudyState {
   currentIndex: number
   currentNote: Note | null
   currentNoteModel: NoteModel | null
-  
+
   // 学习进度
   newCount: number
   reviewCount: number
   learningCount: number
-  
+
   // 状态
   isLoading: boolean
   showAnswer: boolean
-  
+
   // 撤销功能
   undoStack: UndoHistoryItem[]
   canUndo: boolean
-  
+
   // Actions
   loadDeck: (deckId: string, userId: string) => Promise<void>
   nextCard: () => void
@@ -65,7 +65,7 @@ export const useStudyStore = create<StudyState>((set, get) => ({
 
   loadDeck: async (deckId: string, userId: string) => {
     set({ isLoading: true })
-    
+
     try {
       // 获取牌组
       const deck = await db.decks.get(deckId)
@@ -77,10 +77,10 @@ export const useStudyStore = create<StudyState>((set, get) => ({
       // 获取待复习卡片
       const now = Date.now()
       const cards = await cardRepo.getDueCards(userId, { deckId, dueBefore: now })
-      
+
       // 统计
       const stats = await cardRepo.countByState(userId, deckId)
-      
+
       // 加载第一张卡片的笔记
       let note: Note | null = null
       let noteModel: NoteModel | null = null
@@ -88,7 +88,7 @@ export const useStudyStore = create<StudyState>((set, get) => ({
         const noteResult = await db.notes.get(cards[0].noteId)
         if (noteResult) {
           note = noteResult
-          noteModel = await db.noteModels.get(note.noteModelId) || null
+          noteModel = (await db.noteModels.get(note.noteModelId)) || null
         }
       }
 
@@ -113,7 +113,7 @@ export const useStudyStore = create<StudyState>((set, get) => ({
   nextCard: async () => {
     const { currentCards, currentIndex } = get()
     const nextIndex = currentIndex + 1
-    
+
     if (nextIndex >= currentCards.length) {
       set({ currentNote: null, currentNoteModel: null, showAnswer: false })
       return
@@ -123,7 +123,7 @@ export const useStudyStore = create<StudyState>((set, get) => ({
     const note = await db.notes.get(nextCard.noteId)
     let noteModel: NoteModel | null = null
     if (note) {
-      noteModel = await db.noteModels.get(note.noteModelId) || null
+      noteModel = (await db.noteModels.get(note.noteModelId)) || null
     }
 
     set({
@@ -140,13 +140,13 @@ export const useStudyStore = create<StudyState>((set, get) => ({
     if (!card) return
 
     const userId = card.userId
-    
+
     // 保存撤销历史（深拷贝卡片状态）
     const cardSnapshot: Card = { ...card }
-    
+
     // 计算新的调度
     const result = scheduleSM2(card, rating)
-    
+
     // 记录复习日志
     const reviewLogId = await reviewLogRepo.create(userId, card.id, rating, {
       reviewTime: Date.now(),
@@ -175,7 +175,7 @@ export const useStudyStore = create<StudyState>((set, get) => ({
     // 保存到撤销栈（最多保留10条）
     const newUndoStack = [
       ...undoStack.slice(-9),
-      { card: cardSnapshot, reviewLogId, previousIndex: currentIndex }
+      { card: cardSnapshot, reviewLogId, previousIndex: currentIndex },
     ]
     set({ undoStack: newUndoStack, canUndo: true })
 
@@ -211,12 +211,12 @@ export const useStudyStore = create<StudyState>((set, get) => ({
       const note = await db.notes.get(previousCard.noteId)
       let noteModel: NoteModel | null = null
       if (note) {
-        noteModel = await db.noteModels.get(note.noteModelId) || null
+        noteModel = (await db.noteModels.get(note.noteModelId)) || null
       }
 
       // 更新状态
       const newUndoStack = undoStack.slice(0, -1)
-      
+
       // 更新当前卡片列表中的卡片状态
       const updatedCards = [...currentCards]
       // 将恢复的卡片插回原位置
@@ -259,6 +259,3 @@ export const useStudyStore = create<StudyState>((set, get) => ({
     })
   },
 }))
-
-
-

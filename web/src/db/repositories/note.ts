@@ -62,7 +62,7 @@ export const noteRepo = {
       tags?: string[]
       sourceType?: SourceType
       sourceMeta?: Record<string, unknown>
-    }
+    },
   ): Promise<Note> {
     const now = Date.now()
     const noteId = nanoid()
@@ -115,10 +115,7 @@ export const noteRepo = {
   /**
    * 更新笔记
    */
-  async update(
-    id: string,
-    data: Partial<Pick<Note, 'fields' | 'tags' | 'deckId'>>
-  ): Promise<void> {
+  async update(id: string, data: Partial<Pick<Note, 'fields' | 'tags' | 'deckId'>>): Promise<void> {
     const updates: Partial<Note> = {
       ...data,
       dirty: 1,
@@ -137,10 +134,7 @@ export const noteRepo = {
     const now = Date.now()
     await db.transaction('rw', [db.notes, db.cards], async () => {
       await db.notes.update(id, { deletedAt: now, updatedAt: now })
-      await db.cards
-        .where('noteId')
-        .equals(id)
-        .modify({ deletedAt: now, updatedAt: now })
+      await db.cards.where('noteId').equals(id).modify({ deletedAt: now, updatedAt: now })
     })
   },
 
@@ -156,9 +150,7 @@ export const noteRepo = {
 
     const lowerKeyword = keyword.toLowerCase()
     return notes.filter((note) =>
-      Object.values(note.fields).some((value) =>
-        value.toLowerCase().includes(lowerKeyword)
-      )
+      Object.values(note.fields).some((value) => value.toLowerCase().includes(lowerKeyword)),
     )
   },
 }
@@ -192,7 +184,7 @@ export const cardRepo = {
       deckId?: string
       dueBefore?: number
       limit?: number
-    }
+    },
   ): Promise<Card[]> {
     const now = options?.dueBefore ?? Date.now()
     const query = db.cards
@@ -236,10 +228,7 @@ export const cardRepo = {
         acc[card.state] = (acc[card.state] || 0) + 1
         return acc
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     )
   },
 }
-
-
-

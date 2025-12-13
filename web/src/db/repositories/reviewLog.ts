@@ -11,11 +11,7 @@ export const reviewLogRepo = {
    * 获取卡片的复习日志
    */
   async getByCardId(cardId: string): Promise<ReviewLog[]> {
-    return db.reviewLogs
-      .where('cardId')
-      .equals(cardId)
-      .reverse()
-      .toArray()
+    return db.reviewLogs.where('cardId').equals(cardId).reverse().toArray()
   },
 
   /**
@@ -41,7 +37,7 @@ export const reviewLogRepo = {
       prevDifficulty?: number
       newDifficulty?: number
       durationMs?: number
-    }
+    },
   ): Promise<string> {
     const log: ReviewLog = {
       id: nanoid(),
@@ -76,19 +72,14 @@ export const reviewLogRepo = {
     const todayStart = new Date().setHours(0, 0, 0, 0)
     const weekStart = todayStart - 6 * 24 * 60 * 60 * 1000
 
-    const allLogs = await db.reviewLogs
-      .where('userId')
-      .equals(userId)
-      .toArray()
+    const allLogs = await db.reviewLogs.where('userId').equals(userId).toArray()
 
     const totalReviews = allLogs.length
     const reviewsToday = allLogs.filter((l) => l.reviewTime >= todayStart).length
     const reviewsThisWeek = allLogs.filter((l) => l.reviewTime >= weekStart).length
 
     const avgRating =
-      totalReviews > 0
-        ? allLogs.reduce((sum, l) => sum + l.rating, 0) / totalReviews
-        : 0
+      totalReviews > 0 ? allLogs.reduce((sum, l) => sum + l.rating, 0) / totalReviews : 0
 
     const goodEasyCount = allLogs.filter((l) => l.rating >= 3).length
     const retentionRate = totalReviews > 0 ? (goodEasyCount / totalReviews) * 100 : 0
@@ -102,4 +93,3 @@ export const reviewLogRepo = {
     }
   },
 }
-

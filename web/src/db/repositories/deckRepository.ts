@@ -19,9 +19,7 @@ export const deckRepository = {
    * 获取所有牌组
    */
   async getAll(): Promise<Deck[]> {
-    return db.decks
-      .filter(deck => !deck.deletedAt)
-      .toArray()
+    return db.decks.filter((deck) => !deck.deletedAt).toArray()
   },
 
   /**
@@ -83,14 +81,14 @@ export const deckRepository = {
     const cards = await db.cards
       .where('deckId')
       .equals(deckId)
-      .filter(c => !c.deletedAt)
+      .filter((c) => !c.deletedAt)
       .toArray()
 
     const now = Date.now()
     return {
-      new: cards.filter(c => c.state === 'new').length,
-      learning: cards.filter(c => c.state === 'learning' || c.state === 'relearning').length,
-      review: cards.filter(c => c.state === 'review' && c.due <= now).length,
+      new: cards.filter((c) => c.state === 'new').length,
+      learning: cards.filter((c) => c.state === 'learning' || c.state === 'relearning').length,
+      review: cards.filter((c) => c.state === 'review' && c.due <= now).length,
       total: cards.length,
     }
   },
@@ -104,27 +102,30 @@ export const deckRepository = {
     learningCards: number
   }> {
     const now = Date.now()
-    
+
     if (deckId) {
       const cards = await db.cards
         .where('deckId')
         .equals(deckId)
-        .filter(c => !c.deletedAt)
+        .filter((c) => !c.deletedAt)
         .toArray()
-      
+
       return {
-        newCards: cards.filter(c => c.state === 'new').length,
-        reviewCards: cards.filter(c => c.state === 'review' && c.due <= now).length,
-        learningCards: cards.filter(c => (c.state === 'learning' || c.state === 'relearning') && c.due <= now).length,
+        newCards: cards.filter((c) => c.state === 'new').length,
+        reviewCards: cards.filter((c) => c.state === 'review' && c.due <= now).length,
+        learningCards: cards.filter(
+          (c) => (c.state === 'learning' || c.state === 'relearning') && c.due <= now,
+        ).length,
       }
     }
 
-    const allCards = await db.cards.filter(c => !c.deletedAt).toArray()
+    const allCards = await db.cards.filter((c) => !c.deletedAt).toArray()
     return {
-      newCards: allCards.filter(c => c.state === 'new').length,
-      reviewCards: allCards.filter(c => c.state === 'review' && c.due <= now).length,
-      learningCards: allCards.filter(c => (c.state === 'learning' || c.state === 'relearning') && c.due <= now).length,
+      newCards: allCards.filter((c) => c.state === 'new').length,
+      reviewCards: allCards.filter((c) => c.state === 'review' && c.due <= now).length,
+      learningCards: allCards.filter(
+        (c) => (c.state === 'learning' || c.state === 'relearning') && c.due <= now,
+      ).length,
     }
   },
 }
-

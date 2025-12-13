@@ -15,7 +15,7 @@ export const noteRepository = {
     return db.notes
       .where('deckId')
       .equals(deckId)
-      .filter(n => !n.deletedAt)
+      .filter((n) => !n.deletedAt)
       .toArray()
   },
 
@@ -37,7 +37,7 @@ export const noteRepository = {
     sourceType?: Note['sourceType']
   }): Promise<Note> {
     const now = Date.now()
-    
+
     // 获取笔记类型
     const noteModel = await db.noteModels.get(data.noteModelId)
     if (!noteModel) throw new Error('NoteModel not found')
@@ -66,10 +66,10 @@ export const noteRepository = {
     const templates = await db.cardTemplates
       .where('noteModelId')
       .equals(data.noteModelId)
-      .filter(t => !t.deletedAt)
+      .filter((t) => !t.deletedAt)
       .toArray()
 
-    const cards: Card[] = templates.map(tpl => ({
+    const cards: Card[] = templates.map((tpl) => ({
       id: nanoid(),
       userId: 'local',
       noteId: note.id,
@@ -114,12 +114,9 @@ export const noteRepository = {
   async delete(id: string): Promise<void> {
     const now = Date.now()
     await db.notes.update(id, { deletedAt: now })
-    
+
     // 删除关联的卡片
-    await db.cards
-      .where('noteId')
-      .equals(id)
-      .modify({ deletedAt: now })
+    await db.cards.where('noteId').equals(id).modify({ deletedAt: now })
   },
 
   /**
@@ -139,9 +136,8 @@ function generateGUID(content: string): string {
   let hash = 0
   for (let i = 0; i < content.length; i++) {
     const char = content.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash
   }
   return Math.abs(hash).toString(16)
 }
-

@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
 import {
-  Home,
   Folder,
   ShoppingBag,
   BarChart3,
@@ -8,6 +7,7 @@ import {
   Sun,
   Moon,
   BookOpen,
+  GraduationCap,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -25,7 +25,7 @@ import { useTheme } from '@/components/theme-provider'
 import { Button } from '@/components/ui/button'
 
 const navItems = [
-  { title: '首页', url: '/', icon: Home },
+  { title: '学习', url: '/', icon: GraduationCap },
   { title: '我的牌组', url: '/decks', icon: Folder },
   { title: '牌组市场', url: '/market', icon: ShoppingBag },
   { title: '学习统计', url: '/stats', icon: BarChart3 },

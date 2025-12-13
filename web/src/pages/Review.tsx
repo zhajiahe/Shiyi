@@ -48,14 +48,14 @@ interface UndoRecord {
 export function ReviewPage() {
   const [searchParams] = useSearchParams()
   const deckId = searchParams.get('deck') || undefined
-  
+
   const [loading, setLoading] = useState(true)
   const [cards, setCards] = useState<ReviewCard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [completed, setCompleted] = useState(0)
   const [total, setTotal] = useState(0)
-  
+
   // 撤销功能状态
   const [undoStack, setUndoStack] = useState<UndoRecord[]>([])
   const canUndo = undoStack.length > 0
@@ -64,19 +64,19 @@ export function ReviewPage() {
     try {
       setLoading(true)
       const dueCards = await cardRepository.getDueCards(deckId, 100)
-      
+
       // 加载关联数据
       const reviewCards: ReviewCard[] = []
       for (const card of dueCards) {
         const note = await db.notes.get(card.noteId)
         if (!note) continue
-        
+
         const noteModel = await db.noteModels.get(note.noteModelId)
         if (!noteModel) continue
-        
+
         const template = await db.cardTemplates.get(card.cardTemplateId)
         if (!template) continue
-        
+
         reviewCards.push({
           ...card,
           note,
@@ -84,7 +84,7 @@ export function ReviewPage() {
           template,
         })
       }
-      
+
       setCards(reviewCards)
       setTotal(reviewCards.length)
       setCurrentIndex(0)
@@ -103,43 +103,43 @@ export function ReviewPage() {
 
   const handleAnswer = async (rating: Rating) => {
     if (!currentCard) return
-    
+
     // 保存当前卡片状态用于撤销
     const cardSnapshot: CardType = { ...currentCard }
-    
+
     // 提交复习结果并获取日志ID
     const reviewLogId = await cardRepository.submitReview(currentCard.id, rating)
-    
+
     // 保存到撤销栈（最多10条）
-    setUndoStack(prev => [
+    setUndoStack((prev) => [
       ...prev.slice(-9),
-      { cardSnapshot, reviewLogId, previousIndex: currentIndex }
+      { cardSnapshot, reviewLogId, previousIndex: currentIndex },
     ])
-    
+
     // 更新进度
-    setCompleted(prev => prev + 1)
+    setCompleted((prev) => prev + 1)
     setShowAnswer(false)
-    
+
     // 移动到下一张
     if (currentIndex < cards.length - 1) {
-      setCurrentIndex(prev => prev + 1)
+      setCurrentIndex((prev) => prev + 1)
     } else {
       // 重新加载卡片（可能有新的到期卡片）
       await loadCards()
     }
   }
-  
+
   // 撤销上一次评分
   const handleUndo = async () => {
     if (undoStack.length === 0) return
-    
+
     const lastUndo = undoStack[undoStack.length - 1]
     const { cardSnapshot, reviewLogId, previousIndex } = lastUndo
-    
+
     try {
       // 删除复习日志
       await reviewLogRepo.delete(reviewLogId)
-      
+
       // 恢复卡片状态
       await db.cards.update(cardSnapshot.id, {
         state: cardSnapshot.state,
@@ -151,7 +151,7 @@ export function ReviewPage() {
         lapses: cardSnapshot.lapses,
         lastReview: cardSnapshot.lastReview,
       })
-      
+
       // 重新加载卡片数据（获取更新后的状态）
       const restoredCard = await db.cards.get(cardSnapshot.id)
       if (restoredCard) {
@@ -159,7 +159,7 @@ export function ReviewPage() {
         if (note) {
           const noteModel = await db.noteModels.get(note.noteModelId)
           const template = await db.cardTemplates.get(restoredCard.cardTemplateId)
-          
+
           if (noteModel && template) {
             // 更新卡片列表
             const updatedCards = [...cards]
@@ -173,14 +173,14 @@ export function ReviewPage() {
           }
         }
       }
-      
+
       // 恢复状态
       setCurrentIndex(previousIndex)
-      setCompleted(prev => Math.max(0, prev - 1))
+      setCompleted((prev) => Math.max(0, prev - 1))
       setShowAnswer(false)
-      
+
       // 从撤销栈移除
-      setUndoStack(prev => prev.slice(0, -1))
+      setUndoStack((prev) => prev.slice(0, -1))
     } catch (error) {
       console.error('Failed to undo:', error)
     }
@@ -231,9 +231,7 @@ export function ReviewPage() {
                 <CheckCircle className="h-6 w-6 text-green-500" />
               </EmptyMedia>
               <EmptyTitle>恭喜！</EmptyTitle>
-              <EmptyDescription>
-                今日复习已完成，或暂无待复习的卡片
-              </EmptyDescription>
+              <EmptyDescription>今日复习已完成，或暂无待复习的卡片</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
               <div className="flex gap-4">
@@ -274,22 +272,19 @@ export function ReviewPage() {
             <div className="flex items-center gap-2">
               <span>进度</span>
               {canUndo && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 px-2 text-xs"
-                  onClick={handleUndo}
-                >
+                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={handleUndo}>
                   <Undo2 className="h-3 w-3 mr-1" />
                   撤销
                 </Button>
               )}
             </div>
-            <span>{completed} / {total}</span>
+            <span>
+              {completed} / {total}
+            </span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-primary transition-all" 
+            <div
+              className="h-full bg-primary transition-all"
               style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }}
             />
           </div>
@@ -315,40 +310,25 @@ export function ReviewPage() {
             </Button>
           ) : (
             <div className="grid grid-cols-4 gap-2">
-              <Button 
-                variant="destructive" 
-                size="lg"
-                onClick={() => handleAnswer(1)}
-              >
+              <Button variant="destructive" size="lg" onClick={() => handleAnswer(1)}>
                 <div className="flex flex-col items-center">
                   <span>重来</span>
                   <span className="text-xs opacity-80">{intervals.again}</span>
                 </div>
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => handleAnswer(2)}
-              >
+              <Button variant="outline" size="lg" onClick={() => handleAnswer(2)}>
                 <div className="flex flex-col items-center">
                   <span>困难</span>
                   <span className="text-xs opacity-80">{intervals.hard}</span>
                 </div>
               </Button>
-              <Button 
-                variant="secondary" 
-                size="lg"
-                onClick={() => handleAnswer(3)}
-              >
+              <Button variant="secondary" size="lg" onClick={() => handleAnswer(3)}>
                 <div className="flex flex-col items-center">
                   <span>良好</span>
                   <span className="text-xs opacity-80">{intervals.good}</span>
                 </div>
               </Button>
-              <Button 
-                size="lg"
-                onClick={() => handleAnswer(4)}
-              >
+              <Button size="lg" onClick={() => handleAnswer(4)}>
                 <div className="flex flex-col items-center">
                   <span>简单</span>
                   <span className="text-xs opacity-80">{intervals.easy}</span>

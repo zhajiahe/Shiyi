@@ -10,19 +10,17 @@ export const noteModelRepository = {
    * 获取所有笔记类型
    */
   async getAll(): Promise<NoteModel[]> {
-    const models = await db.noteModels
-      .filter(m => !m.deletedAt)
-      .toArray()
-    
+    const models = await db.noteModels.filter((m) => !m.deletedAt).toArray()
+
     // 加载模板
     for (const model of models) {
       model.templates = await db.cardTemplates
         .where('noteModelId')
         .equals(model.id)
-        .filter(t => !t.deletedAt)
+        .filter((t) => !t.deletedAt)
         .sortBy('ord')
     }
-    
+
     return models
   },
 
@@ -32,13 +30,13 @@ export const noteModelRepository = {
   async getById(id: string): Promise<NoteModel | undefined> {
     const model = await db.noteModels.get(id)
     if (!model) return undefined
-    
+
     model.templates = await db.cardTemplates
       .where('noteModelId')
       .equals(id)
-      .filter(t => !t.deletedAt)
+      .filter((t) => !t.deletedAt)
       .sortBy('ord')
-    
+
     return model
   },
 
@@ -55,18 +53,17 @@ export const noteModelRepository = {
    */
   async getBuiltins(): Promise<NoteModel[]> {
     const models = await db.noteModels
-      .filter(m => m.id.startsWith('builtin-') && !m.deletedAt)
+      .filter((m) => m.id.startsWith('builtin-') && !m.deletedAt)
       .toArray()
-    
+
     for (const model of models) {
       model.templates = await db.cardTemplates
         .where('noteModelId')
         .equals(model.id)
-        .filter(t => !t.deletedAt)
+        .filter((t) => !t.deletedAt)
         .sortBy('ord')
     }
-    
+
     return models
   },
 }
-

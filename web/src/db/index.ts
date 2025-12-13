@@ -1,18 +1,11 @@
 /**
  * Dexie.js 离线数据库
- * 
+ *
  * 本地优先架构的核心存储层
  */
 
 import Dexie, { type Table } from 'dexie'
-import type {
-  NoteModel,
-  CardTemplate,
-  Deck,
-  Note,
-  Card,
-  ReviewLog,
-} from '@/types'
+import type { NoteModel, CardTemplate, Deck, Note, Card, ReviewLog } from '@/types'
 
 export class AnkiDatabase extends Dexie {
   noteModels!: Table<NoteModel>
@@ -24,14 +17,15 @@ export class AnkiDatabase extends Dexie {
 
   constructor() {
     super('AnkiWeb')
-    
+
     this.version(1).stores({
       // 主键 + 索引
       noteModels: 'id, userId, name, updatedAt, deletedAt',
       cardTemplates: 'id, noteModelId, ord, updatedAt, deletedAt',
       decks: 'id, userId, parentId, noteModelId, name, updatedAt, deletedAt',
       notes: 'id, userId, deckId, noteModelId, guid, updatedAt, deletedAt, dirty',
-      cards: 'id, userId, noteId, deckId, cardTemplateId, state, queue, due, updatedAt, deletedAt, dirty',
+      cards:
+        'id, userId, noteId, deckId, cardTemplateId, state, queue, due, updatedAt, deletedAt, dirty',
       reviewLogs: 'id, userId, cardId, reviewTime',
     })
   }
@@ -70,6 +64,3 @@ export async function getStorageEstimate(): Promise<{
   }
   return null
 }
-
-
-

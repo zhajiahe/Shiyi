@@ -1,17 +1,17 @@
 /**
  * SM-2 调度算法实现
- * 
+ *
  * SuperMemo 2 算法 - 经典的间隔重复算法
  */
 
 import type { Card, Rating } from '@/types'
 
 export interface SM2Result {
-  interval: number       // 新间隔（天）
-  easeFactor: number     // 新难度系数（x1000）
-  due: number           // 下次复习时间戳
-  state: Card['state']  // 新状态
-  queue: Card['queue']  // 新队列
+  interval: number // 新间隔（天）
+  easeFactor: number // 新难度系数（x1000）
+  due: number // 下次复习时间戳
+  state: Card['state'] // 新状态
+  queue: Card['queue'] // 新队列
 }
 
 const MIN_EASE_FACTOR = 1300
@@ -19,7 +19,7 @@ const INITIAL_EASE_FACTOR = 2500
 
 /**
  * SM-2 调度计算
- * 
+ *
  * @param card 当前卡片
  * @param rating 用户评分 (1=Again, 2=Hard, 3=Good, 4=Easy)
  * @returns 调度结果
@@ -149,4 +149,3 @@ function formatInterval(days: number): string {
   if (days < 365) return `${Math.round(days / 30)}月`
   return `${Math.round(days / 365)}年`
 }
-

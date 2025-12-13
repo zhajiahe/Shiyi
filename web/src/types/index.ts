@@ -171,6 +171,3 @@ export interface TemplateSet {
   createdAt?: number
   updatedAt?: number
 }
-
-
-

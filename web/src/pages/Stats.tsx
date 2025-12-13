@@ -1,7 +1,13 @@
 import { useState, useEffect, useMemo } from 'react'
-import { 
-  BarChart3, Calendar, TrendingUp, 
-  Loader2, Target, Award, Clock, Brain, Layers
+import {
+  Calendar,
+  TrendingUp,
+  Loader2,
+  Target,
+  Award,
+  Clock,
+  Brain,
+  Layers,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -54,7 +60,7 @@ export function StatsPage() {
       setLoading(true)
       const [logs, allCards] = await Promise.all([
         db.reviewLogs.toArray(),
-        db.cards.filter(c => !c.deletedAt).toArray(),
+        db.cards.filter((c) => !c.deletedAt).toArray(),
       ])
       setReviewLogs(logs)
       setCards(allCards)
@@ -68,13 +74,15 @@ export function StatsPage() {
     const now = Date.now()
     return {
       total: cards.length,
-      new: cards.filter(c => c.state === 'new').length,
-      learning: cards.filter(c => c.state === 'learning' || c.state === 'relearning').length,
-      review: cards.filter(c => c.state === 'review').length,
-      due: cards.filter(c => 
-        (c.state === 'learning' || c.state === 'relearning' || c.state === 'review') && c.due <= now
+      new: cards.filter((c) => c.state === 'new').length,
+      learning: cards.filter((c) => c.state === 'learning' || c.state === 'relearning').length,
+      review: cards.filter((c) => c.state === 'review').length,
+      due: cards.filter(
+        (c) =>
+          (c.state === 'learning' || c.state === 'relearning' || c.state === 'review') &&
+          c.due <= now,
       ).length,
-      mature: cards.filter(c => c.state === 'review' && c.interval >= 21).length,
+      mature: cards.filter((c) => c.state === 'review' && c.interval >= 21).length,
     }
   }, [cards])
 
@@ -86,13 +94,13 @@ export function StatsPage() {
     const weekStart = todayStart - 6 * 24 * 60 * 60 * 1000
     const monthStart = todayStart - 29 * 24 * 60 * 60 * 1000
 
-    const todayLogs = reviewLogs.filter(l => l.reviewTime >= todayStart)
-    const weekLogs = reviewLogs.filter(l => l.reviewTime >= weekStart)
-    const monthLogs = reviewLogs.filter(l => l.reviewTime >= monthStart)
+    const todayLogs = reviewLogs.filter((l) => l.reviewTime >= todayStart)
+    const weekLogs = reviewLogs.filter((l) => l.reviewTime >= weekStart)
+    const monthLogs = reviewLogs.filter((l) => l.reviewTime >= monthStart)
 
-    const todayCorrect = todayLogs.filter(l => l.rating >= 3).length
-    const weekCorrect = weekLogs.filter(l => l.rating >= 3).length
-    const monthCorrect = monthLogs.filter(l => l.rating >= 3).length
+    const todayCorrect = todayLogs.filter((l) => l.rating >= 3).length
+    const weekCorrect = weekLogs.filter((l) => l.rating >= 3).length
+    const monthCorrect = monthLogs.filter((l) => l.rating >= 3).length
 
     return {
       today: {
@@ -116,19 +124,19 @@ export function StatsPage() {
   const heatmapData = useMemo(() => {
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 365
     const dates = getPastDays(days)
-    
+
     // 统计每天的复习次数
     const countByDate = new Map<string, number>()
-    reviewLogs.forEach(log => {
+    reviewLogs.forEach((log) => {
       const date = new Date(log.reviewTime)
       const dateStr = formatDate(date)
       countByDate.set(dateStr, (countByDate.get(dateStr) || 0) + 1)
     })
-    
+
     // 找到最大值用于归一化
     const maxCount = Math.max(1, ...countByDate.values())
-    
-    return dates.map(date => {
+
+    return dates.map((date) => {
       const dateStr = formatDate(date)
       const count = countByDate.get(dateStr) || 0
       const intensity = count === 0 ? 0 : Math.min(4, Math.ceil((count / maxCount) * 4))
@@ -140,15 +148,15 @@ export function StatsPage() {
   const dailyTrend = useMemo(() => {
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90
     const dates = getPastDays(days)
-    
-    return dates.map(date => {
+
+    return dates.map((date) => {
       const dateStr = formatDate(date)
       const dayStart = date.getTime()
       const dayEnd = dayStart + 24 * 60 * 60 * 1000
-      
-      const dayLogs = reviewLogs.filter(l => l.reviewTime >= dayStart && l.reviewTime < dayEnd)
-      const correct = dayLogs.filter(l => l.rating >= 3).length
-      
+
+      const dayLogs = reviewLogs.filter((l) => l.reviewTime >= dayStart && l.reviewTime < dayEnd)
+      const correct = dayLogs.filter((l) => l.rating >= 3).length
+
       return {
         date: dateStr,
         label: `${date.getMonth() + 1}/${date.getDate()}`,
@@ -162,8 +170,8 @@ export function StatsPage() {
   const retentionCurve = useMemo(() => {
     // 按间隔天数分组
     const intervalGroups = new Map<number, { total: number; correct: number }>()
-    
-    reviewLogs.forEach(log => {
+
+    reviewLogs.forEach((log) => {
       if (log.prevInterval !== undefined && log.prevInterval > 0) {
         const intervalDays = Math.round(log.prevInterval)
         const group = intervalGroups.get(intervalDays) || { total: 0, correct: 0 }
@@ -172,7 +180,7 @@ export function StatsPage() {
         intervalGroups.set(intervalDays, group)
       }
     })
-    
+
     // 转换为数组并排序
     return Array.from(intervalGroups.entries())
       .map(([interval, data]) => ({
@@ -194,316 +202,301 @@ export function StatsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <BarChart3 className="h-6 w-6" />
-          学习统计
-        </h1>
-        <p className="text-muted-foreground">追踪您的学习进度和记忆表现</p>
+      {/* 概览卡片 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">今日复习</p>
+                <p className="text-2xl font-bold">{overallStats.today.reviews}</p>
+              </div>
+              <Target className="h-8 w-8 text-primary opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">今日正确率</p>
+                <p className="text-2xl font-bold">{overallStats.today.retention}%</p>
+              </div>
+              <Award className="h-8 w-8 text-yellow-500 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">本周复习</p>
+                <p className="text-2xl font-bold">{overallStats.week.reviews}</p>
+              </div>
+              <Clock className="h-8 w-8 text-blue-500 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">连续学习</p>
+                <p className="text-2xl font-bold">{overallStats.streak} 天</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-green-500 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* 概览卡片 */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">今日复习</p>
-                  <p className="text-2xl font-bold">{overallStats.today.reviews}</p>
-                </div>
-                <Target className="h-8 w-8 text-primary opacity-80" />
+      {/* 卡片状态分布 */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Layers className="h-5 w-5" />
+            卡片概览
+          </CardTitle>
+          <CardDescription>学习进度总览</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-2xl font-bold">{cardStats.total}</p>
+              <p className="text-xs text-muted-foreground">总卡片</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-blue-500/10">
+              <p className="text-2xl font-bold text-blue-600">{cardStats.new}</p>
+              <p className="text-xs text-muted-foreground">新卡片</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-orange-500/10">
+              <p className="text-2xl font-bold text-orange-600">{cardStats.learning}</p>
+              <p className="text-xs text-muted-foreground">学习中</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-green-500/10">
+              <p className="text-2xl font-bold text-green-600">{cardStats.review}</p>
+              <p className="text-xs text-muted-foreground">复习中</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-red-500/10">
+              <p className="text-2xl font-bold text-red-600">{cardStats.due}</p>
+              <p className="text-xs text-muted-foreground">待复习</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-purple-500/10">
+              <p className="text-2xl font-bold text-purple-600">{cardStats.mature}</p>
+              <p className="text-xs text-muted-foreground">成熟卡片</p>
+            </div>
+          </div>
+          {/* 进度条 */}
+          {cardStats.total > 0 && (
+            <div className="mt-4">
+              <div className="h-3 rounded-full overflow-hidden flex bg-muted">
+                <div
+                  className="bg-blue-500 transition-all"
+                  style={{ width: `${(cardStats.new / cardStats.total) * 100}%` }}
+                  title={`新卡片: ${cardStats.new}`}
+                />
+                <div
+                  className="bg-orange-500 transition-all"
+                  style={{ width: `${(cardStats.learning / cardStats.total) * 100}%` }}
+                  title={`学习中: ${cardStats.learning}`}
+                />
+                <div
+                  className="bg-green-500 transition-all"
+                  style={{ width: `${(cardStats.review / cardStats.total) * 100}%` }}
+                  title={`复习中: ${cardStats.review}`}
+                />
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">今日正确率</p>
-                  <p className="text-2xl font-bold">{overallStats.today.retention}%</p>
-                </div>
-                <Award className="h-8 w-8 text-yellow-500 opacity-80" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">本周复习</p>
-                  <p className="text-2xl font-bold">{overallStats.week.reviews}</p>
-                </div>
-                <Clock className="h-8 w-8 text-blue-500 opacity-80" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">连续学习</p>
-                  <p className="text-2xl font-bold">{overallStats.streak} 天</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-500 opacity-80" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* 卡片状态分布 */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5" />
-              卡片概览
-            </CardTitle>
-            <CardDescription>
-              学习进度总览
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-              <div className="text-center p-3 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold">{cardStats.total}</p>
-                <p className="text-xs text-muted-foreground">总卡片</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-blue-500/10">
-                <p className="text-2xl font-bold text-blue-600">{cardStats.new}</p>
-                <p className="text-xs text-muted-foreground">新卡片</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-orange-500/10">
-                <p className="text-2xl font-bold text-orange-600">{cardStats.learning}</p>
-                <p className="text-xs text-muted-foreground">学习中</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-green-500/10">
-                <p className="text-2xl font-bold text-green-600">{cardStats.review}</p>
-                <p className="text-xs text-muted-foreground">复习中</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-red-500/10">
-                <p className="text-2xl font-bold text-red-600">{cardStats.due}</p>
-                <p className="text-xs text-muted-foreground">待复习</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-purple-500/10">
-                <p className="text-2xl font-bold text-purple-600">{cardStats.mature}</p>
-                <p className="text-xs text-muted-foreground">成熟卡片</p>
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>新 {Math.round((cardStats.new / cardStats.total) * 100)}%</span>
+                <span>学习 {Math.round((cardStats.learning / cardStats.total) * 100)}%</span>
+                <span>复习 {Math.round((cardStats.review / cardStats.total) * 100)}%</span>
               </div>
             </div>
-            {/* 进度条 */}
-            {cardStats.total > 0 && (
-              <div className="mt-4">
-                <div className="h-3 rounded-full overflow-hidden flex bg-muted">
-                  <div 
-                    className="bg-blue-500 transition-all"
-                    style={{ width: `${(cardStats.new / cardStats.total) * 100}%` }}
-                    title={`新卡片: ${cardStats.new}`}
-                  />
-                  <div 
-                    className="bg-orange-500 transition-all"
-                    style={{ width: `${(cardStats.learning / cardStats.total) * 100}%` }}
-                    title={`学习中: ${cardStats.learning}`}
-                  />
-                  <div 
-                    className="bg-green-500 transition-all"
-                    style={{ width: `${(cardStats.review / cardStats.total) * 100}%` }}
-                    title={`复习中: ${cardStats.review}`}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>新 {Math.round((cardStats.new / cardStats.total) * 100)}%</span>
-                  <span>学习 {Math.round((cardStats.learning / cardStats.total) * 100)}%</span>
-                  <span>复习 {Math.round((cardStats.review / cardStats.total) * 100)}%</span>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          )}
+        </CardContent>
+      </Card>
 
-        {/* 时间范围选择 */}
-        <div className="flex gap-2 mb-6">
-          {[
-            { value: 'week' as const, label: '最近7天' },
-            { value: 'month' as const, label: '最近30天' },
-            { value: 'year' as const, label: '最近一年' },
-          ].map(opt => (
-            <Button
-              key={opt.value}
-              variant={timeRange === opt.value ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTimeRange(opt.value)}
-            >
-              {opt.label}
-            </Button>
-          ))}
-        </div>
+      {/* 时间范围选择 */}
+      <div className="flex gap-2 mb-6">
+        {[
+          { value: 'week' as const, label: '最近7天' },
+          { value: 'month' as const, label: '最近30天' },
+          { value: 'year' as const, label: '最近一年' },
+        ].map((opt) => (
+          <Button
+            key={opt.value}
+            variant={timeRange === opt.value ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTimeRange(opt.value)}
+          >
+            {opt.label}
+          </Button>
+        ))}
+      </div>
 
-        {/* 学习热力图 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              学习热力图
-            </CardTitle>
-            <CardDescription>
-              每日学习活动可视化
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {timeRange === 'year' ? (
-              // 年度热力图 - 类似 GitHub 贡献图
-              <div className="overflow-x-auto">
-                <div className="flex gap-1 min-w-max">
-                  {Array.from({ length: 53 }).map((_, weekIndex) => (
-                    <div key={weekIndex} className="flex flex-col gap-1">
-                      {Array.from({ length: 7 }).map((_, dayIndex) => {
-                        const dataIndex = weekIndex * 7 + dayIndex
-                        const data = heatmapData[dataIndex]
-                        if (!data) return <div key={dayIndex} className="w-3 h-3" />
-                        return (
-                          <div
-                            key={dayIndex}
-                            className={`w-3 h-3 rounded-sm ${HEAT_COLORS[data.intensity]} cursor-pointer`}
-                            title={`${data.dateStr}: ${data.count} 次复习`}
-                          />
-                        )
-                      })}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
-                  <span>少</span>
-                  {HEAT_COLORS.map((color, i) => (
-                    <div key={i} className={`w-3 h-3 rounded-sm ${color}`} />
-                  ))}
-                  <span>多</span>
-                </div>
-              </div>
-            ) : (
-              // 月度/周度热力图 - 网格形式
-              <div className="space-y-1">
-                {['日', '一', '二', '三', '四', '五', '六'].map((day, dayIndex) => (
-                  <div key={dayIndex} className="flex items-center gap-1">
-                    <span className="w-6 text-xs text-muted-foreground">{day}</span>
-                    <div className="flex gap-1">
-                      {heatmapData
-                        .filter(d => d.weekDay === dayIndex)
-                        .map(d => (
-                          <div
-                            key={d.dateStr}
-                            className={`w-6 h-6 rounded ${HEAT_COLORS[d.intensity]} flex items-center justify-center text-xs cursor-pointer`}
-                            title={`${d.dateStr}: ${d.count} 次复习`}
-                          >
-                            {d.count > 0 && d.count}
-                          </div>
-                        ))
-                      }
-                    </div>
+      {/* 学习热力图 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            学习热力图
+          </CardTitle>
+          <CardDescription>每日学习活动可视化</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {timeRange === 'year' ? (
+            // 年度热力图 - 类似 GitHub 贡献图
+            <div className="overflow-x-auto">
+              <div className="flex gap-1 min-w-max">
+                {Array.from({ length: 53 }).map((_, weekIndex) => (
+                  <div key={weekIndex} className="flex flex-col gap-1">
+                    {Array.from({ length: 7 }).map((_, dayIndex) => {
+                      const dataIndex = weekIndex * 7 + dayIndex
+                      const data = heatmapData[dataIndex]
+                      if (!data) return <div key={dayIndex} className="w-3 h-3" />
+                      return (
+                        <div
+                          key={dayIndex}
+                          className={`w-3 h-3 rounded-sm ${HEAT_COLORS[data.intensity]} cursor-pointer`}
+                          title={`${data.dateStr}: ${data.count} 次复习`}
+                        />
+                      )
+                    })}
                   </div>
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
+                <span>少</span>
+                {HEAT_COLORS.map((color, i) => (
+                  <div key={i} className={`w-3 h-3 rounded-sm ${color}`} />
+                ))}
+                <span>多</span>
+              </div>
+            </div>
+          ) : (
+            // 月度/周度热力图 - 网格形式
+            <div className="space-y-1">
+              {['日', '一', '二', '三', '四', '五', '六'].map((day, dayIndex) => (
+                <div key={dayIndex} className="flex items-center gap-1">
+                  <span className="w-6 text-xs text-muted-foreground">{day}</span>
+                  <div className="flex gap-1">
+                    {heatmapData
+                      .filter((d) => d.weekDay === dayIndex)
+                      .map((d) => (
+                        <div
+                          key={d.dateStr}
+                          className={`w-6 h-6 rounded ${HEAT_COLORS[d.intensity]} flex items-center justify-center text-xs cursor-pointer`}
+                          title={`${d.dateStr}: ${d.count} 次复习`}
+                        >
+                          {d.count > 0 && d.count}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-        {/* 每日复习趋势 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              复习趋势
-            </CardTitle>
-            <CardDescription>
-              每日复习数量和正确率
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      {/* 每日复习趋势 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            复习趋势
+          </CardTitle>
+          <CardDescription>每日复习数量和正确率</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-48 flex items-end gap-1">
+            {dailyTrend.map((day, index) => {
+              const maxReviews = Math.max(1, ...dailyTrend.map((d) => d.reviews))
+              const height = day.reviews > 0 ? Math.max(8, (day.reviews / maxReviews) * 100) : 0
+
+              return (
+                <div key={day.date} className="flex-1 flex flex-col items-center">
+                  <div
+                    className="w-full bg-primary/80 rounded-t cursor-pointer hover:bg-primary transition-colors"
+                    style={{ height: `${height}%` }}
+                    title={`${day.date}\n复习: ${day.reviews}\n正确率: ${day.retention}%`}
+                  />
+                  {index % (timeRange === 'week' ? 1 : timeRange === 'month' ? 5 : 10) === 0 && (
+                    <span className="text-xs text-muted-foreground mt-1 truncate w-full text-center">
+                      {day.label}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 记忆保持率曲线 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            记忆保持率曲线
+          </CardTitle>
+          <CardDescription>不同复习间隔下的记忆保持率</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {retentionCurve.length > 0 ? (
             <div className="h-48 flex items-end gap-1">
-              {dailyTrend.map((day, index) => {
-                const maxReviews = Math.max(1, ...dailyTrend.map(d => d.reviews))
-                const height = day.reviews > 0 ? Math.max(8, (day.reviews / maxReviews) * 100) : 0
-                
-                return (
-                  <div key={day.date} className="flex-1 flex flex-col items-center">
-                    <div 
-                      className="w-full bg-primary/80 rounded-t cursor-pointer hover:bg-primary transition-colors"
-                      style={{ height: `${height}%` }}
-                      title={`${day.date}\n复习: ${day.reviews}\n正确率: ${day.retention}%`}
-                    />
-                    {index % (timeRange === 'week' ? 1 : timeRange === 'month' ? 5 : 10) === 0 && (
-                      <span className="text-xs text-muted-foreground mt-1 truncate w-full text-center">
-                        {day.label}
-                      </span>
-                    )}
-                  </div>
-                )
-              })}
+              {retentionCurve.map((point) => (
+                <div key={point.interval} className="flex-1 flex flex-col items-center">
+                  <div
+                    className={`w-full rounded-t cursor-pointer transition-colors ${
+                      point.retention >= 90
+                        ? 'bg-green-500'
+                        : point.retention >= 80
+                          ? 'bg-green-400'
+                          : point.retention >= 70
+                            ? 'bg-yellow-400'
+                            : point.retention >= 60
+                              ? 'bg-orange-400'
+                              : 'bg-red-400'
+                    }`}
+                    style={{ height: `${point.retention}%` }}
+                    title={`间隔 ${point.interval} 天\n保持率: ${point.retention}%\n样本数: ${point.count}`}
+                  />
+                  {point.interval <= 30 && point.interval % (point.interval <= 7 ? 1 : 5) === 0 && (
+                    <span className="text-xs text-muted-foreground mt-1">{point.interval}d</span>
+                  )}
+                </div>
+              ))}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* 记忆保持率曲线 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              记忆保持率曲线
-            </CardTitle>
-            <CardDescription>
-              不同复习间隔下的记忆保持率
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {retentionCurve.length > 0 ? (
-              <div className="h-48 flex items-end gap-1">
-                {retentionCurve.map((point) => (
-                  <div key={point.interval} className="flex-1 flex flex-col items-center">
-                    <div 
-                      className={`w-full rounded-t cursor-pointer transition-colors ${
-                        point.retention >= 90 ? 'bg-green-500' :
-                        point.retention >= 80 ? 'bg-green-400' :
-                        point.retention >= 70 ? 'bg-yellow-400' :
-                        point.retention >= 60 ? 'bg-orange-400' : 'bg-red-400'
-                      }`}
-                      style={{ height: `${point.retention}%` }}
-                      title={`间隔 ${point.interval} 天\n保持率: ${point.retention}%\n样本数: ${point.count}`}
-                    />
-                    {point.interval <= 30 && point.interval % (point.interval <= 7 ? 1 : 5) === 0 && (
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {point.interval}d
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="h-48 flex items-center justify-center text-muted-foreground">
-                暂无足够的数据生成记忆曲线
-              </div>
-            )}
-            <div className="flex items-center gap-4 mt-4 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-green-500" />
-                <span>≥90%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-green-400" />
-                <span>80-89%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-yellow-400" />
-                <span>70-79%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-orange-400" />
-                <span>60-69%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-red-400" />
-                <span>&lt;60%</span>
-              </div>
+          ) : (
+            <div className="h-48 flex items-center justify-center text-muted-foreground">
+              暂无足够的数据生成记忆曲线
             </div>
-          </CardContent>
-        </Card>
+          )}
+          <div className="flex items-center gap-4 mt-4 text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-green-500" />
+              <span>≥90%</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-green-400" />
+              <span>80-89%</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-yellow-400" />
+              <span>70-79%</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-orange-400" />
+              <span>60-69%</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-red-400" />
+              <span>&lt;60%</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
@@ -511,22 +504,22 @@ export function StatsPage() {
 // 计算连续学习天数
 function calculateStreak(logs: ReviewLog[]): number {
   if (logs.length === 0) return 0
-  
+
   const dateSet = new Set<string>()
-  logs.forEach(log => {
+  logs.forEach((log) => {
     const date = new Date(log.reviewTime)
     dateSet.add(formatDate(date))
   })
-  
+
   let streak = 0
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  
+
   for (let i = 0; i < 365; i++) {
     const checkDate = new Date(today)
     checkDate.setDate(checkDate.getDate() - i)
     const dateStr = formatDate(checkDate)
-    
+
     if (dateSet.has(dateStr)) {
       streak++
     } else if (i > 0) {
@@ -534,7 +527,6 @@ function calculateStreak(logs: ReviewLog[]): number {
       break
     }
   }
-  
+
   return streak
 }
-

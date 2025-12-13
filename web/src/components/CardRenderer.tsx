@@ -10,25 +10,52 @@ interface CardRendererProps {
 
 // daisyUI 主题列表
 export const DAISY_THEMES = [
-  'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate',
-  'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden',
-  'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black',
-  'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade',
-  'night', 'coffee', 'winter', 'dim', 'nord', 'sunset'
+  'light',
+  'dark',
+  'cupcake',
+  'bumblebee',
+  'emerald',
+  'corporate',
+  'synthwave',
+  'retro',
+  'cyberpunk',
+  'valentine',
+  'halloween',
+  'garden',
+  'forest',
+  'aqua',
+  'lofi',
+  'pastel',
+  'fantasy',
+  'wireframe',
+  'black',
+  'luxury',
+  'dracula',
+  'cmyk',
+  'autumn',
+  'business',
+  'acid',
+  'lemonade',
+  'night',
+  'coffee',
+  'winter',
+  'dim',
+  'nord',
+  'sunset',
 ] as const
 
-export type DaisyTheme = typeof DAISY_THEMES[number]
+export type DaisyTheme = (typeof DAISY_THEMES)[number]
 
 /**
  * 使用 iframe 隔离样式的卡片渲染组件
  * 内置 daisyUI 主题支持
  */
-export function CardRenderer({ 
-  html, 
-  css = '', 
+export function CardRenderer({
+  html,
+  css = '',
   theme = 'cupcake',
-  className = '', 
-  minHeight = 200 
+  className = '',
+  minHeight = 200,
 }: CardRendererProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [height, setHeight] = useState(minHeight)

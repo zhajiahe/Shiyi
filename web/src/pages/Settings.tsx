@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
-import { 
-  Settings as SettingsIcon, Save, Loader2,
-  Download, Upload, Trash2, HardDrive, AlertTriangle
+import {
+  Save,
+  Loader2,
+  Download,
+  Upload,
+  Trash2,
+  HardDrive,
+  AlertTriangle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -47,7 +52,7 @@ export function SettingsPage() {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  
+
   // 存储相关状态
   const [storageInfo, setStorageInfo] = useState<{
     usage: number
@@ -63,7 +68,7 @@ export function SettingsPage() {
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
   const [clearing, setClearing] = useState(false)
-  
+
   // 导入确认对话框状态
   const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [pendingImportData, setPendingImportData] = useState<{
@@ -83,25 +88,25 @@ export function SettingsPage() {
         // 忽略解析错误
       }
     }
-    
+
     // 加载存储信息
     loadStorageInfo()
     loadDataStats()
   }, [])
-  
+
   const loadStorageInfo = async () => {
     const info = await getStorageEstimate()
     setStorageInfo(info)
   }
-  
+
   const loadDataStats = async () => {
-    const decks = await db.decks.filter(d => !d.deletedAt).count()
-    const notes = await db.notes.filter(n => !n.deletedAt).count()
-    const cards = await db.cards.filter(c => !c.deletedAt).count()
+    const decks = await db.decks.filter((d) => !d.deletedAt).count()
+    const notes = await db.notes.filter((n) => !n.deletedAt).count()
+    const cards = await db.cards.filter((c) => !c.deletedAt).count()
     const reviewLogs = await db.reviewLogs.count()
     setDataStats({ decks, notes, cards, reviewLogs })
   }
-  
+
   // 格式化存储大小
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 B'
@@ -110,12 +115,12 @@ export function SettingsPage() {
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
-  
+
   // 导出全部数据
   const handleExportAll = async () => {
     try {
       setExporting(true)
-      
+
       const exportData = {
         version: 1,
         exportDate: new Date().toISOString(),
@@ -127,9 +132,9 @@ export function SettingsPage() {
           notes: await db.notes.toArray(),
           cards: await db.cards.toArray(),
           reviewLogs: await db.reviewLogs.toArray(),
-        }
+        },
       }
-      
+
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -139,7 +144,7 @@ export function SettingsPage() {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      
+
       toast.success('导出成功', {
         description: '备份文件已下载到本地',
       })
@@ -152,7 +157,7 @@ export function SettingsPage() {
       setExporting(false)
     }
   }
-  
+
   // 导入数据 - 第一步：选择文件
   const handleImportAll = async () => {
     const input = document.createElement('input')
@@ -161,16 +166,16 @@ export function SettingsPage() {
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (!file) return
-      
+
       try {
         setImporting(true)
         const text = await file.text()
         const importData = JSON.parse(text)
-        
+
         if (!importData.version || !importData.data) {
           throw new Error('无效的备份文件格式')
         }
-        
+
         // 设置待导入数据并打开确认对话框
         setPendingImportData({
           data: importData,
@@ -189,11 +194,11 @@ export function SettingsPage() {
     }
     input.click()
   }
-  
+
   // 导入数据 - 第二步：确认导入
   const confirmImport = async () => {
     if (!pendingImportData) return
-    
+
     try {
       const importData = pendingImportData.data as {
         settings?: UserSettings
@@ -206,7 +211,7 @@ export function SettingsPage() {
           reviewLogs?: unknown[]
         }
       }
-      
+
       // 清空现有数据
       await db.noteModels.clear()
       await db.cardTemplates.clear()
@@ -214,7 +219,7 @@ export function SettingsPage() {
       await db.notes.clear()
       await db.cards.clear()
       await db.reviewLogs.clear()
-      
+
       // 导入新数据
       if (importData.data.noteModels?.length) {
         await db.noteModels.bulkAdd(importData.data.noteModels as never[])
@@ -234,13 +239,13 @@ export function SettingsPage() {
       if (importData.data.reviewLogs?.length) {
         await db.reviewLogs.bulkAdd(importData.data.reviewLogs as never[])
       }
-      
+
       // 导入设置
       if (importData.settings) {
         setSettings(importData.settings)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(importData.settings))
       }
-      
+
       toast.success('导入成功', {
         description: `已恢复 ${pendingImportData.deckCount} 个牌组、${pendingImportData.noteCount} 条笔记`,
       })
@@ -257,7 +262,7 @@ export function SettingsPage() {
       setImportDialogOpen(false)
     }
   }
-  
+
   // 清空所有数据
   const handleClearAll = async () => {
     try {
@@ -268,7 +273,7 @@ export function SettingsPage() {
       await db.notes.clear()
       await db.cards.clear()
       await db.reviewLogs.clear()
-      
+
       toast.success('数据已清空', {
         description: '所有学习数据已被删除',
       })
@@ -288,7 +293,7 @@ export function SettingsPage() {
     setSaving(true)
     // 保存到 localStorage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-    
+
     setTimeout(() => {
       setSaving(false)
       setSaved(true)
@@ -305,424 +310,393 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <SettingsIcon className="h-6 w-6" />
-          设置
-        </h1>
-        <p className="text-muted-foreground">自定义您的学习体验</p>
-      </div>
-
       {/* 调度算法 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>调度算法</CardTitle>
-            <CardDescription>
-              选择卡片复习间隔的计算方式
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>调度算法</CardTitle>
+          <CardDescription>选择卡片复习间隔的计算方式</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3">
+            {[
+              { value: 'sm2', label: 'SM-2', desc: '经典算法' },
+              { value: 'fsrs_v4', label: 'FSRS v4', desc: '现代算法' },
+              { value: 'fsrs_v5', label: 'FSRS v5', desc: '最新版本' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() =>
+                  setSettings((s) => ({ ...s, scheduler: opt.value as UserSettings['scheduler'] }))
+                }
+                className={`flex-1 p-4 rounded-lg border-2 transition-all text-left ${
+                  settings.scheduler === opt.value
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50'
+                }`}
+              >
+                <div className="font-medium">{opt.label}</div>
+                <div className="text-sm text-muted-foreground">{opt.desc}</div>
+              </button>
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            <strong>SM-2</strong>: SuperMemo 经典算法，简单可靠。
+            <br />
+            <strong>FSRS</strong>: 基于机器学习的现代算法，更精准预测遗忘曲线。
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* 每日限制 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>每日学习限制</CardTitle>
+          <CardDescription>控制每天学习的卡片数量</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">每日新卡片数量</label>
+            <div className="flex items-center gap-4">
+              <Input
+                type="number"
+                min={0}
+                max={999}
+                value={settings.newCardsPerDay}
+                onChange={(e) =>
+                  setSettings((s) => ({ ...s, newCardsPerDay: parseInt(e.target.value) || 0 }))
+                }
+                className="w-24"
+              />
+              <span className="text-sm text-muted-foreground">张/天</span>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              建议：初学者 10-20 张，进阶用户 30-50 张
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">每日最大复习数量</label>
+            <div className="flex items-center gap-4">
+              <Input
+                type="number"
+                min={0}
+                max={9999}
+                value={settings.maxReviewsPerDay}
+                onChange={(e) =>
+                  setSettings((s) => ({ ...s, maxReviewsPerDay: parseInt(e.target.value) || 0 }))
+                }
+                className="w-24"
+              />
+              <span className="text-sm text-muted-foreground">张/天</span>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">建议：100-300 张，根据可用时间调整</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 学习步骤 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>学习步骤</CardTitle>
+          <CardDescription>新卡片进入复习队列前的学习间隔（分钟）</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">学习步骤</label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={settings.learningSteps.join(', ')}
+                onChange={(e) => {
+                  const steps = e.target.value
+                    .split(',')
+                    .map((s) => parseInt(s.trim()))
+                    .filter((n) => !isNaN(n) && n > 0)
+                  if (steps.length > 0) {
+                    setSettings((s) => ({ ...s, learningSteps: steps }))
+                  }
+                }}
+                placeholder="1, 10"
+                className="w-48"
+              />
+              <span className="text-sm text-muted-foreground">分钟</span>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              用逗号分隔多个步骤，如：1, 10 表示 1分钟后、10分钟后各复习一次
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">毕业间隔</label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={settings.graduatingInterval}
+                  onChange={(e) =>
+                    setSettings((s) => ({
+                      ...s,
+                      graduatingInterval: parseInt(e.target.value) || 1,
+                    }))
+                  }
+                  className="w-20"
+                />
+                <span className="text-sm text-muted-foreground">天</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">点击"良好"后的首次复习间隔</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">简单间隔</label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={settings.easyInterval}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, easyInterval: parseInt(e.target.value) || 1 }))
+                  }
+                  className="w-20"
+                />
+                <span className="text-sm text-muted-foreground">天</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">点击"简单"后的首次复习间隔</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 外观 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>外观</CardTitle>
+          <CardDescription>自定义界面显示</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <label className="block text-sm font-medium mb-2">主题</label>
             <div className="flex gap-3">
               {[
-                { value: 'sm2', label: 'SM-2', desc: '经典算法' },
-                { value: 'fsrs_v4', label: 'FSRS v4', desc: '现代算法' },
-                { value: 'fsrs_v5', label: 'FSRS v5', desc: '最新版本' },
-              ].map(opt => (
+                { value: 'light', label: '浅色' },
+                { value: 'dark', label: '深色' },
+                { value: 'system', label: '跟随系统' },
+              ].map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => setSettings(s => ({ ...s, scheduler: opt.value as UserSettings['scheduler'] }))}
-                  className={`flex-1 p-4 rounded-lg border-2 transition-all text-left ${
-                    settings.scheduler === opt.value
+                  onClick={() => setTheme(opt.value as 'light' | 'dark' | 'system')}
+                  className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                    theme === opt.value
                       ? 'border-primary bg-primary/5'
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <div className="font-medium">{opt.label}</div>
-                  <div className="text-sm text-muted-foreground">{opt.desc}</div>
+                  {opt.label}
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              <strong>SM-2</strong>: SuperMemo 经典算法，简单可靠。
-              <br />
-              <strong>FSRS</strong>: 基于机器学习的现代算法，更精准预测遗忘曲线。
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* 每日限制 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>每日学习限制</CardTitle>
-            <CardDescription>
-              控制每天学习的卡片数量
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                每日新卡片数量
-              </label>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="number"
-                  min={0}
-                  max={999}
-                  value={settings.newCardsPerDay}
-                  onChange={e => setSettings(s => ({ ...s, newCardsPerDay: parseInt(e.target.value) || 0 }))}
-                  className="w-24"
-                />
-                <span className="text-sm text-muted-foreground">张/天</span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                建议：初学者 10-20 张，进阶用户 30-50 张
-              </p>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                每日最大复习数量
-              </label>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="number"
-                  min={0}
-                  max={9999}
-                  value={settings.maxReviewsPerDay}
-                  onChange={e => setSettings(s => ({ ...s, maxReviewsPerDay: parseInt(e.target.value) || 0 }))}
-                  className="w-24"
-                />
-                <span className="text-sm text-muted-foreground">张/天</span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                建议：100-300 张，根据可用时间调整
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 学习步骤 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>学习步骤</CardTitle>
-            <CardDescription>
-              新卡片进入复习队列前的学习间隔（分钟）
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                学习步骤
-              </label>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={settings.learningSteps.join(', ')}
-                  onChange={e => {
-                    const steps = e.target.value.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0)
-                    if (steps.length > 0) {
-                      setSettings(s => ({ ...s, learningSteps: steps }))
-                    }
-                  }}
-                  placeholder="1, 10"
-                  className="w-48"
-                />
-                <span className="text-sm text-muted-foreground">分钟</span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                用逗号分隔多个步骤，如：1, 10 表示 1分钟后、10分钟后各复习一次
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  毕业间隔
-                </label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min={1}
-                    max={365}
-                    value={settings.graduatingInterval}
-                    onChange={e => setSettings(s => ({ ...s, graduatingInterval: parseInt(e.target.value) || 1 }))}
-                    className="w-20"
-                  />
-                  <span className="text-sm text-muted-foreground">天</span>
+      {/* 数据管理 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <HardDrive className="h-5 w-5" />
+            数据管理
+          </CardTitle>
+          <CardDescription>备份、恢复和管理您的学习数据</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* 存储空间 */}
+          <div>
+            <label className="block text-sm font-medium mb-2">存储空间</label>
+            {storageInfo ? (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">已使用</span>
+                  <span>
+                    {formatBytes(storageInfo.usage)} / {formatBytes(storageInfo.quota)}
+                  </span>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  点击"良好"后的首次复习间隔
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  简单间隔
-                </label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min={1}
-                    max={365}
-                    value={settings.easyInterval}
-                    onChange={e => setSettings(s => ({ ...s, easyInterval: parseInt(e.target.value) || 1 }))}
-                    className="w-20"
-                  />
-                  <span className="text-sm text-muted-foreground">天</span>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  点击"简单"后的首次复习间隔
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 外观 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>外观</CardTitle>
-            <CardDescription>
-              自定义界面显示
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                主题
-              </label>
-              <div className="flex gap-3">
-                {[
-                  { value: 'light', label: '浅色' },
-                  { value: 'dark', label: '深色' },
-                  { value: 'system', label: '跟随系统' },
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setTheme(opt.value as 'light' | 'dark' | 'system')}
-                    className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                      theme === opt.value
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
+                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${
+                      storageInfo.usagePercent > 80 ? 'bg-destructive' : 'bg-primary'
                     }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+                    style={{ width: `${Math.min(storageInfo.usagePercent, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {storageInfo.usagePercent.toFixed(1)}% 已使用
+                </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 数据管理 */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HardDrive className="h-5 w-5" />
-              数据管理
-            </CardTitle>
-            <CardDescription>
-              备份、恢复和管理您的学习数据
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* 存储空间 */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                存储空间
-              </label>
-              {storageInfo ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">已使用</span>
-                    <span>{formatBytes(storageInfo.usage)} / {formatBytes(storageInfo.quota)}</span>
-                  </div>
-                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full transition-all ${
-                        storageInfo.usagePercent > 80 ? 'bg-destructive' : 'bg-primary'
-                      }`}
-                      style={{ width: `${Math.min(storageInfo.usagePercent, 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {storageInfo.usagePercent.toFixed(1)}% 已使用
-                  </p>
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">无法获取存储信息</p>
-              )}
-            </div>
-
-            {/* 数据统计 */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                数据统计
-              </label>
-              <div className="grid grid-cols-4 gap-4">
-                <div className="p-3 bg-muted/50 rounded-lg text-center">
-                  <div className="text-2xl font-bold">{dataStats.decks}</div>
-                  <div className="text-xs text-muted-foreground">牌组</div>
-                </div>
-                <div className="p-3 bg-muted/50 rounded-lg text-center">
-                  <div className="text-2xl font-bold">{dataStats.notes}</div>
-                  <div className="text-xs text-muted-foreground">笔记</div>
-                </div>
-                <div className="p-3 bg-muted/50 rounded-lg text-center">
-                  <div className="text-2xl font-bold">{dataStats.cards}</div>
-                  <div className="text-xs text-muted-foreground">卡片</div>
-                </div>
-                <div className="p-3 bg-muted/50 rounded-lg text-center">
-                  <div className="text-2xl font-bold">{dataStats.reviewLogs}</div>
-                  <div className="text-xs text-muted-foreground">复习记录</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 导出/导入 */}
-            <div className="flex gap-4">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={handleExportAll}
-                disabled={exporting}
-              >
-                {exporting ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Download className="h-4 w-4 mr-2" />
-                )}
-                导出全部数据
-              </Button>
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={handleImportAll}
-                disabled={importing}
-              >
-                {importing ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Upload className="h-4 w-4 mr-2" />
-                )}
-                导入数据
-              </Button>
-            </div>
-
-            {/* 清空数据 */}
-            <div className="pt-4 border-t">
-              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg">
-                <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-destructive">危险区域</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    清空所有数据将删除您的牌组、笔记、卡片和复习记录。此操作不可撤销。
-                  </p>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button 
-                        variant="destructive" 
-                        size="sm"
-                        className="mt-3"
-                        disabled={clearing}
-                      >
-                        {clearing ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4 mr-2" />
-                        )}
-                        清空所有数据
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>确定要清空所有数据吗？</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          此操作将永久删除您的所有学习数据，包括：
-                          <br />
-                          • {dataStats.decks} 个牌组
-                          <br />
-                          • {dataStats.notes} 条笔记
-                          <br />
-                          • {dataStats.cards} 张卡片
-                          <br />
-                          • {dataStats.reviewLogs} 条复习记录
-                          <br /><br />
-                          <strong>此操作不可撤销！</strong>建议先导出备份。
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>取消</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={handleClearAll}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          确认清空
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 操作按钮 */}
-        <div className="flex justify-between items-center">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline">恢复默认</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>恢复默认设置？</AlertDialogTitle>
-                <AlertDialogDescription>
-                  这将把所有设置恢复为默认值。您的学习数据不会受到影响。
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>取消</AlertDialogCancel>
-                <AlertDialogAction onClick={handleReset}>
-                  确认恢复
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <div className="flex items-center gap-4">
-            {saved && (
-              <Badge variant="secondary" className="animate-pulse">
-                ✓ 已保存
-              </Badge>
+            ) : (
+              <p className="text-sm text-muted-foreground">无法获取存储信息</p>
             )}
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  保存中...
-                </>
+          </div>
+
+          {/* 数据统计 */}
+          <div>
+            <label className="block text-sm font-medium mb-2">数据统计</label>
+            <div className="grid grid-cols-4 gap-4">
+              <div className="p-3 bg-muted/50 rounded-lg text-center">
+                <div className="text-2xl font-bold">{dataStats.decks}</div>
+                <div className="text-xs text-muted-foreground">牌组</div>
+              </div>
+              <div className="p-3 bg-muted/50 rounded-lg text-center">
+                <div className="text-2xl font-bold">{dataStats.notes}</div>
+                <div className="text-xs text-muted-foreground">笔记</div>
+              </div>
+              <div className="p-3 bg-muted/50 rounded-lg text-center">
+                <div className="text-2xl font-bold">{dataStats.cards}</div>
+                <div className="text-xs text-muted-foreground">卡片</div>
+              </div>
+              <div className="p-3 bg-muted/50 rounded-lg text-center">
+                <div className="text-2xl font-bold">{dataStats.reviewLogs}</div>
+                <div className="text-xs text-muted-foreground">复习记录</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 导出/导入 */}
+          <div className="flex gap-4">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={handleExportAll}
+              disabled={exporting}
+            >
+              {exporting ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  保存设置
-                </>
+                <Download className="h-4 w-4 mr-2" />
               )}
+              导出全部数据
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={handleImportAll}
+              disabled={importing}
+            >
+              {importing ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4 mr-2" />
+              )}
+              导入数据
             </Button>
           </div>
-        </div>
 
-        {/* 关于 */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>关于</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p><strong>拾遗 Shiyi</strong> - 现代化间隔重复记忆系统</p>
-            <p>Local-First 架构，数据存储在本地浏览器</p>
-            <p>支持 SM-2 和 FSRS 调度算法</p>
-          </CardContent>
-        </Card>
-      
+          {/* 清空数据 */}
+          <div className="pt-4 border-t">
+            <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-destructive">危险区域</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  清空所有数据将删除您的牌组、笔记、卡片和复习记录。此操作不可撤销。
+                </p>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm" className="mt-3" disabled={clearing}>
+                      {clearing ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4 mr-2" />
+                      )}
+                      清空所有数据
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>确定要清空所有数据吗？</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        此操作将永久删除您的所有学习数据，包括：
+                        <br />• {dataStats.decks} 个牌组
+                        <br />• {dataStats.notes} 条笔记
+                        <br />• {dataStats.cards} 张卡片
+                        <br />• {dataStats.reviewLogs} 条复习记录
+                        <br />
+                        <br />
+                        <strong>此操作不可撤销！</strong>建议先导出备份。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleClearAll}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        确认清空
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 操作按钮 */}
+      <div className="flex justify-between items-center">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline">恢复默认</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>恢复默认设置？</AlertDialogTitle>
+              <AlertDialogDescription>
+                这将把所有设置恢复为默认值。您的学习数据不会受到影响。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>取消</AlertDialogCancel>
+              <AlertDialogAction onClick={handleReset}>确认恢复</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <div className="flex items-center gap-4">
+          {saved && (
+            <Badge variant="secondary" className="animate-pulse">
+              ✓ 已保存
+            </Badge>
+          )}
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                保存中...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                保存设置
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* 关于 */}
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>关于</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground space-y-2">
+          <p>
+            <strong>拾遗 Shiyi</strong> - 现代化间隔重复记忆系统
+          </p>
+          <p>Local-First 架构，数据存储在本地浏览器</p>
+          <p>支持 SM-2 和 FSRS 调度算法</p>
+        </CardContent>
+      </Card>
+
       {/* 导入确认对话框 */}
       <AlertDialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
         <AlertDialogContent>
@@ -730,26 +704,24 @@ export function SettingsPage() {
             <AlertDialogTitle>确认导入数据？</AlertDialogTitle>
             <AlertDialogDescription>
               即将导入备份数据，这将覆盖现有数据：
+              <br />• {pendingImportData?.deckCount || 0} 个牌组
+              <br />• {pendingImportData?.noteCount || 0} 条笔记
+              <br />• {pendingImportData?.cardCount || 0} 张卡片
               <br />
-              • {pendingImportData?.deckCount || 0} 个牌组
               <br />
-              • {pendingImportData?.noteCount || 0} 条笔记
-              <br />
-              • {pendingImportData?.cardCount || 0} 张卡片
-              <br /><br />
               现有数据将被替换，建议先导出当前数据作为备份。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setImporting(false)
-              setPendingImportData(null)
-            }}>
+            <AlertDialogCancel
+              onClick={() => {
+                setImporting(false)
+                setPendingImportData(null)
+              }}
+            >
               取消
             </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmImport}>
-              确认导入
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmImport}>确认导入</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -24,13 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import {
   Dialog,
   DialogContent,
@@ -52,7 +46,7 @@ export function MarketPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
-  
+
   // 导入对话框状态
   const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [selectedDeck, setSelectedDeck] = useState<SharedDeck | null>(null)
@@ -62,8 +56,8 @@ export function MarketPage() {
   // 收集所有标签
   const allTags = useMemo(() => {
     const tagSet = new Set<string>()
-    decks.forEach(deck => {
-      deck.tags.forEach(tag => tagSet.add(tag))
+    decks.forEach((deck) => {
+      deck.tags.forEach((tag) => tagSet.add(tag))
     })
     return Array.from(tagSet).sort()
   }, [decks])
@@ -71,7 +65,7 @@ export function MarketPage() {
   // 根据选中标签过滤数据
   const filteredDecks = useMemo(() => {
     if (!selectedTag) return decks
-    return decks.filter(deck => deck.tags.includes(selectedTag))
+    return decks.filter((deck) => deck.tags.includes(selectedTag))
   }, [decks, selectedTag])
 
   useEffect(() => {
@@ -97,7 +91,7 @@ export function MarketPage() {
     setSelectedDeck(deck)
     // 检查名称是否已存在并建议唯一名称
     const existingDecks = await deckRepository.getAll()
-    const existingNames = new Set(existingDecks.map(d => d.name))
+    const existingNames = new Set(existingDecks.map((d) => d.name))
     let suggestedName = deck.title
     let counter = 1
     while (existingNames.has(suggestedName)) {
@@ -111,7 +105,7 @@ export function MarketPage() {
   // 确认导入
   const confirmImport = async () => {
     if (!selectedDeck || !deckName.trim()) return
-    
+
     try {
       setImporting(true)
       const result = await importSharedDeck(selectedDeck.slug, deckName.trim())
@@ -148,9 +142,7 @@ export function MarketPage() {
         return (
           <div className="flex items-center gap-2">
             <span className="font-medium">{deck.title}</span>
-            {deck.isFeatured && (
-              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            )}
+            {deck.isFeatured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
             {deck.isOfficial && (
               <Badge variant="secondary" className="text-xs">
                 官方
@@ -168,7 +160,7 @@ export function MarketPage() {
         if (tags.length === 0) return <span className="text-muted-foreground">-</span>
         return (
           <div className="flex flex-wrap gap-1">
-            {tags.slice(0, 3).map(tag => (
+            {tags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs">
                 {tag}
               </Badge>
@@ -247,10 +239,7 @@ export function MarketPage() {
                 查看
               </Link>
             </Button>
-            <Button
-              size="sm"
-              onClick={() => openImportDialog(deck)}
-            >
+            <Button size="sm" onClick={() => openImportDialog(deck)}>
               <Download className="h-4 w-4 mr-1" />
               导入
             </Button>
@@ -276,7 +265,7 @@ export function MarketPage() {
       return (
         deck.title.toLowerCase().includes(searchLower) ||
         (deck.description?.toLowerCase().includes(searchLower) ?? false) ||
-        deck.tags.some(tag => tag.toLowerCase().includes(searchLower))
+        deck.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       )
     },
     state: {
@@ -293,168 +282,152 @@ export function MarketPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">牌组市场</h1>
-        <p className="text-muted-foreground">浏览和导入高质量的学习内容</p>
-      </div>
-
       {/* Search and Filter */}
-        {!loading && !error && decks.length > 0 && (
-          <div className="mb-6 space-y-4">
-            {/* Search */}
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="搜索牌组名称、描述或标签..."
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="pl-9 pr-9"
-              />
-              {globalFilter && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
-                  onClick={() => setGlobalFilter('')}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-
-            {/* Tags Filter */}
-            {allTags.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-muted-foreground">标签筛选：</span>
-                <Button
-                  variant={selectedTag === null ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedTag(null)}
-                >
-                  全部
-                </Button>
-                {allTags.map(tag => (
-                  <Button
-                    key={tag}
-                    variant={selectedTag === tag ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
+      {!loading && !error && decks.length > 0 && (
+        <div className="mb-6 space-y-4">
+          {/* Search */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="搜索牌组名称、描述或标签..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="pl-9 pr-9"
+            />
+            {globalFilter && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                onClick={() => setGlobalFilter('')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
             )}
           </div>
-        )}
 
-        {/* Content */}
-        {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-16 border rounded-lg">
-            <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={loadDecks}>重试</Button>
-          </div>
-        ) : decks.length === 0 ? (
-          <Empty className="border rounded-lg py-16">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <BookOpen className="h-6 w-6" />
-              </EmptyMedia>
-              <EmptyTitle>暂无共享牌组</EmptyTitle>
-              <EmptyDescription>
-                目前市场中没有可用的共享牌组
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        ) : (
-          <div className="space-y-4">
-            {/* Table */}
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map(headerGroup => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map(header => (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
+          {/* Tags Filter */}
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-muted-foreground">标签筛选：</span>
+              <Button
+                variant={selectedTag === null ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedTag(null)}
+              >
+                全部
+              </Button>
+              {allTags.map((tag) => (
+                <Button
+                  key={tag}
+                  variant={selectedTag === tag ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                >
+                  {tag}
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Content */}
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-16 border rounded-lg">
+          <p className="text-destructive mb-4">{error}</p>
+          <Button onClick={loadDecks}>重试</Button>
+        </div>
+      ) : decks.length === 0 ? (
+        <Empty className="border rounded-lg py-16">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookOpen className="h-6 w-6" />
+            </EmptyMedia>
+            <EmptyTitle>暂无共享牌组</EmptyTitle>
+            <EmptyDescription>目前市场中没有可用的共享牌组</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="space-y-4">
+          {/* Table */}
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map(row => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map(cell => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        暂无数据
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      暂无数据
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                共 {table.getFilteredRowModel().rows.length} 个牌组
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  上一页
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  第 {table.getState().pagination.pageIndex + 1} / {table.getPageCount()} 页
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  下一页
-                </Button>
-              </div>
+          {/* Pagination */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              共 {table.getFilteredRowModel().rows.length} 个牌组
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                上一页
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                第 {table.getState().pagination.pageIndex + 1} / {table.getPageCount()} 页
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                下一页
+              </Button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
       {/* 导入对话框 */}
       <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>导入牌组</DialogTitle>
-            <DialogDescription>
-              {selectedDeck?.title} - 请输入牌组名称
-            </DialogDescription>
+            <DialogDescription>{selectedDeck?.title} - 请输入牌组名称</DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Input

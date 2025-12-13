@@ -17,7 +17,7 @@ function App() {
         <Routes>
           {/* Review 页面保持全屏模式 */}
           <Route path="/review" element={<ReviewPage />} />
-          
+
           {/* 其他页面使用 sidebar 布局 */}
           <Route
             path="/*"
