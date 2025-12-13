@@ -1,14 +1,19 @@
 .PHONY: help install dev test test-unit test-integration test-cov lint lint-fix format type-check check \
        db-migrate db-upgrade db-downgrade db-history db-current \
-       docker-build docker-run docker-stop docker-dev clean pre-commit-install pre-commit-run
+       docker-build docker-run docker-stop docker-dev clean pre-commit-install pre-commit-run \
+       web-install web-dev web-build web-lint web-type-check web-check check-all ci
 
 # 默认目标
 .DEFAULT_GOAL := help
 
 help: ## 显示帮助信息
-	@echo "FastAPI Template - 可用命令:"
+	@echo "拾遗 Shiyi - 可用命令:"
 	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
+	@echo "=== 后端命令 ==="
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | grep -v "^web-" | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
+	@echo ""
+	@echo "=== 前端命令 ==="
+	@grep -E '^web-[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
 
 # ==================== 开发相关 ====================
 
@@ -56,8 +61,54 @@ type-check: ## 类型检查
 	@echo "🔍 类型检查..."
 	uv run mypy app/
 
-check: lint format type-check ## 运行所有检查（lint + format + type-check）
-	@echo "✅ 所有检查完成"
+check: lint format type-check ## 运行后端检查（lint + format + type-check）
+	@echo "✅ 后端检查完成"
+
+# ==================== 前端相关 ====================
+
+web-install: ## 安装前端依赖
+	@echo "📦 安装前端依赖..."
+	cd web && pnpm install
+
+web-dev: ## 启动前端开发服务器
+	@echo "🚀 启动前端开发服务器..."
+	cd web && pnpm dev
+
+web-build: ## 构建前端项目
+	@echo "📦 构建前端项目..."
+	cd web && pnpm build
+
+web-lint: ## 前端代码检查
+	@echo "🔍 前端代码检查..."
+	cd web && pnpm exec eslint src --max-warnings 20
+
+web-type-check: ## 前端类型检查
+	@echo "🔍 前端类型检查..."
+	cd web && pnpm exec tsc --noEmit
+
+web-check: web-type-check web-lint ## 运行前端检查（type-check + lint）
+	@echo "✅ 前端检查完成"
+
+# ==================== 完整检查 ====================
+
+check-all: check web-check ## 运行前后端所有检查
+	@echo "✅ 前后端检查全部完成"
+
+ci: ## 模拟 CI 完整检查（提交前运行）
+	@echo "🔄 运行 CI 检查..."
+	@echo ""
+	@echo "=== 后端检查 ==="
+	uv run ruff check app/ tests/
+	uv run ruff format --check app/ tests/
+	uv run mypy app/ --ignore-missing-imports
+	uv run pytest tests/ -v --tb=short
+	@echo ""
+	@echo "=== 前端检查 ==="
+	cd web && pnpm exec tsc --noEmit
+	cd web && pnpm exec eslint src --max-warnings 20
+	cd web && pnpm build
+	@echo ""
+	@echo "✅ CI 检查全部通过！可以安全提交。"
 
 # ==================== Pre-commit ====================
 
