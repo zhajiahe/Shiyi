@@ -124,7 +124,12 @@ export function MarketPage() {
       },
     },
     {
-      accessorKey: 'noteCount',
+      id: 'noteCount',
+      accessorFn: (row) => {
+        // 兼容 snake_case 和 camelCase
+        const deck = row as SharedDeck & { note_count?: number }
+        return deck.noteCount ?? deck.note_count ?? 0
+      },
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -135,9 +140,7 @@ export function MarketPage() {
         </Button>
       ),
       cell: ({ row }) => {
-        // 兼容 snake_case 和 camelCase
-        const deck = row.original as SharedDeck & { note_count?: number }
-        const count = deck.noteCount ?? deck.note_count ?? 0
+        const count = row.getValue('noteCount') as number
         return (
           <div className="flex items-center gap-1">
             <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -147,7 +150,12 @@ export function MarketPage() {
       },
     },
     {
-      accessorKey: 'downloadCount',
+      id: 'downloadCount',
+      accessorFn: (row) => {
+        // 兼容 snake_case 和 camelCase
+        const deck = row as SharedDeck & { download_count?: number }
+        return deck.downloadCount ?? deck.download_count ?? 0
+      },
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -158,9 +166,13 @@ export function MarketPage() {
         </Button>
       ),
       cell: ({ row }) => {
-        // 兼容 snake_case 和 camelCase
-        const deck = row.original as SharedDeck & { download_count?: number }
-        return deck.downloadCount ?? deck.download_count ?? 0
+        const count = row.getValue('downloadCount') as number
+        return (
+          <div className="flex items-center gap-1">
+            <Download className="h-4 w-4 text-muted-foreground" />
+            {count}
+          </div>
+        )
       },
     },
     {
