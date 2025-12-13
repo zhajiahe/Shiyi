@@ -79,7 +79,7 @@ export function CardRenderer({
             }
 
             /* 卡片内容容器 */
-            .anki-card-wrapper {
+            .shiyi-card-wrapper {
               width: 100%;
               padding: 1rem;
             }
@@ -89,7 +89,7 @@ export function CardRenderer({
           </style>
         </head>
         <body>
-          <div class="anki-card-wrapper">
+          <div class="shiyi-card-wrapper">
             ${html}
           </div>
           <script>
@@ -101,11 +101,11 @@ export function CardRenderer({
             
             // 监听内容变化 - 使用 IIFE 避免重复声明
             (function() {
-              if (window._ankiObserver) {
-                window._ankiObserver.disconnect();
+              if (window._shiyiObserver) {
+                window._shiyiObserver.disconnect();
               }
-              window._ankiObserver = new ResizeObserver(updateHeight);
-              window._ankiObserver.observe(document.body);
+              window._shiyiObserver = new ResizeObserver(updateHeight);
+              window._shiyiObserver.observe(document.body);
             })();
             
             // 初始高度

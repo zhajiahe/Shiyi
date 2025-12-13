@@ -10,7 +10,7 @@ import { StatsPage } from './pages/Stats'
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="anki-web-theme">
+    <ThemeProvider defaultTheme="system" storageKey="shiyi-theme">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />

@@ -39,7 +39,7 @@ export function Dashboard() {
         {/* Header */}
         <header className="mb-10">
           <h1 className="text-3xl font-bold tracking-tight">
-            Anki Web
+            拾遗 Shiyi
           </h1>
           <p className="mt-2 text-muted-foreground">
             现代化间隔重复记忆系统

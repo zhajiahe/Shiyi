@@ -41,7 +41,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   easyInterval: 4,
 }
 
-const STORAGE_KEY = 'anki-web-settings'
+const STORAGE_KEY = 'shiyi-settings'
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme()
@@ -135,7 +135,7 @@ export function SettingsPage() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `anki-web-backup-${new Date().toISOString().split('T')[0]}.json`
+      a.download = `shiyi-backup-${new Date().toISOString().split('T')[0]}.json`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -731,7 +731,7 @@ export function SettingsPage() {
             <CardTitle>关于</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p><strong>Anki Web</strong> - 现代化间隔重复记忆系统</p>
+            <p><strong>拾遗 Shiyi</strong> - 现代化间隔重复记忆系统</p>
             <p>Local-First 架构，数据存储在本地浏览器</p>
             <p>支持 SM-2 和 FSRS 调度算法</p>
           </CardContent>

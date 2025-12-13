@@ -69,7 +69,7 @@ export function FlipCard({
         </style>
       </head>
       <body>
-        <div class="anki-card-wrapper">
+        <div class="shiyi-card-wrapper">
           ${html}
         </div>
         <script>
@@ -78,9 +78,9 @@ export function FlipCard({
             window.parent.postMessage({ type: 'flipcard-resize', height: height, side: '${side}' }, '*');
           }
           (function() {
-            if (window._ankiObserver) window._ankiObserver.disconnect();
-            window._ankiObserver = new ResizeObserver(updateHeight);
-            window._ankiObserver.observe(document.body);
+            if (window._shiyiObserver) window._shiyiObserver.disconnect();
+            window._shiyiObserver = new ResizeObserver(updateHeight);
+            window._shiyiObserver.observe(document.body);
           })();
           setTimeout(updateHeight, 100);
           setTimeout(updateHeight, 500);
