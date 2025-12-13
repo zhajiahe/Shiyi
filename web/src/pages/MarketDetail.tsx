@@ -144,6 +144,7 @@ export function MarketDetailPage() {
     if (shouldOpenImport && deck && !loading) {
       openImportDialog()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldOpenImport, deck, loading])
 
   const loadDeck = async (deckSlug: string) => {
@@ -235,7 +236,10 @@ export function MarketDetailPage() {
   }
 
   const noteModel = exportData?.note_models[0]
-  const fieldNames = noteModel?.fields_schema.map(f => f.name) || []
+  const fieldNames = useMemo(() => 
+    noteModel?.fields_schema.map(f => f.name) || [],
+    [noteModel]
+  )
 
   // 动态生成列定义
   const columns: ColumnDef<NotePreview>[] = useMemo(() => {
@@ -483,9 +487,6 @@ export function MarketDetailPage() {
               </div>
             )}
 
-            <p className="text-xs text-muted-foreground mt-4">
-              💡 点击表格中的笔记可以预览实际学习时的卡片效果
-            </p>
           </CardContent>
         </Card>
       </div>
