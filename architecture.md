@@ -72,7 +72,6 @@
 
 - **模型与表现适度解耦**
   - NoteModel 定义字段与"卡片类型"；
-  - Template/TemplateSet 定义布局与样式；
   - 实现上可以放在一起存，但逻辑上保持边界，方便后期换皮升级。
 
 ---
@@ -88,7 +87,6 @@
 - `parent_id`: NanoID \| null（父牌组）
 - `config`: JSONB（调度设置、显示设置）
 - `scheduler`: enum(`"sm2"`, `"fsrs_v4"`, `"fsrs_v5"`)
-- `template_set_id`: string（主题 ID，如 `minimal-white`）
 - `updated_at`: timestamp
 - `deleted_at`: timestamp \| null
 
@@ -117,23 +115,9 @@
     }
   ]
   ```
-- `template_set_id`: string（引用哪个样式主题）
 - `updated_at`, `deleted_at`
 
-> 逻辑上：`fields` = 数据结构，`templates` = 渲染占位内容。  
-> 样式细节（颜色、字体等）由 TemplateSet 的 CSS 提供。
-
-#### TemplateSet（主题）
-
-- `id`: string（如 `minimal-white`, `dark-glass`）
-- `name`: string
-- `description`: string
-- `version`: int
-- `css`: string（或静态文件 URL）
-- `meta`: JSONB（比如是否支持暗色模式等）
-- `updated_at`
-
-> 前端加载后，将 CSS 注入 `<style>` 或 link。
+> 逻辑上：`fields` = 数据结构，`templates` = 渲染占位内容。
 
 #### Note（笔记）
 
@@ -193,7 +177,6 @@
 - `author_id`: User.id
 - `card_count`: int（冗余统计）
 - `note_count`: int
-- `template_set_id`: string（推荐主题）
 - `version`: int（递增）
 - `content_hash`: string（某个版本内容的哈希）
 - `is_featured`: boolean
@@ -228,7 +211,6 @@
     "description": "xxxx",
     "language": "en",
     "tags": ["词汇", "托福"],
-    "template_set_id": "minimal-white",
     "version": 3
   },
   "deck": {
@@ -256,9 +238,7 @@
           "front": "<div class='card card--word'><div class='word'>{{Front}}</div></div>",
           "back": "<div class='card card--word'><div class='word'>{{Front}}</div><div class='meaning'>{{Back}}</div><div class='example muted'>{{Example}}</div></div>"
         }
-      ],
-      "template_set_id": "minimal-white"
-    }
+      ]
   ],
   "notes": [
     {
@@ -400,10 +380,6 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 
 **3）导入策略**
 
-- TemplateSet：
-  - 若为官方内置主题 ID → 直接引用本地版本；
-  - 若为新的主题 ID → 在本地创建一个 TemplateSet 记录。
-
 - NoteModel：
   - 本地无对应 `id` → 直接创建；
   - 本地有同 `id`：保留用户已有版本，导入时生成一个新的 `id`（避免冲突）。
@@ -428,9 +404,8 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
      - 不修改 Card 的调度状态（`stability`、`due` 等），**保留用户学习进度**；
    - 若 `guid` 不存在：
      - 视为新增 Note/Card，插入本地。
-3. 模版与主题：
-   - NoteModel 若是官方模型，可以按策略更新；
-   - TemplateSet 若版本更新，可替换 CSS，实现全局视觉改进。
+3. 模版更新：
+   - NoteModel 若是官方模型，可以按策略更新。
 
 ---
 
@@ -504,7 +479,7 @@ const createNote = (model: NoteModel, fields: string[], deckId: string) => {
 
 - **按需加载**
   - 大型牌组导入/渲染分批加载；
-  - CSS/模板按 TemplateSet 懒加载。
+  - 模板按需加载。
 
 ---
 
