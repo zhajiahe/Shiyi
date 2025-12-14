@@ -9,7 +9,7 @@ from app.repositories.deck import DeckRepository
 from app.repositories.note import CardRepository, NoteRepository
 from app.repositories.note_model import CardTemplateRepository, NoteModelRepository
 from app.repositories.review_log import ReviewLogRepository
-from app.repositories.shared_deck import SharedDeckRepository, SharedDeckSnapshotRepository, TemplateSetRepository
+from app.repositories.shared_deck import SharedDeckRepository, SharedDeckSnapshotRepository
 from app.repositories.user import UserRepository
 
 __all__ = [
@@ -21,7 +21,6 @@ __all__ = [
     "NoteRepository",
     "CardRepository",
     "ReviewLogRepository",
-    "TemplateSetRepository",
     "SharedDeckRepository",
     "SharedDeckSnapshotRepository",
 ]

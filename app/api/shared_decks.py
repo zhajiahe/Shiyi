@@ -15,63 +15,10 @@ from app.schemas.shared_deck import (
     SharedDeckResponse,
     SharedDeckSnapshotResponse,
     SharedDeckUpdate,
-    TemplateSetCreate,
-    TemplateSetResponse,
 )
-from app.services.shared_deck import SharedDeckService, TemplateSetService
+from app.services.shared_deck import SharedDeckService
 
 router = APIRouter(prefix="/shared-decks", tags=["shared-decks"])
-template_set_router = APIRouter(prefix="/template-sets", tags=["template-sets"])
-
-
-# ==================== 主题接口 ====================
-
-
-@template_set_router.get("", response_model=BaseResponse[list[TemplateSetResponse]])
-async def get_template_sets(db: DBSession):
-    """获取所有可用主题（公开接口）"""
-    service = TemplateSetService(db)
-    items = await service.get_all_template_sets()
-    return BaseResponse(
-        success=True,
-        code=200,
-        msg="获取主题列表成功",
-        data=[TemplateSetResponse.model_validate(item) for item in items],
-    )
-
-
-@template_set_router.get("/{template_set_id}", response_model=BaseResponse[TemplateSetResponse])
-async def get_template_set(template_set_id: str, db: DBSession):
-    """获取单个主题详情（公开接口）"""
-    service = TemplateSetService(db)
-    item = await service.get_template_set(template_set_id)
-    return BaseResponse(
-        success=True,
-        code=200,
-        msg="获取主题成功",
-        data=TemplateSetResponse.model_validate(item),
-    )
-
-
-@template_set_router.post(
-    "",
-    response_model=BaseResponse[TemplateSetResponse],
-    status_code=status.HTTP_201_CREATED,
-)
-async def create_template_set(
-    data: TemplateSetCreate,
-    db: DBSession,
-    _current_user: CurrentUser,
-):
-    """创建主题（需要登录）"""
-    service = TemplateSetService(db)
-    item = await service.create_template_set(data)
-    return BaseResponse(
-        success=True,
-        code=201,
-        msg="创建主题成功",
-        data=TemplateSetResponse.model_validate(item),
-    )
 
 
 # ==================== 共享牌组公开接口 ====================

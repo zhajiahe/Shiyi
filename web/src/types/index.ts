@@ -159,15 +159,3 @@ export interface SharedDeck {
   createdAt?: number
   updatedAt?: number
 }
-
-export interface TemplateSet {
-  id: string
-  name: string
-  description?: string
-  css: string
-  version: number
-  meta?: Record<string, unknown>
-  isOfficial: boolean
-  createdAt?: number
-  updatedAt?: number
-}

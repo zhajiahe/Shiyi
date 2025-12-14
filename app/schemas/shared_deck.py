@@ -8,36 +8,6 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-# ==================== 主题 Schema ====================
-
-
-class TemplateSetBase(BaseModel):
-    """主题基础字段"""
-
-    name: str = Field(..., min_length=1, max_length=100, description="主题名称")
-    description: str | None = Field(default=None, max_length=500, description="主题描述")
-    css: str = Field(default="", description="CSS 样式")
-    meta: dict | None = Field(default=None, description="元数据")
-
-
-class TemplateSetCreate(TemplateSetBase):
-    """创建主题请求"""
-
-    pass
-
-
-class TemplateSetResponse(TemplateSetBase):
-    """主题响应"""
-
-    id: str = Field(..., description="主题ID")
-    version: int = Field(default=1, description="版本号")
-    is_official: bool = Field(default=False, description="是否官方主题")
-    created_at: datetime | None = Field(default=None, description="创建时间")
-    updated_at: datetime | None = Field(default=None, description="更新时间")
-
-    model_config = {"from_attributes": True}
-
-
 # ==================== 共享牌组快照 Schema ====================
 
 
@@ -67,7 +37,6 @@ class SharedDeckBase(BaseModel):
     language: str = Field(default="zh-CN", max_length=10, description="语言")
     tags: list[str] = Field(default_factory=list, description="标签列表")
     cover_image_url: str | None = Field(default=None, max_length=500, description="封面图片URL")
-    template_set_id: str | None = Field(default=None, description="推荐主题ID")
 
 
 class SharedDeckCreate(SharedDeckBase):
@@ -84,7 +53,6 @@ class SharedDeckUpdate(BaseModel):
     language: str | None = Field(default=None, max_length=10, description="语言")
     tags: list[str] | None = Field(default=None, description="标签列表")
     cover_image_url: str | None = Field(default=None, max_length=500, description="封面图片URL")
-    template_set_id: str | None = Field(default=None, description="推荐主题ID")
     is_active: bool | None = Field(default=None, description="是否上架")
 
 

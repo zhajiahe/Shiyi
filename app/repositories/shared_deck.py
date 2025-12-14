@@ -1,36 +1,15 @@
 """
-共享牌组和主题 Repository
+共享牌组 Repository
 
-封装 SharedDeck 和 TemplateSet 相关的数据库操作
+封装 SharedDeck 相关的数据库操作
 """
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.shared_deck import SharedDeck, SharedDeckSnapshot, TemplateSet
+from app.models.shared_deck import SharedDeck, SharedDeckSnapshot
 from app.repositories.base import BaseRepository
-
-
-class TemplateSetRepository(BaseRepository[TemplateSet]):
-    """主题数据访问层"""
-
-    def __init__(self, db: AsyncSession):
-        super().__init__(TemplateSet, db)
-
-    async def get_all_active(self) -> list[TemplateSet]:
-        """
-        获取所有可用主题
-
-        Returns:
-            主题列表
-        """
-        result = await self.db.execute(
-            select(TemplateSet)
-            .where(TemplateSet.deleted_at.is_(None))
-            .order_by(TemplateSet.is_official.desc(), TemplateSet.created_at.desc())
-        )
-        return list(result.scalars().all())
 
 
 class SharedDeckRepository(BaseRepository[SharedDeck]):

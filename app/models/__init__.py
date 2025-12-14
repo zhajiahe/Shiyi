@@ -9,7 +9,7 @@ from app.models.deck import Deck
 from app.models.note import Card, Note
 from app.models.note_model import CardTemplate, NoteModel
 from app.models.review_log import ReviewLog
-from app.models.shared_deck import SharedDeck, SharedDeckSnapshot, TemplateSet
+from app.models.shared_deck import SharedDeck, SharedDeckSnapshot
 from app.models.user import User
 
 __all__ = [
@@ -27,7 +27,6 @@ __all__ = [
     "Note",
     "Card",
     "ReviewLog",
-    "TemplateSet",
     "SharedDeck",
     "SharedDeckSnapshot",
 ]

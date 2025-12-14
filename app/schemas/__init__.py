@@ -44,8 +44,6 @@ from app.schemas.shared_deck import (
     SharedDeckResponse,
     SharedDeckSnapshotResponse,
     SharedDeckUpdate,
-    TemplateSetCreate,
-    TemplateSetResponse,
 )
 from app.schemas.user import (
     LoginRequest,
@@ -97,8 +95,6 @@ __all__ = [
     "ReviewLogListQuery",
     "ReviewStats",
     # SharedDeck
-    "TemplateSetCreate",
-    "TemplateSetResponse",
     "SharedDeckCreate",
     "SharedDeckUpdate",
     "SharedDeckResponse",

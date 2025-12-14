@@ -339,7 +339,6 @@ SAMPLE_SHARED_DECKS = [
         "language": "en",
         "tags": ["编程", "计算机", "入门", "术语"],
         "note_model_id": "builtin-vocabulary",
-        "template_set_id": "theme-cupcake",
         "is_featured": True,
         "is_official": True,
         "notes": [
@@ -449,7 +448,6 @@ SAMPLE_SHARED_DECKS = [
         "language": "en",
         "tags": ["英语", "口语", "日常", "实用"],
         "note_model_id": "builtin-language",
-        "template_set_id": "theme-emerald",
         "is_featured": True,
         "is_official": True,
         "notes": [
@@ -568,7 +566,6 @@ SAMPLE_SHARED_DECKS = [
         "language": "zh-CN",
         "tags": ["计算机科学", "基础", "面试", "概念"],
         "note_model_id": "builtin-qa",
-        "template_set_id": "theme-dark",
         "is_featured": True,
         "is_official": True,
         "notes": [

@@ -1,77 +1,15 @@
 """
 共享牌组服务
 
-处理 SharedDeck 和 TemplateSet 相关的业务逻辑
+处理 SharedDeck 相关的业务逻辑
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, ForbiddenException, NotFoundException
-from app.models.shared_deck import SharedDeck, SharedDeckSnapshot, TemplateSet
-from app.repositories.shared_deck import (
-    SharedDeckRepository,
-    SharedDeckSnapshotRepository,
-    TemplateSetRepository,
-)
-from app.schemas.shared_deck import (
-    SharedDeckCreate,
-    SharedDeckListQuery,
-    SharedDeckUpdate,
-    TemplateSetCreate,
-)
-
-
-class TemplateSetService:
-    """主题服务类"""
-
-    def __init__(self, db: AsyncSession):
-        self.db = db
-        self.template_set_repo = TemplateSetRepository(db)
-
-    async def get_template_set(self, template_set_id: str) -> TemplateSet:
-        """
-        获取单个主题
-
-        Args:
-            template_set_id: 主题 ID
-
-        Returns:
-            TemplateSet 实例
-        """
-        template_set = await self.template_set_repo.get_by_id(template_set_id)
-        if not template_set:
-            raise NotFoundException(msg="主题不存在")
-        return template_set
-
-    async def get_all_template_sets(self) -> list[TemplateSet]:
-        """
-        获取所有可用主题
-
-        Returns:
-            主题列表
-        """
-        return await self.template_set_repo.get_all_active()
-
-    async def create_template_set(self, data: TemplateSetCreate, is_official: bool = False) -> TemplateSet:
-        """
-        创建主题
-
-        Args:
-            data: 创建数据
-            is_official: 是否官方主题
-
-        Returns:
-            创建的 TemplateSet 实例
-        """
-        return await self.template_set_repo.create(
-            {
-                "name": data.name,
-                "description": data.description,
-                "css": data.css,
-                "meta": data.meta,
-                "is_official": is_official,
-            }
-        )
+from app.models.shared_deck import SharedDeck, SharedDeckSnapshot
+from app.repositories.shared_deck import SharedDeckRepository, SharedDeckSnapshotRepository
+from app.schemas.shared_deck import SharedDeckCreate, SharedDeckListQuery, SharedDeckUpdate
 
 
 class SharedDeckService:
@@ -164,7 +102,6 @@ class SharedDeckService:
                 "language": data.language,
                 "tags": data.tags,
                 "cover_image_url": data.cover_image_url,
-                "template_set_id": data.template_set_id,
             }
         )
 

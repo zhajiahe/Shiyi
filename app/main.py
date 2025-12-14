@@ -14,7 +14,6 @@ from app.api.note_models import router as note_models_router
 from app.api.notes import router as notes_router
 from app.api.review_logs import router as review_logs_router
 from app.api.shared_decks import router as shared_decks_router
-from app.api.shared_decks import template_set_router
 from app.api.users import auth_router
 from app.api.users import router as users_router
 from app.core.config import settings
@@ -92,7 +91,6 @@ app.include_router(review_logs_router, prefix="/api/v1")
 
 # 注册共享牌组路由
 app.include_router(shared_decks_router, prefix="/api/v1")
-app.include_router(template_set_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":

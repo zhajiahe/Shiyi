@@ -16,11 +16,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import AsyncSessionLocal
 from app.core.security import get_password_hash
-from app.core.seed_data import BUILTIN_NOTE_MODELS, BUILTIN_TEMPLATE_SETS, SAMPLE_SHARED_DECKS
+from app.core.seed_data import BUILTIN_NOTE_MODELS, SAMPLE_SHARED_DECKS
 from app.models.deck import Deck
 from app.models.note import Card, Note
 from app.models.note_model import CardTemplate, NoteModel
-from app.models.shared_deck import SharedDeck, SharedDeckSnapshot, TemplateSet
+from app.models.shared_deck import SharedDeck, SharedDeckSnapshot
 from app.models.user import User
 
 # 系统用户配置
@@ -56,34 +56,6 @@ async def init_system_user(db: AsyncSession) -> str:
     print(f"  ✅ 创建系统用户: {SYSTEM_USER_CONFIG['nickname']} (@{SYSTEM_USER_CONFIG['username']})")
     
     return user.id
-
-
-async def init_template_sets(db: AsyncSession) -> None:
-    """初始化内置主题"""
-    print("🎨 初始化内置主题...")
-    
-    for ts_data in BUILTIN_TEMPLATE_SETS:
-        # 检查是否已存在
-        result = await db.execute(
-            select(TemplateSet).where(TemplateSet.id == ts_data["id"])
-        )
-        existing = result.scalar_one_or_none()
-        
-        if existing:
-            print(f"  ⏭️  主题已存在: {ts_data['name']}")
-            continue
-        
-        template_set = TemplateSet(
-            id=ts_data["id"],
-            name=ts_data["name"],
-            description=ts_data["description"],
-            css=ts_data["css"],
-            is_official=ts_data["is_official"],
-        )
-        db.add(template_set)
-        print(f"  ✅ 创建主题: {ts_data['name']}")
-    
-    await db.flush()
 
 
 async def init_note_models(db: AsyncSession, system_user_id: str) -> None:
@@ -259,11 +231,8 @@ async def main():
         try:
             # 1. 初始化系统用户
             system_user_id = await init_system_user(db)
-            
-            # 2. 初始化主题
-            await init_template_sets(db)
-            
-            # 3. 初始化笔记类型
+
+            # 2. 初始化笔记类型
             await init_note_models(db, system_user_id)
             
             # 4. 初始化示例共享牌组
