@@ -147,7 +147,6 @@ export interface SharedDeck {
   language: string
   tags: string[]
   coverImageUrl?: string
-  templateSetId?: string
   cardCount: number
   noteCount: number
   downloadCount: number

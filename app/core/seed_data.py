@@ -280,54 +280,6 @@ BUILTIN_NOTE_MODELS = [
 ]
 
 
-# ==================== 内置主题定义 ====================
-
-BUILTIN_TEMPLATE_SETS = [
-    {
-        "id": "theme-cupcake",
-        "name": "Cupcake (柔和)",
-        "description": "柔和甜美的浅色主题",
-        "css": "",
-        "is_official": True,
-    },
-    {
-        "id": "theme-dark",
-        "name": "Dark (暗黑)",
-        "description": "护眼暗色主题",
-        "css": "",
-        "is_official": True,
-    },
-    {
-        "id": "theme-emerald",
-        "name": "Emerald (翠绿)",
-        "description": "清新绿色主题",
-        "css": "",
-        "is_official": True,
-    },
-    {
-        "id": "theme-corporate",
-        "name": "Corporate (商务)",
-        "description": "专业商务风格",
-        "css": "",
-        "is_official": True,
-    },
-    {
-        "id": "theme-dracula",
-        "name": "Dracula (德古拉)",
-        "description": "流行的深色开发者主题",
-        "css": "",
-        "is_official": True,
-    },
-    {
-        "id": "theme-nord",
-        "name": "Nord (北极)",
-        "description": "北欧风格冷色调",
-        "css": "",
-        "is_official": True,
-    },
-]
-
-
 # ==================== 示例共享牌组数据 ====================
 
 SAMPLE_SHARED_DECKS = [

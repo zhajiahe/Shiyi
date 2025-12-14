@@ -196,7 +196,6 @@ async def init_shared_decks(db: AsyncSession, system_user_id: str) -> None:
             description=deck_data["description"],
             language=deck_data["language"],
             tags=deck_data["tags"],
-            template_set_id=deck_data.get("template_set_id"),
             note_count=note_count,
             card_count=card_count,
             is_featured=deck_data.get("is_featured", False),
