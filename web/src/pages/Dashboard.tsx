@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { BookOpen, Folder, Loader2, Download, Sparkles, Clock, Target } from 'lucide-react'
+import {
+  BookOpen,
+  Folder,
+  Loader2,
+  Download,
+  Sparkles,
+  Clock,
+  Target,
+  CheckSquare,
+  Square,
+} from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Empty,
   EmptyContent,
@@ -29,6 +40,9 @@ export function Dashboard() {
     review: 0,
     total: 0,
   })
+  // 多选功能
+  const [selectedDeckIds, setSelectedDeckIds] = useState<Set<string>>(new Set())
+  const [isSelectMode, setIsSelectMode] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -74,6 +88,27 @@ export function Dashboard() {
   const todayTotal = globalStats.new + globalStats.learning + globalStats.review
   const hasStudyContent = todayTotal > 0
 
+  // 多选相关函数
+  const toggleDeckSelection = (deckId: string) => {
+    setSelectedDeckIds((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(deckId)) {
+        newSet.delete(deckId)
+      } else {
+        newSet.add(deckId)
+      }
+      return newSet
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedDeckIds.size === decks.length) {
+      setSelectedDeckIds(new Set())
+    } else {
+      setSelectedDeckIds(new Set(decks.map((d) => d.id)))
+    }
+  }
+
   const handleStartStudy = (deckId?: string) => {
     if (deckId) {
       navigate(`/review?deck=${deckId}`)
@@ -81,6 +116,32 @@ export function Dashboard() {
       navigate('/review')
     }
   }
+
+  const handleStartSelectedStudy = () => {
+    if (selectedDeckIds.size === 0) return
+    if (selectedDeckIds.size === decks.length) {
+      // 全部选中，等同于全局学习
+      navigate('/review')
+    } else {
+      navigate(`/review?decks=${Array.from(selectedDeckIds).join(',')}`)
+    }
+  }
+
+  // 计算选中牌组的统计
+  const selectedStats = {
+    new: 0,
+    learning: 0,
+    review: 0,
+  }
+  selectedDeckIds.forEach((id) => {
+    const stats = deckStats[id]
+    if (stats) {
+      selectedStats.new += stats.new
+      selectedStats.learning += stats.learning
+      selectedStats.review += stats.review
+    }
+  })
+  const selectedTotal = selectedStats.new + selectedStats.learning + selectedStats.review
 
   if (loading) {
     return (
@@ -162,23 +223,78 @@ export function Dashboard() {
 
       {/* 各牌组学习状态 */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">牌组学习进度</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">牌组学习进度</h2>
+          <div className="flex items-center gap-2">
+            {isSelectMode && (
+              <>
+                <Button variant="ghost" size="sm" onClick={toggleSelectAll}>
+                  {selectedDeckIds.size === decks.length ? (
+                    <>
+                      <CheckSquare className="h-4 w-4 mr-1" />
+                      取消全选
+                    </>
+                  ) : (
+                    <>
+                      <Square className="h-4 w-4 mr-1" />
+                      全选
+                    </>
+                  )}
+                </Button>
+                {selectedDeckIds.size > 0 && (
+                  <Button size="sm" onClick={handleStartSelectedStudy}>
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    学习选中 ({selectedTotal})
+                  </Button>
+                )}
+              </>
+            )}
+            <Button
+              variant={isSelectMode ? 'secondary' : 'outline'}
+              size="sm"
+              onClick={() => {
+                setIsSelectMode(!isSelectMode)
+                if (isSelectMode) {
+                  setSelectedDeckIds(new Set())
+                }
+              }}
+            >
+              {isSelectMode ? '取消' : '多选'}
+            </Button>
+          </div>
+        </div>
         <div className="grid gap-3">
           {decks.map((deck) => {
             const stats = deckStats[deck.id] || { new: 0, learning: 0, review: 0, total: 0 }
             const deckTotal = stats.new + stats.learning + stats.review
             const masteredPercent =
               stats.total > 0 ? Math.round(((stats.total - deckTotal) / stats.total) * 100) : 0
+            const isSelected = selectedDeckIds.has(deck.id)
 
             return (
               <Card
                 key={deck.id}
-                className="cursor-pointer transition-colors hover:bg-muted/50"
-                onClick={() => handleStartStudy(deck.id)}
+                className={`cursor-pointer transition-colors hover:bg-muted/50 ${
+                  isSelected ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => {
+                  if (isSelectMode) {
+                    toggleDeckSelection(deck.id)
+                  } else {
+                    handleStartStudy(deck.id)
+                  }
+                }}
               >
                 <CardContent className="py-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
+                      {isSelectMode && (
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => toggleDeckSelection(deck.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
                       <Folder className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">{deck.name}</span>
                     </div>

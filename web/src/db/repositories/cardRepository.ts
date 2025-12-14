@@ -21,37 +21,94 @@ function getSchedulerFromSettings(): SchedulerType {
   return 'sm2'
 }
 
+// 获取用户设置
+function getSettings(): { newCardsPerDay: number; maxReviewsPerDay: number } {
+  try {
+    const settings = localStorage.getItem('shiyi-settings')
+    if (settings) {
+      const parsed = JSON.parse(settings)
+      return {
+        newCardsPerDay: parsed.newCardsPerDay ?? 20,
+        maxReviewsPerDay: parsed.maxReviewsPerDay ?? 200,
+      }
+    }
+  } catch {
+    // 忽略解析错误
+  }
+  return { newCardsPerDay: 20, maxReviewsPerDay: 200 }
+}
+
 export const cardRepository = {
   /**
    * 获取待复习的卡片（按优先级排序）
+   * @param deckIds - 单个牌组ID、多个牌组ID数组、或undefined（全部牌组）
+   * @param options - 可选配置
    */
-  async getDueCards(deckId?: string, limit = 100): Promise<Card[]> {
+  async getDueCards(
+    deckIds?: string | string[],
+    options?: {
+      limit?: number
+      applyNewCardLimit?: boolean // 是否应用每日新卡限制
+    },
+  ): Promise<Card[]> {
     const now = Date.now()
+    const limit = options?.limit ?? 100
+    const applyNewCardLimit = options?.applyNewCardLimit ?? true
+    const settings = getSettings()
 
     let cards: Card[]
-    if (deckId) {
-      cards = await db.cards
-        .where('deckId')
-        .equals(deckId)
-        .filter((c) => !c.deletedAt)
-        .toArray()
+
+    // 支持单个或多个牌组ID
+    const deckIdArray = deckIds
+      ? Array.isArray(deckIds)
+        ? deckIds
+        : [deckIds]
+      : undefined
+
+    if (deckIdArray && deckIdArray.length > 0) {
+      // 查询多个牌组的卡片
+      const results = await Promise.all(
+        deckIdArray.map((id) =>
+          db.cards
+            .where('deckId')
+            .equals(id)
+            .filter((c) => !c.deletedAt)
+            .toArray(),
+        ),
+      )
+      cards = results.flat()
     } else {
       cards = await db.cards.filter((c) => !c.deletedAt).toArray()
     }
 
-    // 筛选待复习卡片
-    const dueCards = cards.filter((card) => {
-      if (card.state === 'new') return true
-      if (card.state === 'learning' || card.state === 'relearning') {
-        return card.due <= now
-      }
-      if (card.state === 'review') {
-        return card.due <= now
-      }
-      return false
-    })
+    // 分离不同状态的卡片
+    const newCards: Card[] = []
+    const learningCards: Card[] = []
+    const reviewCards: Card[] = []
 
-    // 排序：学习中 > 新卡片 > 复习
+    for (const card of cards) {
+      if (card.state === 'new') {
+        newCards.push(card)
+      } else if (card.state === 'learning' || card.state === 'relearning') {
+        if (card.due <= now) {
+          learningCards.push(card)
+        }
+      } else if (card.state === 'review') {
+        if (card.due <= now) {
+          reviewCards.push(card)
+        }
+      }
+    }
+
+    // 应用每日新卡限制
+    const limitedNewCards = applyNewCardLimit
+      ? newCards.slice(0, settings.newCardsPerDay)
+      : newCards
+
+    // 合并并排序：学习中 > 新卡片 > 复习
+    const dueCards = [...learningCards, ...limitedNewCards, ...reviewCards]
+
+    // 在每个类别内按 due 排序
     dueCards.sort((a, b) => {
       const order = { learning: 0, relearning: 0, new: 1, review: 2 }
       const orderA = order[a.state] ?? 3

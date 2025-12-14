@@ -1,7 +1,7 @@
 .PHONY: help install dev test test-unit test-integration test-cov lint lint-fix format type-check check \
        db-migrate db-upgrade db-downgrade db-history db-current \
        docker-build docker-run docker-stop docker-dev clean pre-commit-install pre-commit-run \
-       web-install web-dev web-build web-lint web-type-check web-check check-all ci
+       web-install web-dev web-build web-lint web-type-check web-format web-format-check web-check check-all ci
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -80,11 +80,19 @@ web-build: ## 构建前端项目
 
 web-lint: ## 前端代码检查
 	@echo "🔍 前端代码检查..."
-	cd web && pnpm exec eslint src --max-warnings 20
+	cd web && pnpm run lint
 
 web-type-check: ## 前端类型检查
 	@echo "🔍 前端类型检查..."
-	cd web && pnpm exec tsc --noEmit
+	cd web && pnpm run typecheck
+
+web-format: ## 前端代码格式化
+	@echo "🎨 前端代码格式化..."
+	cd web && pnpm run format
+
+web-format-check: ## 前端格式检查
+	@echo "🔍 前端格式检查..."
+	cd web && pnpm run format:check
 
 web-check: web-type-check web-lint ## 运行前端检查（type-check + lint）
 	@echo "✅ 前端检查完成"
@@ -104,8 +112,9 @@ ci: ## 模拟 CI 完整检查（提交前运行）
 	uv run pytest tests/ -v --tb=short
 	@echo ""
 	@echo "=== 前端检查 ==="
-	cd web && pnpm exec tsc --noEmit
-	cd web && pnpm exec eslint src --max-warnings 20
+	cd web && pnpm run typecheck
+	cd web && pnpm run lint
+	cd web && pnpm run format:check
 	cd web && pnpm build
 	@echo ""
 	@echo "✅ CI 检查全部通过！可以安全提交。"

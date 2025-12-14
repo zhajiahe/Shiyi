@@ -4,15 +4,7 @@
 
 import { nanoid } from 'nanoid'
 import { db } from '@/db'
-import type { Deck, DeckConfig } from '@/types'
-
-const DEFAULT_CONFIG: DeckConfig = {
-  newPerDay: 20,
-  maxReviewsPerDay: 200,
-  learningSteps: [1, 10],
-  graduatingInterval: 1,
-  easyInterval: 4,
-}
+import type { Deck } from '@/types'
 
 export const deckRepository = {
   /**
@@ -38,10 +30,7 @@ export const deckRepository = {
       id: nanoid(),
       userId: 'local',
       name: data.name || '新牌组',
-      parentId: data.parentId,
       noteModelId: data.noteModelId,
-      config: data.config || DEFAULT_CONFIG,
-      scheduler: data.scheduler || 'sm2',
       description: data.description,
       createdAt: now,
       updatedAt: now,

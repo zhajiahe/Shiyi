@@ -47,7 +47,14 @@ interface UndoRecord {
 
 export function ReviewPage() {
   const [searchParams] = useSearchParams()
-  const deckId = searchParams.get('deck') || undefined
+  // 支持单个牌组 (?deck=xxx) 或多个牌组 (?decks=xxx,yyy,zzz)
+  const deckParam = searchParams.get('deck')
+  const decksParam = searchParams.get('decks')
+  const deckIds: string[] | undefined = decksParam
+    ? decksParam.split(',').filter(Boolean)
+    : deckParam
+      ? [deckParam]
+      : undefined
 
   const [loading, setLoading] = useState(true)
   const [cards, setCards] = useState<ReviewCard[]>([])
@@ -63,7 +70,10 @@ export function ReviewPage() {
   const loadCards = useCallback(async () => {
     try {
       setLoading(true)
-      const dueCards = await cardRepository.getDueCards(deckId, 100)
+      const dueCards = await cardRepository.getDueCards(deckIds, {
+        limit: 100,
+        applyNewCardLimit: true,
+      })
 
       // 加载关联数据
       const reviewCards: ReviewCard[] = []
@@ -93,7 +103,8 @@ export function ReviewPage() {
     } finally {
       setLoading(false)
     }
-  }, [deckId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckParam, decksParam])
 
   useEffect(() => {
     loadCards()

@@ -36,24 +36,13 @@ export interface NoteModel {
 
 // ==================== 牌组 ====================
 
-export interface DeckConfig {
-  newPerDay: number
-  maxReviewsPerDay: number
-  learningSteps: number[]
-  graduatingInterval: number
-  easyInterval: number
-}
-
 export type SchedulerType = 'sm2' | 'fsrs_v4' | 'fsrs_v5'
 
 export interface Deck {
   id: string
   userId: string
   name: string
-  parentId?: string
   noteModelId?: string
-  config: DeckConfig
-  scheduler: SchedulerType
   description?: string
   createdAt?: number
   updatedAt?: number
