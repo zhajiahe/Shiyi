@@ -114,3 +114,31 @@ class CardListQuery(BaseModel):
     state: Literal["new", "learning", "review", "relearning"] | None = Field(default=None, description="状态过滤")
     queue: Literal["new", "learning", "review", "suspended"] | None = Field(default=None, description="队列过滤")
     due_before: int | None = Field(default=None, description="到期时间之前")
+
+
+# ==================== 批量操作 Schema ====================
+
+
+class NoteBatchItem(BaseModel):
+    """批量创建笔记的单项"""
+
+    fields: dict[str, str] = Field(..., description="字段内容")
+    tags: list[str] = Field(default_factory=list, description="标签列表")
+
+
+class NoteBatchCreate(BaseModel):
+    """批量创建笔记请求"""
+
+    deck_id: str = Field(..., description="所属牌组ID")
+    note_model_id: str = Field(..., description="笔记类型ID")
+    notes: list[NoteBatchItem] = Field(..., min_length=1, max_length=1000, description="笔记列表（最多1000条）")
+    source_type: Literal["manual", "ai", "import"] = Field(default="import", description="来源类型")
+
+
+class NoteBatchResult(BaseModel):
+    """批量创建结果"""
+
+    created_count: int = Field(..., description="成功创建的笔记数")
+    skipped_count: int = Field(..., description="跳过的笔记数（重复）")
+    error_count: int = Field(..., description="失败的笔记数")
+    created_ids: list[str] = Field(default_factory=list, description="创建的笔记ID列表")

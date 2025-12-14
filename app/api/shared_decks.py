@@ -145,3 +145,26 @@ async def delete_shared_deck(
     service = SharedDeckService(db)
     await service.delete_shared_deck(shared_deck_id, current_user.id)
     return BaseResponse(success=True, code=200, msg="删除共享牌组成功", data=None)
+
+
+@router.post("/{shared_deck_id}/publish-version", response_model=BaseResponse[SharedDeckResponse])
+async def publish_new_version(
+    shared_deck_id: str,
+    db: DBSession,
+    current_user: CurrentUser,
+):
+    """
+    发布共享牌组的新版本
+
+    从关联的源牌组重新导出内容，创建新的版本快照。
+    版本号自动递增，内容哈希会重新计算。
+    如果内容没有变化，会返回错误。
+    """
+    service = SharedDeckService(db)
+    item = await service.publish_new_version(shared_deck_id, current_user.id)
+    return BaseResponse(
+        success=True,
+        code=200,
+        msg="发布新版本成功",
+        data=SharedDeckResponse.model_validate(item),
+    )

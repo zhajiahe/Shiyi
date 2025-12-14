@@ -14,6 +14,8 @@ from app.schemas.note import (
     CardListQuery,
     CardResponse,
     CardUpdate,
+    NoteBatchCreate,
+    NoteBatchResult,
     NoteCreate,
     NoteListQuery,
     NoteResponse,
@@ -36,6 +38,8 @@ from app.schemas.review_log import (
     ReviewStats,
 )
 from app.schemas.shared_deck import (
+    PublishDeckRequest,
+    PublishVersionRequest,
     SharedDeckCreate,
     SharedDeckDetailResponse,
     SharedDeckListQuery,
@@ -81,6 +85,8 @@ __all__ = [
     "NoteUpdate",
     "NoteResponse",
     "NoteListQuery",
+    "NoteBatchCreate",
+    "NoteBatchResult",
     # Card
     "CardResponse",
     "CardUpdate",
@@ -97,4 +103,6 @@ __all__ = [
     "SharedDeckDetailResponse",
     "SharedDeckListQuery",
     "SharedDeckSnapshotResponse",
+    "PublishDeckRequest",
+    "PublishVersionRequest",
 ]

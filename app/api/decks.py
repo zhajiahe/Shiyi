@@ -14,7 +14,9 @@ from app.schemas.deck import (
     DeckResponse,
     DeckUpdate,
 )
+from app.schemas.shared_deck import PublishDeckRequest, SharedDeckResponse
 from app.services.deck import DeckService
+from app.services.shared_deck import SharedDeckService
 
 router = APIRouter(prefix="/decks", tags=["decks"])
 
@@ -109,3 +111,26 @@ async def delete_deck(
     service = DeckService(db)
     await service.delete_deck(deck_id, current_user.id)
     return BaseResponse(success=True, code=200, msg="删除牌组成功", data=None)
+
+
+@router.post("/{deck_id}/publish", response_model=BaseResponse[SharedDeckResponse], status_code=status.HTTP_201_CREATED)
+async def publish_deck(
+    deck_id: str,
+    data: PublishDeckRequest,
+    db: DBSession,
+    current_user: CurrentUser,
+):
+    """
+    将牌组发布为共享牌组
+
+    将私有牌组发布到牌组市场，供其他用户下载使用。
+    发布后牌组内容会被打包，并创建初始版本快照。
+    """
+    service = SharedDeckService(db)
+    item = await service.publish_deck(deck_id, current_user.id, data)
+    return BaseResponse(
+        success=True,
+        code=201,
+        msg="发布共享牌组成功",
+        data=SharedDeckResponse.model_validate(item),
+    )

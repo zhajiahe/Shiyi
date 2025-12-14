@@ -115,6 +115,21 @@ class NoteRepository(BaseRepository[Note]):
         )
         return result.scalar_one_or_none()
 
+    async def get_guids_by_deck(self, deck_id: str) -> set[str]:
+        """
+        获取牌组内所有笔记的 GUID 集合
+
+        Args:
+            deck_id: 牌组 ID
+
+        Returns:
+            GUID 集合
+        """
+        result = await self.db.execute(
+            select(Note.guid).where(Note.deck_id == deck_id, Note.deleted_at.is_(None))
+        )
+        return {row[0] for row in result.all()}
+
     @staticmethod
     def generate_guid(fields: dict[str, str]) -> str:
         """

@@ -11,7 +11,7 @@ from app.models.note import Card, Note
 from app.repositories.deck import DeckRepository
 from app.repositories.note import CardRepository, NoteRepository
 from app.repositories.note_model import CardTemplateRepository, NoteModelRepository
-from app.schemas.note import CardListQuery, CardUpdate, NoteCreate, NoteListQuery, NoteUpdate
+from app.schemas.note import CardListQuery, CardUpdate, NoteBatchCreate, NoteBatchResult, NoteCreate, NoteListQuery, NoteUpdate
 
 
 class NoteService:
@@ -147,6 +147,100 @@ class NoteService:
 
         # 重新加载以获取卡片
         return await self.note_repo.get_by_id_with_cards(note.id)  # type: ignore
+
+    async def create_notes_batch(self, user_id: str, data: NoteBatchCreate) -> NoteBatchResult:
+        """
+        批量创建笔记
+
+        Args:
+            user_id: 用户 ID
+            data: 批量创建数据
+
+        Returns:
+            批量创建结果
+
+        Raises:
+            BadRequestException: 牌组或笔记类型无效
+        """
+        # 验证牌组
+        deck = await self.deck_repo.get_by_id(data.deck_id)
+        if not deck:
+            raise BadRequestException(msg="牌组不存在")
+        if deck.user_id != user_id:
+            raise ForbiddenException(msg="无权限访问此牌组")
+
+        # 验证笔记类型
+        note_model = await self.note_model_repo.get_by_id_with_templates(data.note_model_id)
+        if not note_model:
+            raise BadRequestException(msg="笔记类型不存在")
+
+        # 获取现有 GUID 用于去重
+        existing_guids = await self.note_repo.get_guids_by_deck(data.deck_id)
+
+        created_count = 0
+        skipped_count = 0
+        error_count = 0
+        created_ids = []
+
+        templates = [t for t in note_model.templates if t.deleted_at is None]
+
+        for item in data.notes:
+            try:
+                guid = NoteRepository.generate_guid(item.fields)
+
+                # 检查是否重复
+                if guid in existing_guids:
+                    skipped_count += 1
+                    continue
+
+                # 创建笔记
+                note = await self.note_repo.create(
+                    {
+                        "user_id": user_id,
+                        "deck_id": data.deck_id,
+                        "note_model_id": data.note_model_id,
+                        "guid": guid,
+                        "fields": item.fields,
+                        "tags": item.tags,
+                        "source_type": data.source_type,
+                        "dirty": 1,
+                    }
+                )
+
+                # 为每个模板创建卡片
+                for template in templates:
+                    await self.card_repo.create(
+                        {
+                            "user_id": user_id,
+                            "note_id": note.id,
+                            "deck_id": data.deck_id,
+                            "card_template_id": template.id,
+                            "ord": template.ord,
+                            "state": "new",
+                            "queue": "new",
+                            "due": 0,
+                            "interval": 0,
+                            "ease_factor": 2500,
+                            "reps": 0,
+                            "lapses": 0,
+                            "stability": 0.0,
+                            "difficulty": 0.0,
+                            "dirty": 1,
+                        }
+                    )
+
+                existing_guids.add(guid)
+                created_ids.append(note.id)
+                created_count += 1
+            except Exception:
+                error_count += 1
+
+        return NoteBatchResult(
+            created_count=created_count,
+            skipped_count=skipped_count,
+            error_count=error_count,
+            created_ids=created_ids,
+        )
 
     async def update_note(
         self,

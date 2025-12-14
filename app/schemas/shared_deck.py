@@ -90,3 +90,23 @@ class SharedDeckListQuery(BaseModel):
     q: str | None = Field(default=None, description="搜索关键词")
     is_featured: bool | None = Field(default=None, description="是否精选")
     is_official: bool | None = Field(default=None, description="是否官方")
+
+
+# ==================== 发布相关 Schema ====================
+
+
+class PublishDeckRequest(BaseModel):
+    """发布牌组为共享牌组请求"""
+
+    slug: str = Field(..., min_length=1, max_length=100, pattern=r"^[a-z0-9-]+$", description="URL 友好标识")
+    title: str = Field(..., min_length=1, max_length=200, description="标题")
+    description: str | None = Field(default=None, description="描述（Markdown）")
+    language: str = Field(default="zh-CN", max_length=10, description="语言")
+    tags: list[str] = Field(default_factory=list, description="标签列表")
+    cover_image_url: str | None = Field(default=None, max_length=500, description="封面图片URL")
+
+
+class PublishVersionRequest(BaseModel):
+    """发布共享牌组新版本请求"""
+
+    changelog: str | None = Field(default=None, max_length=1000, description="更新日志")

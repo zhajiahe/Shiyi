@@ -9,6 +9,8 @@ from fastapi import APIRouter, Depends, status
 from app.core.deps import CurrentUser, DBSession
 from app.models.base import BasePageQuery, BaseResponse, PageResponse
 from app.schemas.note import (
+    NoteBatchCreate,
+    NoteBatchResult,
     NoteCreate,
     NoteListQuery,
     NoteResponse,
@@ -109,3 +111,26 @@ async def delete_note(
     service = NoteService(db)
     await service.delete_note(note_id, current_user.id)
     return BaseResponse(success=True, code=200, msg="删除笔记成功", data=None)
+
+
+@router.post("/batch", response_model=BaseResponse[NoteBatchResult], status_code=status.HTTP_201_CREATED)
+async def create_notes_batch(
+    data: NoteBatchCreate,
+    db: DBSession,
+    current_user: CurrentUser,
+):
+    """
+    批量创建笔记
+
+    一次性创建多条笔记及其关联的卡片。
+    支持去重：如果笔记内容（GUID）已存在，会自动跳过。
+    最多支持 1000 条笔记。
+    """
+    service = NoteService(db)
+    result = await service.create_notes_batch(current_user.id, data)
+    return BaseResponse(
+        success=True,
+        code=201,
+        msg=f"批量创建完成：成功 {result.created_count}，跳过 {result.skipped_count}，失败 {result.error_count}",
+        data=result,
+    )
