@@ -248,8 +248,6 @@ class SharedDeckService:
                 "id": deck.id,
                 "name": deck.name,
                 "description": deck.description,
-                "config": deck.config,
-                "scheduler": deck.scheduler,
             },
             "notes": [
                 {

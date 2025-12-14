@@ -5,11 +5,9 @@ Pydantic Schema 模块
 """
 
 from app.schemas.deck import (
-    DeckConfig,
     DeckCreate,
     DeckListQuery,
     DeckResponse,
-    DeckTreeNode,
     DeckUpdate,
 )
 from app.schemas.note import (
@@ -74,11 +72,9 @@ __all__ = [
     "CardTemplateUpdate",
     "CardTemplateResponse",
     # Deck
-    "DeckConfig",
     "DeckCreate",
     "DeckUpdate",
     "DeckResponse",
-    "DeckTreeNode",
     "DeckListQuery",
     # Note
     "NoteCreate",

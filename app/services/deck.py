@@ -64,22 +64,9 @@ class DeckService:
         return await self.deck_repo.get_by_user_id(
             user_id=user_id,
             keyword=query_params.keyword,
-            parent_id=query_params.parent_id,
             skip=skip,
             limit=page_size,
         )
-
-    async def get_deck_tree(self, user_id: str) -> list[Deck]:
-        """
-        获取牌组树
-
-        Args:
-            user_id: 用户 ID
-
-        Returns:
-            根牌组列表（包含子牌组）
-        """
-        return await self.deck_repo.get_root_decks_with_children(user_id)
 
     async def create_deck(self, user_id: str, data: DeckCreate) -> Deck:
         """
@@ -93,29 +80,18 @@ class DeckService:
             创建的 Deck 实例
 
         Raises:
-            BadRequestException: 名称已存在或父牌组无效
+            BadRequestException: 名称已存在
         """
-        # 验证父牌组
-        if data.parent_id:
-            parent = await self.deck_repo.get_by_id(data.parent_id)
-            if not parent:
-                raise BadRequestException(msg="父牌组不存在")
-            if parent.user_id != user_id:
-                raise ForbiddenException(msg="无权限访问父牌组")
-
-        # 检查同一父牌组下名称是否已存在
-        if await self.deck_repo.name_exists_in_parent(user_id, data.name, data.parent_id):
-            raise BadRequestException(msg="同一层级下牌组名称已存在")
+        # 检查名称是否已存在
+        if await self.deck_repo.name_exists(user_id, data.name):
+            raise BadRequestException(msg="牌组名称已存在")
 
         # 创建牌组
         return await self.deck_repo.create(
             {
                 "user_id": user_id,
                 "name": data.name,
-                "parent_id": data.parent_id,
                 "note_model_id": data.note_model_id,
-                "config": data.config.model_dump(),
-                "scheduler": data.scheduler,
                 "description": data.description,
             }
         )
@@ -140,38 +116,17 @@ class DeckService:
         Raises:
             NotFoundException: 牌组不存在
             ForbiddenException: 无权限访问
-            BadRequestException: 名称已存在或父牌组无效
+            BadRequestException: 名称已存在
         """
         deck = await self.get_deck(deck_id, user_id)
 
-        # 验证新父牌组
-        new_parent_id = data.parent_id if data.parent_id is not None else deck.parent_id
-        if data.parent_id is not None:
-            if data.parent_id:
-                parent = await self.deck_repo.get_by_id(data.parent_id)
-                if not parent:
-                    raise BadRequestException(msg="父牌组不存在")
-                if parent.user_id != user_id:
-                    raise ForbiddenException(msg="无权限访问父牌组")
-                # 防止循环引用
-                if await self.deck_repo.is_descendant(deck_id, data.parent_id):
-                    raise BadRequestException(msg="不能将牌组移动到自己的子牌组下")
-
-        # 检查同一父牌组下名称是否已存在
-        new_name = data.name if data.name is not None else deck.name
-        if data.name is not None or data.parent_id is not None:
-            if await self.deck_repo.name_exists_in_parent(user_id, new_name, new_parent_id, exclude_id=deck_id):
-                raise BadRequestException(msg="同一层级下牌组名称已存在")
+        # 检查名称是否已存在
+        if data.name and data.name != deck.name:
+            if await self.deck_repo.name_exists(user_id, data.name, exclude_id=deck_id):
+                raise BadRequestException(msg="牌组名称已存在")
 
         # 更新数据
         update_data = data.model_dump(exclude_unset=True)
-        if "config" in update_data and update_data["config"] is not None:
-            update_data["config"] = (
-                update_data["config"].model_dump()
-                if hasattr(update_data["config"], "model_dump")
-                else update_data["config"]
-            )
-
         return await self.deck_repo.update(deck, update_data)
 
     async def delete_deck(self, deck_id: str, user_id: str) -> None:
