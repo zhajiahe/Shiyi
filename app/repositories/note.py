@@ -125,9 +125,7 @@ class NoteRepository(BaseRepository[Note]):
         Returns:
             GUID 集合
         """
-        result = await self.db.execute(
-            select(Note.guid).where(Note.deck_id == deck_id, Note.deleted_at.is_(None))
-        )
+        result = await self.db.execute(select(Note.guid).where(Note.deck_id == deck_id, Note.deleted_at.is_(None)))
         return {row[0] for row in result.all()}
 
     @staticmethod

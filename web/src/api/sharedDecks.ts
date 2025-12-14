@@ -200,14 +200,6 @@ export async function importSharedDeck(
     name: deckName,
     description: exportData.deck.description,
     noteModelId: exportData.note_models[0]?.id,
-    config: {
-      newPerDay: 20,
-      maxReviewsPerDay: 200,
-      learningSteps: [1, 10],
-      graduatingInterval: 1,
-      easyInterval: 4,
-    },
-    scheduler: 'sm2',
     createdAt: now,
     updatedAt: now,
   }

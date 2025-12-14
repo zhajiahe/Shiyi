@@ -1,14 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import {
-  Calendar,
-  TrendingUp,
-  Loader2,
-  Target,
-  Award,
-  Clock,
-  Brain,
-  Layers,
-} from 'lucide-react'
+import { Calendar, TrendingUp, Loader2, Target, Award, Clock, Brain, Layers } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { db } from '@/db'

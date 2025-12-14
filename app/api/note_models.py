@@ -25,6 +25,31 @@ router = APIRouter(prefix="/note-models", tags=["note-models"])
 # ==================== 笔记类型接口 ====================
 
 
+@router.get("/available", response_model=BaseResponse[list[NoteModelResponse]])
+async def get_available_note_models(
+    db: DBSession,
+    current_user: CurrentUser,
+    keyword: str | None = None,
+):
+    """
+    获取用户可用的所有笔记类型
+
+    返回内置预设模板 + 用户自己创建的笔记类型。
+    内置模板由系统管理员创建，所有用户可用。
+    """
+    service = NoteModelService(db)
+    items = await service.get_available_note_models(
+        user_id=current_user.id,
+        keyword=keyword,
+    )
+    return BaseResponse(
+        success=True,
+        code=200,
+        msg="获取可用笔记类型成功",
+        data=[NoteModelResponse.model_validate(item) for item in items],
+    )
+
+
 @router.get("", response_model=BaseResponse[PageResponse[NoteModelResponse]])
 async def get_note_models(
     db: DBSession,

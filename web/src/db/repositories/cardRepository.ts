@@ -59,11 +59,7 @@ export const cardRepository = {
     let cards: Card[]
 
     // 支持单个或多个牌组ID
-    const deckIdArray = deckIds
-      ? Array.isArray(deckIds)
-        ? deckIds
-        : [deckIds]
-      : undefined
+    const deckIdArray = deckIds ? (Array.isArray(deckIds) ? deckIds : [deckIds]) : undefined
 
     if (deckIdArray && deckIdArray.length > 0) {
       // 查询多个牌组的卡片

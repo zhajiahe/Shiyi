@@ -193,9 +193,7 @@ class SharedDeckService:
             创建的 SharedDeck 实例
         """
         # 验证牌组存在且属于当前用户
-        deck_result = await self.db.execute(
-            select(Deck).where(Deck.id == deck_id, Deck.deleted_at.is_(None))
-        )
+        deck_result = await self.db.execute(select(Deck).where(Deck.id == deck_id, Deck.deleted_at.is_(None)))
         deck = deck_result.scalar_one_or_none()
         if not deck:
             raise NotFoundException(msg="牌组不存在")
@@ -207,15 +205,11 @@ class SharedDeckService:
             raise BadRequestException(msg="该标识已被使用")
 
         # 统计笔记和卡片数量
-        notes_result = await self.db.execute(
-            select(Note).where(Note.deck_id == deck_id, Note.deleted_at.is_(None))
-        )
+        notes_result = await self.db.execute(select(Note).where(Note.deck_id == deck_id, Note.deleted_at.is_(None)))
         notes = list(notes_result.scalars().all())
         note_count = len(notes)
 
-        cards_result = await self.db.execute(
-            select(Card).where(Card.deck_id == deck_id, Card.deleted_at.is_(None))
-        )
+        cards_result = await self.db.execute(select(Card).where(Card.deck_id == deck_id, Card.deleted_at.is_(None)))
         cards = list(cards_result.scalars().all())
         card_count = len(cards)
 
@@ -283,15 +277,11 @@ class SharedDeckService:
             raise NotFoundException(msg="未找到关联的牌组，请确保牌组名称与共享牌组标题一致")
 
         # 统计笔记和卡片
-        notes_result = await self.db.execute(
-            select(Note).where(Note.deck_id == deck.id, Note.deleted_at.is_(None))
-        )
+        notes_result = await self.db.execute(select(Note).where(Note.deck_id == deck.id, Note.deleted_at.is_(None)))
         notes = list(notes_result.scalars().all())
         note_count = len(notes)
 
-        cards_result = await self.db.execute(
-            select(Card).where(Card.deck_id == deck.id, Card.deleted_at.is_(None))
-        )
+        cards_result = await self.db.execute(select(Card).where(Card.deck_id == deck.id, Card.deleted_at.is_(None)))
         cards = list(cards_result.scalars().all())
         card_count = len(cards)
 
@@ -367,9 +357,7 @@ class SharedDeckService:
             raise NotFoundException(msg="共享牌组数据不存在")
 
         # 获取笔记
-        notes_result = await self.db.execute(
-            select(Note).where(Note.deck_id == deck.id, Note.deleted_at.is_(None))
-        )
+        notes_result = await self.db.execute(select(Note).where(Note.deck_id == deck.id, Note.deleted_at.is_(None)))
         notes = list(notes_result.scalars().all())
 
         # 获取笔记类型
@@ -413,9 +401,7 @@ class SharedDeckService:
                 )
 
         # 获取卡片
-        cards_result = await self.db.execute(
-            select(Card).where(Card.deck_id == deck.id, Card.deleted_at.is_(None))
-        )
+        cards_result = await self.db.execute(select(Card).where(Card.deck_id == deck.id, Card.deleted_at.is_(None)))
         cards = list(cards_result.scalars().all())
 
         # 增加下载计数
@@ -448,3 +434,59 @@ class SharedDeckService:
                 for c in cards
             ],
         }
+
+    # ==================== 管理员功能 ====================
+
+    async def set_featured(self, shared_deck_id: str, featured: bool) -> SharedDeck:
+        """
+        设置/取消精选
+
+        Args:
+            shared_deck_id: 共享牌组 ID
+            featured: 是否精选
+
+        Returns:
+            更新后的 SharedDeck
+        """
+        shared_deck = await self.shared_deck_repo.get_by_id(shared_deck_id)
+        if not shared_deck:
+            raise NotFoundException(msg="共享牌组不存在")
+
+        await self.shared_deck_repo.update(shared_deck, {"is_featured": featured})
+        return await self.get_shared_deck(shared_deck_id)
+
+    async def set_official(self, shared_deck_id: str, official: bool) -> SharedDeck:
+        """
+        设置/取消官方推荐
+
+        Args:
+            shared_deck_id: 共享牌组 ID
+            official: 是否官方推荐
+
+        Returns:
+            更新后的 SharedDeck
+        """
+        shared_deck = await self.shared_deck_repo.get_by_id(shared_deck_id)
+        if not shared_deck:
+            raise NotFoundException(msg="共享牌组不存在")
+
+        await self.shared_deck_repo.update(shared_deck, {"is_official": official})
+        return await self.get_shared_deck(shared_deck_id)
+
+    async def set_active(self, shared_deck_id: str, active: bool) -> SharedDeck:
+        """
+        上架/下架共享牌组
+
+        Args:
+            shared_deck_id: 共享牌组 ID
+            active: 是否上架
+
+        Returns:
+            更新后的 SharedDeck
+        """
+        shared_deck = await self.shared_deck_repo.get_by_id(shared_deck_id)
+        if not shared_deck:
+            raise NotFoundException(msg="共享牌组不存在")
+
+        await self.shared_deck_repo.update(shared_deck, {"is_active": active})
+        return await self.get_shared_deck(shared_deck_id)

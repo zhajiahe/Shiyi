@@ -44,7 +44,8 @@ class NoteModelService:
         note_model = await self.note_model_repo.get_by_id_with_templates(note_model_id)
         if not note_model:
             raise NotFoundException(msg="笔记类型不存在")
-        if note_model.user_id != user_id:
+        # 允许访问内置模板或自己创建的模板
+        if not note_model.is_builtin and note_model.user_id != user_id:
             raise ForbiddenException(msg="无权限访问此笔记类型")
         return note_model
 
@@ -73,6 +74,26 @@ class NoteModelService:
             keyword=query_params.keyword,
             skip=skip,
             limit=page_size,
+        )
+
+    async def get_available_note_models(
+        self,
+        user_id: str,
+        keyword: str | None = None,
+    ) -> list[NoteModel]:
+        """
+        获取用户可用的所有笔记类型（内置 + 用户自己创建的）
+
+        Args:
+            user_id: 用户 ID
+            keyword: 搜索关键词
+
+        Returns:
+            笔记类型列表（内置模板在前）
+        """
+        return await self.note_model_repo.get_available_for_user(
+            user_id=user_id,
+            keyword=keyword,
         )
 
     async def create_note_model(self, user_id: str, data: NoteModelCreate) -> NoteModel:

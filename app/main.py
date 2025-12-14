@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from app.api.admin import router as admin_router
 from app.api.cards import router as cards_router
 from app.api.decks import router as decks_router
 from app.api.note_models import router as note_models_router
@@ -26,8 +27,8 @@ setup_logging()
 
 # 创建 FastAPI 应用
 app = FastAPI(
-    title="FastAPI Template",
-    description="基于 SQLAlchemy 2.0+ 的 FastAPI 项目模板",
+    title="Shiyi Study",
+    description="Shiyi Study is a platform for learning and studying.",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -91,6 +92,9 @@ app.include_router(review_logs_router, prefix="/api/v1")
 
 # 注册共享牌组路由
 app.include_router(shared_decks_router, prefix="/api/v1")
+
+# 注册管理员路由
+app.include_router(admin_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":

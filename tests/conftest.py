@@ -103,11 +103,27 @@ async def db(db_engine):
     async with AsyncSessionLocal() as session:
         yield session
 
-        # 测试后清理数据（保留表结构）
+        # 测试后清理数据（保留表结构，按依赖顺序删除）
+        # 注意：不清理 users 表，因为 superuser_token 是 session 级别缓存的
         try:
             from sqlalchemy import text
 
-            await session.execute(text("DELETE FROM users"))
+            # 按外键依赖顺序删除（不包括 users）
+            tables = [
+                "shared_deck_snapshots",
+                "shared_decks",
+                "review_logs",
+                "cards",
+                "notes",
+                "card_templates",
+                "note_models",
+                "decks",
+            ]
+            for table in tables:
+                try:
+                    await session.execute(text(f"DELETE FROM {table}"))
+                except Exception:
+                    pass  # 表可能不存在
             await session.commit()
         except Exception:
             await session.rollback()

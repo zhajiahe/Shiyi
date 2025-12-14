@@ -99,6 +99,7 @@ class NoteModelResponse(NoteModelBase):
 
     id: str = Field(..., description="笔记类型ID")
     user_id: str = Field(..., description="所属用户ID")
+    is_builtin: bool = Field(default=False, description="是否内置/预设模板")
     templates: list[CardTemplateResponse] = Field(default_factory=list, description="卡片模板列表")
     created_at: datetime | None = Field(default=None, description="创建时间")
     updated_at: datetime | None = Field(default=None, description="更新时间")

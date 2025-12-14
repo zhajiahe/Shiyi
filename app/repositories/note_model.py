@@ -106,6 +106,47 @@ class NoteModelRepository(BaseRepository[NoteModel]):
         result = await self.db.execute(query)
         return result.scalar_one_or_none() is not None
 
+    async def get_available_for_user(
+        self,
+        user_id: str,
+        *,
+        keyword: str | None = None,
+    ) -> list[NoteModel]:
+        """
+        获取用户可用的所有笔记类型（内置 + 用户自己创建的）
+
+        Args:
+            user_id: 用户 ID
+            keyword: 搜索关键词
+
+        Returns:
+            笔记类型列表（内置模板在前）
+        """
+        from sqlalchemy import or_
+
+        # 查询条件：内置模板 OR 用户自己创建的
+        query = (
+            select(NoteModel)
+            .options(selectinload(NoteModel.templates))
+            .where(
+                NoteModel.deleted_at.is_(None),
+                or_(
+                    NoteModel.is_builtin.is_(True),
+                    NoteModel.user_id == user_id,
+                ),
+            )
+        )
+
+        # 关键词搜索
+        if keyword:
+            query = query.where(NoteModel.name.like(f"%{keyword}%"))
+
+        # 排序：内置模板在前，然后按创建时间倒序
+        query = query.order_by(NoteModel.is_builtin.desc(), NoteModel.created_at.desc())
+
+        result = await self.db.execute(query)
+        return list(result.scalars().all())
+
 
 class CardTemplateRepository(BaseRepository[CardTemplate]):
     """卡片模板数据访问层"""

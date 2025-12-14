@@ -4,7 +4,7 @@
 NoteModel 定义字段结构，CardTemplate 定义问答模板
 """
 
-from sqlalchemy import JSON, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, BaseTableMixin
@@ -26,6 +26,9 @@ class NoteModel(Base, BaseTableMixin):
         comment="字段定义，如 [{'name': 'Front'}, {'name': 'Back'}]",
     )
     css: Mapped[str | None] = mapped_column(Text, nullable=True, comment="自定义CSS样式")
+    is_builtin: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, index=True, comment="是否内置/预设模板（由管理员创建）"
+    )
 
     # 关系
     templates: Mapped[list["CardTemplate"]] = relationship(

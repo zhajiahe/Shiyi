@@ -155,22 +155,22 @@ export function Dashboard() {
   if (decks.length === 0) {
     return (
       <Empty className="border rounded-lg py-16">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <BookOpen className="h-6 w-6" />
-            </EmptyMedia>
-            <EmptyTitle>还没有学习内容</EmptyTitle>
-            <EmptyDescription>从牌组市场导入共享牌组开始您的学习之旅</EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button asChild>
-              <Link to="/market">
-                <Download className="h-4 w-4 mr-2" />
-                浏览牌组市场
-              </Link>
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <BookOpen className="h-6 w-6" />
+          </EmptyMedia>
+          <EmptyTitle>还没有学习内容</EmptyTitle>
+          <EmptyDescription>从牌组市场导入共享牌组开始您的学习之旅</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button asChild>
+            <Link to="/market">
+              <Download className="h-4 w-4 mr-2" />
+              浏览牌组市场
+            </Link>
+          </Button>
+        </EmptyContent>
+      </Empty>
     )
   }
 

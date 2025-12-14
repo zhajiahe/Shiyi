@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-  Save,
-  Loader2,
-  Download,
-  Upload,
-  Trash2,
-  HardDrive,
-  AlertTriangle,
-} from 'lucide-react'
+import { Save, Loader2, Download, Upload, Trash2, HardDrive, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

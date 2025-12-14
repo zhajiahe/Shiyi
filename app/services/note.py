@@ -11,7 +11,15 @@ from app.models.note import Card, Note
 from app.repositories.deck import DeckRepository
 from app.repositories.note import CardRepository, NoteRepository
 from app.repositories.note_model import CardTemplateRepository, NoteModelRepository
-from app.schemas.note import CardListQuery, CardUpdate, NoteBatchCreate, NoteBatchResult, NoteCreate, NoteListQuery, NoteUpdate
+from app.schemas.note import (
+    CardListQuery,
+    CardUpdate,
+    NoteBatchCreate,
+    NoteBatchResult,
+    NoteCreate,
+    NoteListQuery,
+    NoteUpdate,
+)
 
 
 class NoteService:
