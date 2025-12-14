@@ -7,3 +7,4 @@ export default {
   tabWidth: 2,
   arrowParens: 'always',
 }
+

@@ -179,3 +179,4 @@ function formatFSRSInterval(card: FSRSCard): string {
   if (days < 365) return `${Math.round(days / 30)}月`
   return `${Math.round(days / 365)}年`
 }
+

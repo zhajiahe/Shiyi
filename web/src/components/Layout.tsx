@@ -46,3 +46,4 @@ export function Layout({ children }: LayoutProps) {
     </SidebarProvider>
   )
 }
+
