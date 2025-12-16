@@ -31,6 +31,7 @@
     "dexie-react-hooks": "^4.2.0",
     "lucide-react": "^0.560.0",
     "nanoid": "^5.1.6",
+    "papaparse": "^5.5.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.10.1",
@@ -38,11 +39,13 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "ts-fsrs": "^5.2.3",
+    "xlsx": "^0.18.5",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.3",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

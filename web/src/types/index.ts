@@ -3,6 +3,37 @@
  * 与后端模型对应
  */
 
+// ==================== 用户 ====================
+
+export interface User {
+  id: string
+  username: string
+  email: string
+  nickname: string
+  isActive: boolean
+  isSuperuser: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface LoginRequest {
+  username: string
+  password: string
+}
+
+export interface RegisterRequest {
+  username: string
+  email: string
+  nickname: string
+  password: string
+}
+
+export interface AuthTokens {
+  accessToken: string
+  refreshToken: string
+  tokenType: string
+}
+
 // ==================== 笔记类型 ====================
 
 export interface FieldDefinition {

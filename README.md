@@ -1,103 +1,166 @@
-# FastAPI 后端开发模板
+# 拾遗 Shiyi
 
-> 基于 FastAPI 的现代 Python 后端项目模板，集成最佳实践
+> 一个本地优先的现代化间隔重复记忆系统
 
-## ✨ 特性
+**数据属于用户，服务只用来增强体验。**
 
-- 🚀 **FastAPI** + SQLAlchemy 2.0 异步 ORM
-- 🔐 **JWT 认证** (Access Token + Refresh Token)
-- 📁 **分层架构** (Router → Service → Repository)
-- 🗃️ **Alembic** 数据库迁移
-- 🧪 **Pytest** 单元测试 + 集成测试
-- 🐳 **Docker** 容器化支持
-- 🔍 **Ruff + MyPy** 代码质量保证
+## 为什么选择拾遗？
 
-## 📦 项目结构
+传统记忆应用的痛点：
+- 数据存储在云端，隐私难以保障
+- 依赖网络，离线无法使用
+- 同步冲突频繁，数据容易丢失
+- 界面老旧，学习体验不佳
 
-```
-fastapi-template/
-├── app/
-│   ├── api/              # API 路由
-│   ├── core/             # 配置、安全、数据库
-│   ├── models/           # SQLAlchemy 模型
-│   ├── schemas/          # Pydantic 模型
-│   ├── services/         # 业务逻辑层
-│   ├── repositories/     # 数据访问层
-│   └── main.py           # 应用入口
-├── tests/                # 测试代码
-├── alembic/              # 数据库迁移
-├── Dockerfile            # Docker 配置
-└── docker-compose.yml    # Docker Compose
-```
+**拾遗的解决方案**：完全本地化的现代记忆系统，你的数据永远在你手中。
+
+## ✨ 核心特性
+
+### 🔒 本地优先架构
+
+拾遗采用"本地优先"设计理念。所有学习数据——牌组、笔记、卡片、复习记录——全部存储在浏览器的 IndexedDB 中。
+
+- **完全离线可用**：无需网络连接，随时随地学习
+- **无需注册登录**：打开即用，零门槛开始记忆之旅
+- **数据完全私有**：学习进度、复习习惯不会上传到任何服务器
+- **支持 PWA**：可安装到桌面，获得原生应用般的体验
+
+### 🧠 科学的调度算法
+
+拾遗内置双调度引擎，满足不同用户的需求：
+
+**FSRS (Free Spaced Repetition Scheduler)**
+- 基于最新记忆科学研究的算法
+- 根据你的实际记忆表现动态调整复习间隔
+- 相比传统算法减少 20-30% 的复习量
+- 支持 v4 和 v5 两个版本
+
+**SM-2 (SuperMemo 2)**
+- 经典的间隔重复算法
+- Anki 用户熟悉的复习体验
+- 稳定可靠，经过数十年验证
+
+你可以为不同牌组选择不同的算法，甚至随时切换。
+
+### 📚 共享牌组市场
+
+拾遗提供一个去中心化的牌组分发市场：
+
+- **无需登录浏览**：任何人都可以自由浏览高质量共享牌组
+- **一键导入**：下载后自动导入到本地，立即开始学习
+- **完全私有化**：导入后的牌组与服务器完全断开，你的学习进度不会被追踪
+- **版本更新**：当牌组作者更新内容时，你可以选择更新，同时保留已有的学习进度
+- **内容安全**：所有共享牌组经过审核，不含用户隐私数据
+
+### 🎨 灵活的定制能力
+
+拾遗继承了 Anki 强大的定制系统，同时提供更友好的编辑体验：
+
+**笔记类型 (Note Model)**
+- 自定义字段数量和名称
+- 支持文本、图片、音频等多种内容
+- 可创建适合不同学习场景的笔记模板
+
+**卡片模板 (Card Template)**
+- HTML + CSS 自定义卡片外观
+- 支持正反面不同样式
+- 一个笔记可生成多张卡片（如：正向卡 + 反向卡）
+- 内置美观的默认主题，开箱即用
+
+**牌组管理**
+- 支持子牌组，构建知识层级
+- 每个牌组独立的调度设置
+- 批量操作和标签管理
+
+### 📊 学习统计
+
+拾遗记录你的每一次复习，帮助你了解学习状态：
+
+- 今日复习进度和完成情况
+- 历史复习热力图
+- 记忆稳定性分析
+- 卡片状态分布（新学、复习、重学）
+
+## 🎯 使用场景
+
+**语言学习**
+- 单词记忆
+- 语法点复习
+- 听力材料重复
+
+**专业考试**
+- 医学术语
+- 法律条文
+- 资格认证
+
+**知识管理**
+- 读书笔记卡片化
+- 技术知识点整理
+- 名言警句收集
+
+**日常记忆**
+- 人名地名
+- 历史事件
+- 任何你想长期记住的内容
 
 ## 🚀 快速开始
 
-### 1. 安装依赖
+### 启动后端服务
 
 ```bash
-# 安装 uv（如未安装）
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# 克隆并安装
-git clone <your-repo-url>
-cd fastapi-template
-uv sync
+make install && make dev
 ```
 
-### 2. 配置环境变量
+API 服务运行在 `http://localhost:8000`
+
+### 启动前端应用
 
 ```bash
-cp .env.example .env
-# 编辑 .env 设置数据库和密钥
+cd web && pnpm install && pnpm dev
 ```
 
-### 3. 初始化数据库
+应用运行在 `http://localhost:5173`
 
+## 🛠 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 前端框架 | React 19 + TypeScript |
+| 构建工具 | Vite |
+| 样式方案 | TailwindCSS + shadcn/ui |
+| 状态管理 | Zustand |
+| 离线存储 | IndexedDB + Dexie.js |
+| 调度算法 | ts-fsrs |
+| 后端框架 | FastAPI (Python 3.12+) |
+| 数据库 | SQLite / PostgreSQL |
+| ORM | SQLAlchemy (Async) |
+
+## 📖 相关文档
+
+- [架构设计](./architecture.md) - 详细技术方案与领域模型
+- [开发指南](./AGENTS.md) - 代码规范、命令和测试指南
+- [Makefile 指南](./MAKEFILE_GUIDE.md) - 可用的 Make 命令
+
+## 🗺️ 路线图
+
+- [x] 核心学习功能（创建、复习、统计）
+- [x] FSRS + SM-2 双调度引擎
+- [x] 共享牌组市场
+- [ ] PWA 离线支持
+- [ ] 批量导入 (CSV/Excel)
+- [ ] Anki .apkg 格式导入
+- [ ] 牌组开发者平台
+- [ ] 移动端适配
+
+## 🤝 参与贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+提交代码前请运行：
 ```bash
-make db-upgrade
+make ci
 ```
 
-### 4. 启动服务
-
-```bash
-make dev
-# 访问 http://localhost:8000/docs
-```
-
-## 🛠️ 常用命令
-
-```bash
-make dev              # 启动开发服务器
-make test             # 运行测试
-make test-cov         # 测试 + 覆盖率报告
-make lint-fix         # 代码检查并修复
-make format           # 格式化代码
-make check            # 运行所有检查
-```
-
-## 📡 API 概览
-
-| 接口 | 方法 | 说明 |
-|------|------|------|
-| `/api/v1/auth/login` | POST | 用户登录 |
-| `/api/v1/auth/register` | POST | 用户注册 |
-| `/api/v1/auth/refresh` | POST | 刷新令牌 |
-| `/api/v1/auth/me` | GET | 获取当前用户 |
-| `/api/v1/users` | GET/POST | 用户列表/创建 |
-| `/api/v1/users/{id}` | GET/PUT/DELETE | 用户详情/更新/删除 |
-
-## 🐳 Docker 部署
-
-```bash
-# 生产环境
-docker-compose up -d app
-
-# 开发环境（支持热重载）
-docker-compose --profile dev up -d app-dev
-
-# 使用 PostgreSQL
-docker-compose --profile postgres up -d
-```
-## 📄 License
+## 📄 许可证
 
 MIT License

@@ -57,7 +57,7 @@ async def root():
     """根路径，健康检查"""
     return {
         "status": "ok",
-        "message": "FastAPI Template is running!",
+        "message": "Shiyi App is running!",
         "docs": "/docs",
         "redoc": "/redoc",
     }

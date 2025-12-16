@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./test.db"
 
     # 应用配置
-    APP_NAME: str = "FastAPI Template"
+    APP_NAME: str = "Shiyi App"
     DEBUG: bool = True
 
     # CORS 配置
