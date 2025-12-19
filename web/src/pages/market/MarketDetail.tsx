@@ -45,8 +45,8 @@ import {
   importSharedDeck,
   checkDeckNameExists,
   getUniqueDeckName,
+  type SharedDeckDetailResponse,
 } from '@/api/sharedDecks'
-import type { SharedDeck } from '@/types'
 
 const API_BASE = 'http://localhost:8000/api/v1'
 const PAGE_SIZE = 10
@@ -122,7 +122,7 @@ export function MarketDetailPage() {
   const navigate = useNavigate()
   const shouldOpenImport = searchParams.get('import') === 'true'
 
-  const [deck, setDeck] = useState<SharedDeck | null>(null)
+  const [deck, setDeck] = useState<SharedDeckDetailResponse | null>(null)
   const [exportData, setExportData] = useState<ExportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -349,8 +349,8 @@ export function MarketDetailPage() {
             <div>
               <CardTitle className="text-2xl flex items-center gap-2">
                 {deck.title}
-                {deck.isOfficial && <Badge variant="secondary">官方</Badge>}
-                {deck.isFeatured && <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />}
+                {deck.is_official && <Badge variant="secondary">官方</Badge>}
+                {deck.is_featured && <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />}
               </CardTitle>
               <CardDescription className="mt-2 text-base">
                 {deck.description || '暂无描述'}
@@ -377,21 +377,15 @@ export function MarketDetailPage() {
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <BookOpen className="h-4 w-4" />
-              {(deck as SharedDeck & { note_count?: number }).noteCount ??
-                (deck as SharedDeck & { note_count?: number }).note_count ??
-                0}{' '}
+              {deck.note_count ?? 0}{' '}
               笔记
             </span>
             <span>
-              {(deck as SharedDeck & { card_count?: number }).cardCount ??
-                (deck as SharedDeck & { card_count?: number }).card_count ??
-                0}{' '}
+              {deck.card_count ?? 0}{' '}
               卡片
             </span>
             <span>
-              {(deck as SharedDeck & { download_count?: number }).downloadCount ??
-                (deck as SharedDeck & { download_count?: number }).download_count ??
-                0}{' '}
+              {deck.download_count ?? 0}{' '}
               次下载
             </span>
           </div>
@@ -591,18 +585,14 @@ export function MarketDetailPage() {
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">笔记数量</span>
                     <span>
-                      {(deck as SharedDeck & { note_count?: number })?.noteCount ??
-                        (deck as SharedDeck & { note_count?: number })?.note_count ??
-                        0}{' '}
+                      {deck?.note_count ?? 0}{' '}
                       条
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">卡片数量</span>
                     <span>
-                      {(deck as SharedDeck & { card_count?: number })?.cardCount ??
-                        (deck as SharedDeck & { card_count?: number })?.card_count ??
-                        0}{' '}
+                      {deck?.card_count ?? 0}{' '}
                       张
                     </span>
                   </div>

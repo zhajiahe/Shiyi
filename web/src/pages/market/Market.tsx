@@ -33,13 +33,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { getSharedDecks, importSharedDeck } from '@/api/sharedDecks'
+import {
+  getSharedDecks,
+  importSharedDeck,
+  type SharedDeckResponse,
+} from '@/api/sharedDecks'
 import { deckRepository } from '@/db/repositories'
-import type { SharedDeck } from '@/types'
 
 export function MarketPage() {
   const navigate = useNavigate()
-  const [decks, setDecks] = useState<SharedDeck[]>([])
+  const [decks, setDecks] = useState<SharedDeckResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [sorting, setSorting] = useState<SortingState>([])
@@ -49,7 +52,7 @@ export function MarketPage() {
 
   // 导入对话框状态
   const [importDialogOpen, setImportDialogOpen] = useState(false)
-  const [selectedDeck, setSelectedDeck] = useState<SharedDeck | null>(null)
+  const [selectedDeck, setSelectedDeck] = useState<SharedDeckResponse | null>(null)
   const [deckName, setDeckName] = useState('')
   const [importing, setImporting] = useState(false)
 
@@ -87,7 +90,7 @@ export function MarketPage() {
   }
 
   // 打开导入对话框
-  const openImportDialog = async (deck: SharedDeck) => {
+  const openImportDialog = async (deck: SharedDeckResponse) => {
     setSelectedDeck(deck)
     // 检查名称是否已存在并建议唯一名称
     const existingDecks = await deckRepository.getAll()
@@ -125,7 +128,7 @@ export function MarketPage() {
     }
   }
 
-  const columns: ColumnDef<SharedDeck>[] = [
+  const columns: ColumnDef<SharedDeckResponse>[] = [
     {
       accessorKey: 'title',
       header: ({ column }) => (
@@ -142,8 +145,8 @@ export function MarketPage() {
         return (
           <div className="flex items-center gap-2">
             <span className="font-medium">{deck.title}</span>
-            {deck.isFeatured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
-            {deck.isOfficial && (
+            {deck.is_featured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+            {deck.is_official && (
               <Badge variant="secondary" className="text-xs">
                 官方
               </Badge>
@@ -176,11 +179,7 @@ export function MarketPage() {
     },
     {
       id: 'noteCount',
-      accessorFn: (row) => {
-        // 兼容 snake_case 和 camelCase
-        const deck = row as SharedDeck & { note_count?: number }
-        return deck.noteCount ?? deck.note_count ?? 0
-      },
+      accessorFn: (row) => row.note_count ?? 0,
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -202,11 +201,7 @@ export function MarketPage() {
     },
     {
       id: 'downloadCount',
-      accessorFn: (row) => {
-        // 兼容 snake_case 和 camelCase
-        const deck = row as SharedDeck & { download_count?: number }
-        return deck.downloadCount ?? deck.download_count ?? 0
-      },
+      accessorFn: (row) => row.download_count ?? 0,
       header: ({ column }) => (
         <Button
           variant="ghost"

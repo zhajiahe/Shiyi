@@ -1,34 +1,24 @@
 /**
  * 共享牌组 API 客户端
+ * 包装生成的 API 和本地导入逻辑
  */
 
-import type { SharedDeck, NoteModel, CardTemplate, Deck, Note, Card } from '@/types'
+import type { NoteModel, CardTemplate, Deck, Note, Card } from '@/types'
+import type {
+  PageResponseSharedDeckResponse,
+  SharedDeckDetailResponse,
+  SharedDeckResponse,
+} from '@/api/generated/models'
+import {
+  getSharedDecksApiV1SharedDecksGet,
+  getSharedDeckApiV1SharedDecksSlugGet,
+  exportSharedDeckApiV1SharedDecksSlugExportGet,
+} from '@/api/generated/shared-decks/shared-decks'
 import { db } from '@/db'
 import { nanoid } from 'nanoid'
 
-const API_BASE = 'http://localhost:8000/api/v1'
-
-interface ApiResponse<T> {
-  success: boolean
-  code: number
-  msg: string
-  data: T
-}
-
-interface SharedDeckListResponse {
-  items: SharedDeck[]
-  total: number
-  page: number
-  page_size: number
-}
-
-interface SharedDeckDetailResponse extends SharedDeck {
-  author?: {
-    id: string
-    username: string
-    nickname: string
-  }
-}
+// 导出类型以供页面使用
+export type { SharedDeckResponse, SharedDeckDetailResponse, PageResponseSharedDeckResponse }
 
 /**
  * 获取共享牌组列表
@@ -40,39 +30,26 @@ export async function getSharedDecks(params?: {
   language?: string
   isOfficial?: boolean
   isFeatured?: boolean
-}): Promise<SharedDeckListResponse> {
-  const searchParams = new URLSearchParams()
-  if (params?.page) searchParams.set('page', params.page.toString())
-  if (params?.pageSize) searchParams.set('page_size', params.pageSize.toString())
-  if (params?.tag) searchParams.set('tag', params.tag)
-  if (params?.language) searchParams.set('language', params.language)
-  if (params?.isOfficial !== undefined)
-    searchParams.set('is_official', params.isOfficial.toString())
-  if (params?.isFeatured !== undefined)
-    searchParams.set('is_featured', params.isFeatured.toString())
-
-  const response = await fetch(`${API_BASE}/shared-decks?${searchParams}`)
-  const result: ApiResponse<SharedDeckListResponse> = await response.json()
-
-  if (!result.success) {
-    throw new Error(result.msg)
-  }
-
-  return result.data
+}): Promise<PageResponseSharedDeckResponse> {
+  const result = (await getSharedDecksApiV1SharedDecksGet({
+    page_num: params?.page,
+    page_size: params?.pageSize,
+    tag: params?.tag,
+    language: params?.language,
+    is_official: params?.isOfficial,
+    is_featured: params?.isFeatured,
+  })) as unknown as PageResponseSharedDeckResponse
+  return result
 }
 
 /**
  * 获取共享牌组详情
  */
 export async function getSharedDeckDetail(slug: string): Promise<SharedDeckDetailResponse> {
-  const response = await fetch(`${API_BASE}/shared-decks/${slug}`)
-  const result: ApiResponse<SharedDeckDetailResponse> = await response.json()
-
-  if (!result.success) {
-    throw new Error(result.msg)
-  }
-
-  return result.data
+  const result = (await getSharedDeckApiV1SharedDecksSlugGet(
+    slug,
+  )) as unknown as SharedDeckDetailResponse
+  return result
 }
 
 /**
@@ -98,6 +75,43 @@ export async function getUniqueDeckName(baseName: string): Promise<string> {
   return name
 }
 
+// 导出数据类型定义
+interface ExportData {
+  note_models: Array<{
+    id: string
+    name: string
+    fields_schema: Array<{ name: string; description?: string }>
+    css?: string
+    templates: Array<{
+      id: string
+      name: string
+      ord: number
+      question_template: string
+      answer_template: string
+    }>
+  }>
+  deck: {
+    id: string
+    name: string
+    description?: string
+    config?: object
+    scheduler?: string
+  }
+  notes: Array<{
+    id: string
+    guid: string
+    note_model_id: string
+    fields: Record<string, string>
+    tags: string[]
+  }>
+  cards: Array<{
+    id: string
+    note_id: string
+    card_template_id: string
+    ord: number
+  }>
+}
+
 /**
  * 导入共享牌组到本地
  * @param slug 共享牌组的 URL 标识
@@ -112,54 +126,13 @@ export async function importSharedDeck(
   noteCount: number
   cardCount: number
 }> {
-  // 获取后端的牌组数据（通过 API 获取笔记类型、笔记、卡片）
-  const response = await fetch(`${API_BASE}/shared-decks/${slug}/export`)
-  const result = await response.json()
-
-  if (!result.success) {
-    throw new Error(result.msg)
-  }
-
-  const exportData = result.data as {
-    note_models: Array<{
-      id: string
-      name: string
-      fields_schema: Array<{ name: string; description?: string }>
-      css?: string
-      templates: Array<{
-        id: string
-        name: string
-        ord: number
-        question_template: string
-        answer_template: string
-      }>
-    }>
-    deck: {
-      id: string
-      name: string
-      description?: string
-      config?: object
-      scheduler?: string
-    }
-    notes: Array<{
-      id: string
-      guid: string
-      note_model_id: string
-      fields: Record<string, string>
-      tags: string[]
-    }>
-    cards: Array<{
-      id: string
-      note_id: string
-      card_template_id: string
-      ord: number
-    }>
-  }
+  // 使用生成的 API 获取导出数据
+  const exportData = (await exportSharedDeckApiV1SharedDecksSlugExportGet(slug)) as unknown as ExportData
 
   const now = Date.now()
   const localDeckId = nanoid()
 
-  // 3. 导入笔记类型
+  // 导入笔记类型
   for (const nm of exportData.note_models) {
     const existing = await db.noteModels.get(nm.id)
     if (!existing) {
@@ -192,7 +165,7 @@ export async function importSharedDeck(
     }
   }
 
-  // 4. 创建本地牌组（使用自定义名称或默认名称）
+  // 创建本地牌组
   const deckName = customDeckName || exportData.deck.name
   const deck: Deck = {
     id: localDeckId,
@@ -205,7 +178,7 @@ export async function importSharedDeck(
   }
   await db.decks.add(deck)
 
-  // 5. 导入笔记
+  // 导入笔记
   const noteIdMap = new Map<string, string>()
   for (const n of exportData.notes) {
     const localNoteId = nanoid()
@@ -227,7 +200,7 @@ export async function importSharedDeck(
     await db.notes.add(note)
   }
 
-  // 6. 导入卡片
+  // 导入卡片
   for (const c of exportData.cards) {
     const localNoteId = noteIdMap.get(c.note_id)
     if (!localNoteId) continue

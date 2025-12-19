@@ -3,16 +3,22 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { Layout } from '@/components/Layout'
 import { PrivateRoute } from '@/components/PrivateRoute'
-import { Dashboard } from './pages/Dashboard'
-import { DecksPage } from './pages/Decks'
-import { ReviewPage } from './pages/Review'
-import { MarketPage } from './pages/Market'
-import { MarketDetailPage } from './pages/MarketDetail'
+// 学习模块
+import { Dashboard } from './pages/learn/Dashboard'
+import { DecksPage } from './pages/learn/Decks'
+import { ReviewPage } from './pages/learn/Review'
+import { StatsPage } from './pages/learn/Stats'
+// 市场模块
+import { MarketPage } from './pages/market/Market'
+import { MarketDetailPage } from './pages/market/MarketDetail'
+// 设置
 import { SettingsPage } from './pages/Settings'
-import { StatsPage } from './pages/Stats'
+// 认证模块
 import { LoginPage } from './pages/auth/Login'
 import { RegisterPage } from './pages/auth/Register'
+// 用户模块
 import { ProfilePage } from './pages/profile/Profile'
+// 工作台模块
 import { StudioOverview } from './pages/studio/Overview'
 import { StudioTemplates } from './pages/studio/Templates'
 import { StudioDecks } from './pages/studio/Decks'
