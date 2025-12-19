@@ -10,6 +10,8 @@ import {
   User,
   LogIn,
   LogOut,
+  Shield,
+  Package,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -40,6 +42,13 @@ const studioItems = [
   { title: '工作台', url: '/studio', icon: Layers },
   { title: '模板市场', url: '/studio/templates', icon: Folder },
   { title: '我的牌组', url: '/studio/decks', icon: ShoppingBag },
+]
+
+// 管理员导航（需要超级管理员权限）
+const adminItems = [
+  { title: '管理控制台', url: '/admin', icon: Shield },
+  { title: '牌组管理', url: '/admin/shared-decks', icon: Package },
+  { title: '用户管理', url: '/admin/users', icon: User },
 ]
 
 export function AppSidebar() {
@@ -103,6 +112,27 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {studioItems.map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
+                      <Link to={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* 管理员控制台（仅超级管理员可见） */}
+        {user?.is_superuser && (
+          <SidebarGroup>
+            <SidebarGroupLabel>管理</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminItems.map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                       <Link to={item.url}>

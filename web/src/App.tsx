@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { Layout } from '@/components/Layout'
 import { PrivateRoute } from '@/components/PrivateRoute'
+import { AdminRoute } from '@/components/AdminRoute'
 // 学习模块
 import { Dashboard } from './pages/learn/Dashboard'
 import { DecksPage } from './pages/learn/Decks'
@@ -23,6 +24,10 @@ import { StudioOverview } from './pages/studio/Overview'
 import { StudioTemplates } from './pages/studio/Templates'
 import { StudioDecks } from './pages/studio/Decks'
 import { StudioDeckDetail } from './pages/studio/DeckDetail'
+// 管理员模块
+import { AdminDashboard } from './pages/admin/Dashboard'
+import { AdminSharedDecks } from './pages/admin/SharedDecks'
+import { AdminUsers } from './pages/admin/Users'
 
 function App() {
   return (
@@ -89,6 +94,32 @@ function App() {
                       <PrivateRoute>
                         <StudioDeckDetail />
                       </PrivateRoute>
+                    }
+                  />
+
+                  {/* 管理员页面 */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRoute>
+                        <AdminDashboard />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/shared-decks"
+                    element={
+                      <AdminRoute>
+                        <AdminSharedDecks />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/users"
+                    element={
+                      <AdminRoute>
+                        <AdminUsers />
+                      </AdminRoute>
                     }
                   />
                 </Routes>
