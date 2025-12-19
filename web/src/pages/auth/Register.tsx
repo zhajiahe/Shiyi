@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -130,6 +131,15 @@ export function RegisterPage() {
               <Link to="/auth/login" className="text-primary hover:underline">
                 立即登录
               </Link>
+            </div>
+
+            <div className="text-center pt-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/">
+                  <Home className="h-4 w-4 mr-2" />
+                  返回首页
+                </Link>
+              </Button>
             </div>
           </form>
         </CardContent>

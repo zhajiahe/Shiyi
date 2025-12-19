@@ -1,30 +1,47 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Plus, FileText, Share, Upload } from 'lucide-react'
+import { ArrowLeft, Plus, FileText, Share, Upload, Sparkles } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getDeckApiV1DecksDeckIdGet } from '@/api/generated/decks/decks'
 import { getNotesApiV1NotesGet } from '@/api/generated/notes/notes'
-import type { DeckResponse, NoteResponse, PageResponseNoteResponse } from '@/api/generated/models'
+import { getNoteModelApiV1NoteModelsNoteModelIdGet } from '@/api/generated/note-models/note-models'
+import type {
+  DeckResponse,
+  NoteResponse,
+  NoteModelResponse,
+  PageResponseNoteResponse,
+} from '@/api/generated/models'
 import { NoteDialog } from './components/NoteDialog'
 import { PublishDialog } from './components/PublishDialog'
 import { ImportDialog } from './components/ImportDialog'
+import { AIGenerateDialog } from './components/AIGenerateDialog'
 
 export function StudioDeckDetail() {
   const { id } = useParams<{ id: string }>()
   const [deck, setDeck] = useState<DeckResponse | null>(null)
+  const [noteModel, setNoteModel] = useState<NoteModelResponse | null>(null)
   const [notes, setNotes] = useState<NoteResponse[]>([])
   const [noteCount, setNoteCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false)
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false)
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
+  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false)
 
   const fetchDeck = useCallback(async () => {
     try {
       const data = (await getDeckApiV1DecksDeckIdGet(id!)) as unknown as DeckResponse
       setDeck(data)
+
+      // 获取笔记模型
+      if (data.note_model_id) {
+        const model = (await getNoteModelApiV1NoteModelsNoteModelIdGet(
+          data.note_model_id,
+        )) as unknown as NoteModelResponse
+        setNoteModel(model)
+      }
     } catch (err) {
       console.error('Failed to fetch deck:', err)
     }
@@ -125,6 +142,14 @@ export function StudioDeckDetail() {
                 <Upload className="mr-2 h-4 w-4" />
                 批量导入
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIsAIDialogOpen(true)}
+                disabled={!noteModel}
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                AI 生成
+              </Button>
               <Button onClick={() => setIsNoteDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 添加笔记
@@ -188,6 +213,17 @@ export function StudioDeckDetail() {
           onOpenChange={setIsImportDialogOpen}
           deckId={id}
           noteModelId={deck?.note_model_id ?? undefined}
+          onSuccess={fetchNotes}
+        />
+      )}
+
+      {/* AI 生成弹窗 */}
+      {id && noteModel && (
+        <AIGenerateDialog
+          open={isAIDialogOpen}
+          onOpenChange={setIsAIDialogOpen}
+          deckId={id}
+          noteModel={noteModel}
           onSuccess={fetchNotes}
         />
       )}

@@ -4,9 +4,20 @@
 使用 daisyUI 组件设计卡片模板
 """
 
+from datetime import UTC, datetime
+from typing import Any
+from uuid import UUID
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+# 系统用户 ID（用于内置模板）
+SYSTEM_USER_ID = UUID("00000000-0000-0000-0000-000000000000")
+
+
 # ==================== 内置笔记类型定义 (使用 daisyUI) ====================
 
-BUILTIN_NOTE_MODELS = [
+BUILTIN_NOTE_MODELS: list[dict[str, Any]] = [
     {
         "id": "builtin-basic",
         "name": "Basic (基础)",
@@ -584,3 +595,74 @@ SAMPLE_SHARED_DECKS = [
         ],
     },
 ]
+
+
+# ==================== 种子数据初始化 ====================
+
+
+async def init_builtin_note_models(db: AsyncSession) -> int:
+    """
+    初始化内置笔记类型
+
+    检查每个内置模板是否存在，如不存在则创建。
+    如果已存在但 is_builtin=False，则更新为 True。
+
+    Args:
+        db: 数据库会话
+
+    Returns:
+        创建或更新的模板数量
+    """
+    from app.models.note_model import CardTemplate, NoteModel
+
+    changed_count = 0
+    now = datetime.now(UTC)
+
+    for model_data in BUILTIN_NOTE_MODELS:
+        model_id = model_data["id"]
+
+        # 检查是否已存在
+        result = await db.execute(select(NoteModel).where(NoteModel.id == model_id))
+        existing = result.scalar_one_or_none()
+
+        if existing:
+            # 如果存在但 is_builtin=False，更新它
+            if not existing.is_builtin:
+                existing.is_builtin = True
+                existing.updated_at = now
+                changed_count += 1
+            continue
+
+        # 创建笔记类型
+        note_model = NoteModel(
+            id=model_id,
+            user_id=str(SYSTEM_USER_ID),
+            name=model_data["name"],
+            fields_schema=model_data["fields_schema"],
+            css=model_data.get("css", ""),
+            is_builtin=True,
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(note_model)
+
+        # 创建卡片模板
+        for idx, tpl_data in enumerate(model_data["templates"]):
+            template = CardTemplate(
+                id=f"{model_id}-tpl-{idx}",
+                note_model_id=model_id,
+                name=tpl_data["name"],
+                ord=tpl_data["ord"],
+                question_template=tpl_data["question_template"],
+                answer_template=tpl_data["answer_template"],
+                created_at=now,
+                updated_at=now,
+            )
+            db.add(template)
+
+        changed_count += 1
+
+    if changed_count > 0:
+        await db.commit()
+
+    return changed_count

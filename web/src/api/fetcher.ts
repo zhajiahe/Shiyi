@@ -3,7 +3,9 @@
  * 用于 orval 生成的 API 客户端
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// 开发环境使用相对路径，由 Vite 代理转发
+// 生产环境通过 VITE_API_URL 环境变量配置
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 // Token 管理
 const TOKEN_KEY = 'shiyi-auth-token'

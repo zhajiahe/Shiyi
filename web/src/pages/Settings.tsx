@@ -1,10 +1,22 @@
 import { useState, useEffect } from 'react'
-import { Save, Loader2, Download, Upload, Trash2, HardDrive, AlertTriangle } from 'lucide-react'
+import {
+  Save,
+  Loader2,
+  Download,
+  Upload,
+  Trash2,
+  HardDrive,
+  AlertTriangle,
+  Bot,
+  Eye,
+  EyeOff,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { useAIConfigStore, POPULAR_MODELS } from '@/stores/useAIConfigStore'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +56,10 @@ export function SettingsPage() {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  // AI 配置
+  const { config: aiConfig, setConfig: setAIConfig } = useAIConfigStore()
+  const [showApiKey, setShowApiKey] = useState(false)
 
   // 存储相关状态
   const [storageInfo, setStorageInfo] = useState<{
@@ -489,6 +505,127 @@ export function SettingsPage() {
               ))}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* AI 配置 */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5" />
+            AI 配置
+          </CardTitle>
+          <CardDescription>配置 OpenAI 兼容 API，用于智能生成笔记</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* 启用开关 */}
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-sm font-medium">启用 AI 功能</label>
+              <p className="text-xs text-muted-foreground">开启后可在牌组中使用 AI 生成笔记</p>
+            </div>
+            <button
+              onClick={() => setAIConfig({ enabled: !aiConfig.enabled })}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                aiConfig.enabled ? 'bg-primary' : 'bg-muted'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  aiConfig.enabled ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+
+          {aiConfig.enabled && (
+            <>
+              {/* API Key */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  API Key <span className="text-destructive">*</span>
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showApiKey ? 'text' : 'password'}
+                    placeholder="sk-xxxxxxxxxxxxxxxx"
+                    value={aiConfig.apiKey}
+                    onChange={(e) => setAIConfig({ apiKey: e.target.value })}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  API Key 仅存储在本地浏览器，不会上传到服务器
+                </p>
+              </div>
+
+              {/* Base URL */}
+              <div>
+                <label className="block text-sm font-medium mb-2">API Base URL</label>
+                <Input
+                  placeholder="https://api.openai.com/v1"
+                  value={aiConfig.baseUrl}
+                  onChange={(e) => setAIConfig({ baseUrl: e.target.value })}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  支持 OpenAI、DeepSeek、通义千问等兼容接口
+                </p>
+              </div>
+
+              {/* 模型选择 */}
+              <div>
+                <label className="block text-sm font-medium mb-2">模型</label>
+                <select
+                  className="w-full h-10 px-3 py-2 border rounded-md bg-background"
+                  value={aiConfig.model}
+                  onChange={(e) => setAIConfig({ model: e.target.value })}
+                >
+                  {POPULAR_MODELS.map((model) => (
+                    <option key={model.value} value={model.value}>
+                      {model.label} ({model.provider})
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  也可以直接输入自定义模型名称
+                </p>
+                <Input
+                  placeholder="或输入自定义模型名称"
+                  value={POPULAR_MODELS.some((m) => m.value === aiConfig.model) ? '' : aiConfig.model}
+                  onChange={(e) => setAIConfig({ model: e.target.value })}
+                  className="mt-2"
+                />
+              </div>
+
+              {/* 配置状态 */}
+              <div className="p-3 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-2">
+                  {aiConfig.apiKey && aiConfig.baseUrl && aiConfig.model ? (
+                    <>
+                      <Badge variant="default" className="bg-green-600">
+                        已配置
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        使用 {aiConfig.model} 模型
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Badge variant="secondary">未完成</Badge>
+                      <span className="text-sm text-muted-foreground">请填写所有必填项</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

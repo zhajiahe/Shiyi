@@ -38,11 +38,22 @@ export function PublishDialog({
 
   // 生成默认 slug
   function generateSlug(name: string) {
-    return name
+    // 先用拼音或英文转换，如果是纯中文则生成随机 slug
+    let slug = name
       .toLowerCase()
       .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '')
+      .replace(/[^\w\u4e00-\u9fa5-]/g, '') // 保留字母数字和中文
+      .replace(/[\u4e00-\u9fa5]+/g, '') // 移除中文
+      .replace(/-+/g, '-') // 合并连续的 -
+      .replace(/^-|-$/g, '') // 移除首尾的 -
       .slice(0, 50)
+
+    // 如果 slug 为空（纯中文名称），生成随机 slug
+    if (!slug) {
+      slug = `deck-${Date.now().toString(36)}`
+    }
+
+    return slug
   }
 
   async function handlePublish() {
