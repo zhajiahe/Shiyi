@@ -198,8 +198,27 @@ export function ReviewPage() {
   }
 
   // 渲染卡片内容
-  const renderContent = (template: string, fields: Record<string, string>) => {
+  const renderContent = (template: string, fields: Record<string, string>, isQuestion: boolean) => {
     let content = template
+
+    // 替换 {{cloze:FieldName}} - 处理填空模板
+    content = content.replace(/\{\{cloze:(\w+)\}\}/g, (_, fieldName) => {
+      const fieldValue = fields[fieldName] || ''
+      if (isQuestion) {
+        // 问题侧：将 {{c1::answer}} 替换为 [...] 或显示 hint
+        return fieldValue.replace(
+          /\{\{c\d+::(.*?)(?:::(.*?))?\}\}/g,
+          (__, _answer, hint) => `<span class="cloze-blank">${hint || '...'}</span>`,
+        )
+      } else {
+        // 答案侧：将 {{c1::answer}} 替换为高亮的答案
+        return fieldValue.replace(
+          /\{\{c\d+::(.*?)(?:::(.*?))?\}\}/g,
+          (__, answer) => `<span class="cloze">${answer}</span>`,
+        )
+      }
+    })
+
     // 替换字段占位符 {{FieldName}}
     for (const [key, value] of Object.entries(fields)) {
       content = content.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value)
@@ -304,8 +323,8 @@ export function ReviewPage() {
         {/* Card - 翻转卡片 */}
         <div className="max-w-2xl mx-auto">
           <FlipCard
-            questionHtml={renderContent(template.questionTemplate, note.fields)}
-            answerHtml={renderContent(template.answerTemplate, note.fields)}
+            questionHtml={renderContent(template.questionTemplate, note.fields, true)}
+            answerHtml={renderContent(template.answerTemplate, note.fields, false)}
             css={noteModel.css || ''}
             theme="cupcake"
             isFlipped={showAnswer}

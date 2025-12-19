@@ -364,9 +364,9 @@ export function MarketDetailPage() {
         </CardHeader>
         <CardContent>
           {/* Tags */}
-          {deck.tags.length > 0 && (
+          {(deck.tags?.length ?? 0) > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
-              {deck.tags.map((tag) => (
+              {(deck.tags ?? []).map((tag) => (
                 <Badge key={tag} variant="outline">
                   {tag}
                 </Badge>
@@ -377,17 +377,10 @@ export function MarketDetailPage() {
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <BookOpen className="h-4 w-4" />
-              {deck.note_count ?? 0}{' '}
-              笔记
+              {deck.note_count ?? 0} 笔记
             </span>
-            <span>
-              {deck.card_count ?? 0}{' '}
-              卡片
-            </span>
-            <span>
-              {deck.download_count ?? 0}{' '}
-              次下载
-            </span>
+            <span>{deck.card_count ?? 0} 卡片</span>
+            <span>{deck.download_count ?? 0} 次下载</span>
           </div>
         </CardContent>
       </Card>
@@ -584,17 +577,11 @@ export function MarketDetailPage() {
                 <div className="mt-4 p-3 bg-muted/50 rounded-lg text-sm">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">笔记数量</span>
-                    <span>
-                      {deck?.note_count ?? 0}{' '}
-                      条
-                    </span>
+                    <span>{deck?.note_count ?? 0} 条</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">卡片数量</span>
-                    <span>
-                      {deck?.card_count ?? 0}{' '}
-                      张
-                    </span>
+                    <span>{deck?.card_count ?? 0} 张</span>
                   </div>
                 </div>
               </div>
