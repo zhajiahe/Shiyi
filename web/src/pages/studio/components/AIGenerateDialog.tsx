@@ -43,7 +43,7 @@ export function AIGenerateDialog({
 
   const [topic, setTopic] = useState('')
   const [count, setCount] = useState(5)
-  const [isGenerating, setIsGenerating] = useState(false)
+  const [, setIsGenerating] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
   const [streamContent, setStreamContent] = useState('')
   const [generatedNotes, setGeneratedNotes] = useState<GeneratedNote[]>([])
@@ -325,7 +325,9 @@ ${topic}
               <span>正在生成内容...</span>
             </div>
             <div className="p-4 rounded-lg bg-muted/50 max-h-64 overflow-auto">
-              <pre className="text-sm whitespace-pre-wrap font-mono">{streamContent || '等待响应...'}</pre>
+              <pre className="text-sm whitespace-pre-wrap font-mono">
+                {streamContent || '等待响应...'}
+              </pre>
             </div>
           </div>
         )}
@@ -355,7 +357,9 @@ ${topic}
                 <div
                   key={note.id}
                   className={`p-3 rounded-lg border transition-colors ${
-                    note.selected ? 'bg-primary/5 border-primary/30' : 'bg-muted/30 border-transparent'
+                    note.selected
+                      ? 'bg-primary/5 border-primary/30'
+                      : 'bg-muted/30 border-transparent'
                   }`}
                 >
                   <div className="flex items-start gap-2">
@@ -429,4 +433,3 @@ ${topic}
     </Dialog>
   )
 }
-

@@ -593,12 +593,12 @@ export function SettingsPage() {
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  也可以直接输入自定义模型名称
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">也可以直接输入自定义模型名称</p>
                 <Input
                   placeholder="或输入自定义模型名称"
-                  value={POPULAR_MODELS.some((m) => m.value === aiConfig.model) ? '' : aiConfig.model}
+                  value={
+                    POPULAR_MODELS.some((m) => m.value === aiConfig.model) ? '' : aiConfig.model
+                  }
                   onChange={(e) => setAIConfig({ model: e.target.value })}
                   className="mt-2"
                 />

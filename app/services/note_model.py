@@ -158,10 +158,14 @@ class NoteModelService:
 
         Raises:
             NotFoundException: 笔记类型不存在
-            ForbiddenException: 无权限访问
+            ForbiddenException: 无权限访问或修改内置模板
             BadRequestException: 名称已存在
         """
         note_model = await self.get_note_model(note_model_id, user_id)
+
+        # 内置模板不允许修改
+        if note_model.is_builtin:
+            raise ForbiddenException(msg="内置模板不允许修改")
 
         # 检查名称是否已存在
         if data.name is not None and data.name != note_model.name:
@@ -188,9 +192,14 @@ class NoteModelService:
 
         Raises:
             NotFoundException: 笔记类型不存在
-            ForbiddenException: 无权限访问
+            ForbiddenException: 无权限访问或删除内置模板
         """
-        await self.get_note_model(note_model_id, user_id)  # 验证权限
+        note_model = await self.get_note_model(note_model_id, user_id)  # 验证权限
+
+        # 内置模板不允许删除
+        if note_model.is_builtin:
+            raise ForbiddenException(msg="内置模板不允许删除")
+
         await self.note_model_repo.delete(note_model_id, soft_delete=True)
 
     # ==================== 卡片模板相关 ====================
@@ -243,10 +252,14 @@ class NoteModelService:
 
         Raises:
             NotFoundException: 笔记类型不存在
-            ForbiddenException: 无权限访问
+            ForbiddenException: 无权限访问或修改内置模板
         """
         # 验证笔记类型权限
-        await self.get_note_model(note_model_id, user_id)
+        note_model = await self.get_note_model(note_model_id, user_id)
+
+        # 内置模板不允许添加卡片模板
+        if note_model.is_builtin:
+            raise ForbiddenException(msg="内置模板不允许修改")
 
         # 获取最大序号
         max_ord = await self.card_template_repo.get_max_ord(note_model_id)
@@ -280,7 +293,17 @@ class NoteModelService:
 
         Returns:
             更新后的 CardTemplate 实例
+
+        Raises:
+            ForbiddenException: 内置模板不允许修改
         """
+        # 验证笔记类型权限
+        note_model = await self.get_note_model(note_model_id, user_id)
+
+        # 内置模板不允许修改卡片模板
+        if note_model.is_builtin:
+            raise ForbiddenException(msg="内置模板不允许修改")
+
         template = await self.get_card_template(note_model_id, template_id, user_id)
         update_data = data.model_dump(exclude_unset=True)
         return await self.card_template_repo.update(template, update_data)
@@ -301,7 +324,14 @@ class NoteModelService:
 
         Raises:
             NotFoundException: 模板不存在
-            ForbiddenException: 无权限访问
+            ForbiddenException: 无权限访问或删除内置模板的卡片模板
         """
+        # 验证笔记类型权限
+        note_model = await self.get_note_model(note_model_id, user_id)
+
+        # 内置模板不允许删除卡片模板
+        if note_model.is_builtin:
+            raise ForbiddenException(msg="内置模板不允许修改")
+
         await self.get_card_template(note_model_id, template_id, user_id)  # 验证权限
         await self.card_template_repo.delete(template_id, soft_delete=True)

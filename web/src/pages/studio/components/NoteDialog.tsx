@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -39,59 +39,60 @@ export function NoteDialog({
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
-  // 获取可用笔记类型
-  useEffect(() => {
-    if (open && !noteModelId) {
-      fetchNoteModels()
-    }
-  }, [open, noteModelId])
-
-  // 如果指定了 noteModelId，获取该模型
-  useEffect(() => {
-    if (open && noteModelId) {
-      fetchNoteModel(noteModelId)
-    }
-  }, [open, noteModelId])
-
-  async function fetchNoteModels() {
-    setIsLoading(true)
-    try {
-      const data =
-        (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as unknown as NoteModelResponse[]
-      setNoteModels(data)
-      if (data.length > 0) {
-        setSelectedModel(data[0])
-        initializeFields(data[0])
-      }
-    } catch (err) {
-      console.error('Failed to fetch note models:', err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  async function fetchNoteModel(id: string) {
-    setIsLoading(true)
-    try {
-      const data = (await getNoteModelApiV1NoteModelsNoteModelIdGet(
-        id,
-      )) as unknown as NoteModelResponse
-      setSelectedModel(data)
-      initializeFields(data)
-    } catch (err) {
-      console.error('Failed to fetch note model:', err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  function initializeFields(model: NoteModelResponse) {
+  const initializeFields = useCallback((model: NoteModelResponse) => {
     const newFields: Record<string, string> = {}
     model.fields_schema?.forEach((field) => {
       newFields[field.name] = ''
     })
     setFields(newFields)
-  }
+  }, [])
+
+  // 获取可用笔记类型
+  useEffect(() => {
+    async function fetchNoteModels() {
+      setIsLoading(true)
+      try {
+        const data =
+          (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as unknown as NoteModelResponse[]
+        setNoteModels(data)
+        if (data.length > 0) {
+          setSelectedModel(data[0])
+          initializeFields(data[0])
+        }
+      } catch (err) {
+        console.error('Failed to fetch note models:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (open && !noteModelId) {
+      fetchNoteModels()
+    }
+  }, [open, noteModelId, initializeFields])
+
+  // 如果指定了 noteModelId，获取该模型
+  useEffect(() => {
+    async function fetchNoteModel() {
+      if (!noteModelId) return
+      setIsLoading(true)
+      try {
+        const data = (await getNoteModelApiV1NoteModelsNoteModelIdGet(
+          noteModelId,
+        )) as unknown as NoteModelResponse
+        setSelectedModel(data)
+        initializeFields(data)
+      } catch (err) {
+        console.error('Failed to fetch note model:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (open && noteModelId) {
+      fetchNoteModel()
+    }
+  }, [open, noteModelId, initializeFields])
 
   function handleModelChange(modelId: string) {
     const model = noteModels.find((m) => m.id === modelId)

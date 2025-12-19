@@ -39,6 +39,10 @@ export function StudioTemplates() {
   }
 
   function handleEdit(model: NoteModelResponse) {
+    // 内置模板不允许编辑
+    if (model.is_builtin) {
+      return
+    }
     setEditingModel(model)
     setIsDialogOpen(true)
   }
@@ -137,8 +141,13 @@ function TemplateCard({
   template: NoteModelResponse
   onClick?: () => void
 }) {
+  const isBuiltin = template.is_builtin
+
   return (
-    <Card className="hover:bg-accent/50 cursor-pointer transition-colors" onClick={onClick}>
+    <Card
+      className={`transition-colors ${isBuiltin ? 'opacity-80' : 'hover:bg-accent/50 cursor-pointer'}`}
+      onClick={isBuiltin ? undefined : onClick}
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">{template.name}</CardTitle>
