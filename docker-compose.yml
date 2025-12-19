@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile
     container_name: shiyi-frontend
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "${FRONTEND_PORT:-5173}:80"
     depends_on:
       - backend
     restart: unless-stopped
