@@ -3,7 +3,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/useAuthStore'
-import { api } from '@/api/client'
+import {
+  updateCurrentUserApiV1AuthMePut,
+  changePasswordApiV1AuthChangePasswordPost,
+} from '@/api/generated/auth/auth'
 import { toast } from 'sonner'
 
 export function ProfilePage() {
@@ -18,7 +21,7 @@ export function ProfilePage() {
   const handleSave = async () => {
     setIsLoading(true)
     try {
-      await api.put('/auth/me', formData)
+      await updateCurrentUserApiV1AuthMePut(formData)
       await fetchCurrentUser()
       setIsEditing(false)
       toast.success('个人信息已更新')
@@ -120,7 +123,7 @@ function PasswordChangeForm() {
 
     setIsLoading(true)
     try {
-      await api.put('/auth/password', {
+      await changePasswordApiV1AuthChangePasswordPost({
         old_password: formData.oldPassword,
         new_password: formData.newPassword,
       })

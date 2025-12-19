@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 import { Plus, FileText, Share2, Download } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { api } from '@/api/client'
+import { getDecksApiV1DecksGet } from '@/api/generated/decks/decks'
+import { getNoteModelsApiV1NoteModelsGet } from '@/api/generated/note-models/note-models'
+import type { PageResponseDeckResponse, PageResponseNoteModelResponse } from '@/api/generated/models'
 
 interface Stats {
   deckCount: number
@@ -25,14 +27,17 @@ export function StudioOverview() {
     async function fetchStats() {
       try {
         // 并行获取数据
-        const [decks, templates] = await Promise.all([
-          api.get<{ items: unknown[]; total: number }>('/decks?page_size=1'),
-          api.get<{ items: unknown[]; total: number }>('/note-models?page_size=1'),
+        const [decksRes, templatesRes] = await Promise.all([
+          getDecksApiV1DecksGet({ page_size: 1 }),
+          getNoteModelsApiV1NoteModelsGet({ page_size: 1 }),
         ])
 
+        const decks = decksRes as PageResponseDeckResponse
+        const templates = templatesRes as PageResponseNoteModelResponse
+
         setStats({
-          deckCount: decks.total,
-          templateCount: templates.total,
+          deckCount: decks.total ?? 0,
+          templateCount: templates.total ?? 0,
           sharedCount: 0, // TODO: 获取已发布数量
           totalDownloads: 0, // TODO: 获取总下载量
         })

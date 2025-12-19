@@ -20,24 +20,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { api } from '@/api/client'
+import {
+  getDecksApiV1DecksGet,
+  createDeckApiV1DecksPost,
+  deleteDeckApiV1DecksDeckIdDelete,
+} from '@/api/generated/decks/decks'
+import type { DeckResponse, PageResponseDeckResponse } from '@/api/generated/models'
 import { toast } from 'sonner'
-
-interface DeckResponse {
-  id: string
-  name: string
-  description?: string
-  noteModelId?: string
-  createdAt: string
-  updatedAt: string
-}
-
-interface PageResponse<T> {
-  items: T[]
-  total: number
-  pageNum: number
-  pageSize: number
-}
 
 export function StudioDecks() {
   const [decks, setDecks] = useState<DeckResponse[]>([])
@@ -54,8 +43,8 @@ export function StudioDecks() {
   async function fetchDecks() {
     setIsLoading(true)
     try {
-      const data = await api.get<PageResponse<DeckResponse>>('/decks?page_size=100')
-      setDecks(data.items)
+      const data = (await getDecksApiV1DecksGet({ page_size: 100 })) as PageResponseDeckResponse
+      setDecks(data.items ?? [])
     } catch (err) {
       console.error('Failed to fetch decks:', err)
     } finally {
@@ -68,7 +57,7 @@ export function StudioDecks() {
 
     setIsCreating(true)
     try {
-      await api.post('/decks', {
+      await createDeckApiV1DecksPost({
         name: newDeckName.trim(),
         description: newDeckDesc.trim() || undefined,
       })
@@ -88,7 +77,7 @@ export function StudioDecks() {
     if (!confirm('确定要删除这个牌组吗？')) return
 
     try {
-      await api.delete(`/decks/${id}`)
+      await deleteDeckApiV1DecksDeckIdDelete(id)
       toast.success('牌组已删除')
       fetchDecks()
     } catch (err) {
@@ -211,7 +200,7 @@ function DeckCard({ deck, onDelete }: { deck: DeckResponse; onDelete: () => void
       </CardHeader>
       <CardContent>
         <div className="text-sm text-muted-foreground">
-          创建于 {new Date(deck.createdAt).toLocaleDateString()}
+          创建于 {deck.created_at ? new Date(deck.created_at).toLocaleDateString() : '未知'}
         </div>
       </CardContent>
     </Card>

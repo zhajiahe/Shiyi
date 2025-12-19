@@ -20,7 +20,7 @@ export function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await login(formData)
+      await login(formData.username, formData.password)
       navigate(redirectTo)
     } catch {
       // 错误已在 store 中处理

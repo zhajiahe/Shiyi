@@ -11,21 +11,14 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { api } from '@/api/client'
+import {
+  getAvailableNoteModelsApiV1NoteModelsAvailableGet,
+  getNoteModelApiV1NoteModelsNoteModelIdGet,
+} from '@/api/generated/note-models/note-models'
+import { createNotesBatchApiV1NotesBatchPost } from '@/api/generated/notes/notes'
+import type { NoteModelResponse, NoteBatchResult } from '@/api/generated/models'
 import { toast } from 'sonner'
 import { Upload, FileSpreadsheet, AlertCircle, Check, X } from 'lucide-react'
-
-interface FieldSchema {
-  name: string
-  type: string
-  required?: boolean
-}
-
-interface NoteModelResponse {
-  id: string
-  name: string
-  fieldsSchema: FieldSchema[]
-}
 
 interface ImportDialogProps {
   open: boolean
@@ -69,12 +62,12 @@ export function ImportDialog({
   const fetchNoteModel = useCallback(async () => {
     if (!noteModelId) {
       // 获取可用模板列表，选择第一个
-      const models = await api.get<NoteModelResponse[]>('/note-models/available')
+      const models = (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as NoteModelResponse[]
       if (models.length > 0) {
         setNoteModel(models[0])
       }
     } else {
-      const model = await api.get<NoteModelResponse>(`/note-models/${noteModelId}`)
+      const model = (await getNoteModelApiV1NoteModelsNoteModelIdGet(noteModelId)) as NoteModelResponse
       setNoteModel(model)
     }
   }, [noteModelId])
@@ -149,7 +142,7 @@ export function ImportDialog({
 
     // 自动匹配字段
     const fieldMapping: Record<string, string> = {}
-    noteModel.fieldsSchema.forEach((field) => {
+    noteModel.fields_schema?.forEach((field) => {
       // 尝试找到匹配的列（忽略大小写）
       const matchedHeader = headers.find(
         (h) => h.toLowerCase() === field.name.toLowerCase() || h === field.name,
@@ -164,12 +157,12 @@ export function ImportDialog({
       const errors: string[] = []
       const mappedData: Record<string, string> = {}
 
-      noteModel.fieldsSchema.forEach((field) => {
+      noteModel.fields_schema?.forEach((field) => {
         const headerName = fieldMapping[field.name]
         const value = headerName ? (row[headerName] || '').toString().trim() : ''
         mappedData[field.name] = value
 
-        if (field.required !== false && !value) {
+        if (!value) {
           errors.push(`缺少必填字段: ${field.name}`)
         }
       })
@@ -192,7 +185,7 @@ export function ImportDialog({
       const errors: string[] = []
       const mappedData: Record<string, string> = {}
 
-      noteModel?.fieldsSchema.forEach((field) => {
+      noteModel?.fields_schema?.forEach((field) => {
         const header = newMapping[field.name]
         const originalRow = preview.rows.find((r) => r === row)
         // 从原始数据获取值
@@ -209,7 +202,7 @@ export function ImportDialog({
           : ''
         mappedData[field.name] = value
 
-        if (field.required !== false && !value) {
+        if (!value) {
           errors.push(`缺少必填字段: ${field.name}`)
         }
       })
@@ -239,15 +232,11 @@ export function ImportDialog({
         tags: [],
       }))
 
-      const result = await api.post<{
-        created_count: number
-        skipped_count: number
-        error_count: number
-      }>('/notes/batch', {
+      const result = (await createNotesBatchApiV1NotesBatchPost({
         deck_id: deckId,
         note_model_id: noteModel.id,
         notes,
-      })
+      })) as NoteBatchResult
 
       setImportResult({
         created: result.created_count,
@@ -327,11 +316,7 @@ export function ImportDialog({
                   笔记类型: {noteModel.name}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  必填字段:{' '}
-                  {noteModel.fieldsSchema
-                    .filter((f) => f.required !== false)
-                    .map((f) => f.name)
-                    .join(', ')}
+                  必填字段: {noteModel.fields_schema?.map((f) => f.name).join(', ')}
                 </div>
               </div>
             )}
@@ -345,11 +330,11 @@ export function ImportDialog({
             <div className="p-4 border rounded-lg">
               <div className="text-sm font-medium mb-3">字段映射</div>
               <div className="grid gap-2">
-                {noteModel.fieldsSchema.map((field) => (
+                {noteModel.fields_schema?.map((field) => (
                   <div key={field.name} className="flex items-center gap-2">
                     <span className="w-24 text-sm">
                       {field.name}
-                      {field.required !== false && <span className="text-destructive">*</span>}
+                      <span className="text-destructive">*</span>
                     </span>
                     <span className="text-muted-foreground">→</span>
                     <select
@@ -388,7 +373,7 @@ export function ImportDialog({
                   <thead className="bg-muted sticky top-0">
                     <tr>
                       <th className="px-3 py-2 text-left">状态</th>
-                      {noteModel.fieldsSchema.map((field) => (
+                      {noteModel.fields_schema?.map((field) => (
                         <th key={field.name} className="px-3 py-2 text-left">
                           {field.name}
                         </th>
@@ -405,7 +390,7 @@ export function ImportDialog({
                             <Check className="h-4 w-4 text-green-500" />
                           )}
                         </td>
-                        {noteModel.fieldsSchema.map((field) => (
+                        {noteModel.fields_schema?.map((field) => (
                           <td key={field.name} className="px-3 py-2 truncate max-w-32">
                             {row.data[field.name] || '-'}
                           </td>

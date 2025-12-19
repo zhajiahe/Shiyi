@@ -104,7 +104,13 @@ class NoteListQuery(BaseModel):
 
     deck_id: str | None = Field(default=None, description="牌组ID")
     keyword: str | None = Field(default=None, description="搜索关键词（字段内容）")
-    tags: list[str] | None = Field(default=None, description="标签过滤")
+    tags: str | None = Field(default=None, description="标签过滤（逗号分隔）")
+
+    def get_tags_list(self) -> list[str] | None:
+        """将逗号分隔的标签字符串转换为列表"""
+        if not self.tags:
+            return None
+        return [t.strip() for t in self.tags.split(",") if t.strip()]
 
 
 class CardListQuery(BaseModel):

@@ -1,38 +1,11 @@
 /**
- * 核心类型定义
- * 与后端模型对应
+ * 离线优先架构的本地类型定义
+ *
+ * 这些类型用于 IndexedDB 存储和调度算法，
+ * 与后端 API 类型可能有所不同（后端类型由 orval 自动生成）。
+ *
+ * 认证相关类型请使用: @/api/generated/models
  */
-
-// ==================== 用户 ====================
-
-export interface User {
-  id: string
-  username: string
-  email: string
-  nickname: string
-  isActive: boolean
-  isSuperuser: boolean
-  createdAt?: string
-  updatedAt?: string
-}
-
-export interface LoginRequest {
-  username: string
-  password: string
-}
-
-export interface RegisterRequest {
-  username: string
-  email: string
-  nickname: string
-  password: string
-}
-
-export interface AuthTokens {
-  accessToken: string
-  refreshToken: string
-  tokenType: string
-}
 
 // ==================== 笔记类型 ====================
 

@@ -79,7 +79,7 @@ class NoteService:
             user_id=user_id,
             deck_id=query_params.deck_id,
             keyword=query_params.keyword,
-            tags=query_params.tags,
+            tags=query_params.get_tags_list(),
             skip=skip,
             limit=page_size,
         )

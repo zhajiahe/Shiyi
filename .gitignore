@@ -221,3 +221,4 @@ __marimo__/
 
 # sqlite
 *db
+test.db.bak

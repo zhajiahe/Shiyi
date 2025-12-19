@@ -4,34 +4,16 @@ import { ArrowLeft, Plus, FileText, Share, Upload } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { api } from '@/api/client'
+import { getDeckApiV1DecksDeckIdGet } from '@/api/generated/decks/decks'
+import { getNotesApiV1NotesGet } from '@/api/generated/notes/notes'
+import type {
+  DeckResponse,
+  NoteResponse,
+  PageResponseNoteResponse,
+} from '@/api/generated/models'
 import { NoteDialog } from './components/NoteDialog'
 import { PublishDialog } from './components/PublishDialog'
 import { ImportDialog } from './components/ImportDialog'
-
-interface DeckResponse {
-  id: string
-  name: string
-  description?: string
-  noteModelId?: string
-  createdAt: string
-  updatedAt: string
-}
-
-interface NoteResponse {
-  id: string
-  guid: string
-  fields: Record<string, string>
-  tags: string[]
-  createdAt: string
-}
-
-interface PageResponse<T> {
-  items: T[]
-  total: number
-  pageNum: number
-  pageSize: number
-}
 
 export function StudioDeckDetail() {
   const { id } = useParams<{ id: string }>()
@@ -45,7 +27,7 @@ export function StudioDeckDetail() {
 
   const fetchDeck = useCallback(async () => {
     try {
-      const data = await api.get<DeckResponse>(`/decks/${id}`)
+      const data = (await getDeckApiV1DecksDeckIdGet(id!)) as unknown as DeckResponse
       setDeck(data)
     } catch (err) {
       console.error('Failed to fetch deck:', err)
@@ -55,9 +37,12 @@ export function StudioDeckDetail() {
   const fetchNotes = useCallback(async () => {
     setIsLoading(true)
     try {
-      const data = await api.get<PageResponse<NoteResponse>>(`/notes?deck_id=${id}&page_size=20`)
-      setNotes(data.items)
-      setNoteCount(data.total)
+      const data = (await getNotesApiV1NotesGet({
+        deck_id: id,
+        page_size: 20,
+      })) as unknown as PageResponseNoteResponse
+      setNotes(data.items ?? [])
+      setNoteCount(data.total ?? 0)
     } catch (err) {
       console.error('Failed to fetch notes:', err)
     } finally {
@@ -114,7 +99,9 @@ export function StudioDeckDetail() {
             <CardTitle className="text-sm font-medium">创建时间</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm">{new Date(deck.createdAt).toLocaleString()}</div>
+            <div className="text-sm">
+              {deck.created_at ? new Date(deck.created_at).toLocaleString() : '未知'}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -122,7 +109,9 @@ export function StudioDeckDetail() {
             <CardTitle className="text-sm font-medium">更新时间</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm">{new Date(deck.updatedAt).toLocaleString()}</div>
+            <div className="text-sm">
+              {deck.updated_at ? new Date(deck.updated_at).toLocaleString() : '未知'}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -180,7 +169,7 @@ export function StudioDeckDetail() {
           open={isNoteDialogOpen}
           onOpenChange={setIsNoteDialogOpen}
           deckId={id}
-          noteModelId={deck?.noteModelId}
+          noteModelId={deck?.note_model_id ?? undefined}
           onSuccess={fetchNotes}
         />
       )}
@@ -202,7 +191,7 @@ export function StudioDeckDetail() {
           open={isImportDialogOpen}
           onOpenChange={setIsImportDialogOpen}
           deckId={id}
-          noteModelId={deck?.noteModelId}
+          noteModelId={deck?.note_model_id ?? undefined}
           onSuccess={fetchNotes}
         />
       )}
@@ -212,7 +201,7 @@ export function StudioDeckDetail() {
 
 function NoteItem({ note }: { note: NoteResponse }) {
   // 获取前两个字段作为预览
-  const fieldEntries = Object.entries(note.fields).slice(0, 2)
+  const fieldEntries = Object.entries(note.fields || {}).slice(0, 2)
 
   return (
     <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50">
@@ -224,7 +213,7 @@ function NoteItem({ note }: { note: NoteResponse }) {
             </span>
           ))}
         </div>
-        {note.tags.length > 0 && (
+        {note.tags && note.tags.length > 0 && (
           <div className="flex gap-1 mt-1">
             {note.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">
@@ -235,7 +224,7 @@ function NoteItem({ note }: { note: NoteResponse }) {
         )}
       </div>
       <div className="text-xs text-muted-foreground">
-        {new Date(note.createdAt).toLocaleDateString()}
+        {note.created_at ? new Date(note.created_at).toLocaleDateString() : ''}
       </div>
     </div>
   )

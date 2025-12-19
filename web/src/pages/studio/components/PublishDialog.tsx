@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { api } from '@/api/client'
+import { publishDeckApiV1DecksDeckIdPublishPost } from '@/api/generated/decks/decks'
 import { toast } from 'sonner'
 import { Check, AlertCircle } from 'lucide-react'
 
@@ -58,7 +58,7 @@ export function PublishDialog({
 
     setIsPublishing(true)
     try {
-      await api.post(`/decks/${deckId}/publish`, {
+      await publishDeckApiV1DecksDeckIdPublishPost(deckId, {
         slug: slug.trim(),
         tags: tags
           .split(',')

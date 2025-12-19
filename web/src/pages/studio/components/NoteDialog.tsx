@@ -9,20 +9,13 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { api } from '@/api/client'
+import {
+  getAvailableNoteModelsApiV1NoteModelsAvailableGet,
+  getNoteModelApiV1NoteModelsNoteModelIdGet,
+} from '@/api/generated/note-models/note-models'
+import { createNoteApiV1NotesPost } from '@/api/generated/notes/notes'
+import type { NoteModelResponse } from '@/api/generated/models'
 import { toast } from 'sonner'
-
-interface FieldSchema {
-  name: string
-  type: string
-  required?: boolean
-}
-
-interface NoteModelResponse {
-  id: string
-  name: string
-  fieldsSchema: FieldSchema[]
-}
 
 interface NoteDialogProps {
   open: boolean
@@ -63,7 +56,7 @@ export function NoteDialog({
   async function fetchNoteModels() {
     setIsLoading(true)
     try {
-      const data = await api.get<NoteModelResponse[]>('/note-models/available')
+      const data = (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as NoteModelResponse[]
       setNoteModels(data)
       if (data.length > 0) {
         setSelectedModel(data[0])
@@ -79,7 +72,7 @@ export function NoteDialog({
   async function fetchNoteModel(id: string) {
     setIsLoading(true)
     try {
-      const data = await api.get<NoteModelResponse>(`/note-models/${id}`)
+      const data = (await getNoteModelApiV1NoteModelsNoteModelIdGet(id)) as NoteModelResponse
       setSelectedModel(data)
       initializeFields(data)
     } catch (err) {
@@ -91,7 +84,7 @@ export function NoteDialog({
 
   function initializeFields(model: NoteModelResponse) {
     const newFields: Record<string, string> = {}
-    model.fieldsSchema.forEach((field) => {
+    model.fields_schema?.forEach((field) => {
       newFields[field.name] = ''
     })
     setFields(newFields)
@@ -108,10 +101,8 @@ export function NoteDialog({
   async function handleSubmit() {
     if (!selectedModel) return
 
-    // 验证必填字段
-    const emptyRequired = selectedModel.fieldsSchema
-      .filter((f) => f.required !== false)
-      .find((f) => !fields[f.name]?.trim())
+    // 验证必填字段（默认所有字段必填）
+    const emptyRequired = selectedModel.fields_schema?.find((f) => !fields[f.name]?.trim())
 
     if (emptyRequired) {
       toast.error(`请填写 ${emptyRequired.name}`)
@@ -120,7 +111,7 @@ export function NoteDialog({
 
     setIsSaving(true)
     try {
-      await api.post('/notes', {
+      await createNoteApiV1NotesPost({
         deck_id: deckId,
         note_model_id: selectedModel.id,
         fields,
@@ -173,11 +164,11 @@ export function NoteDialog({
             )}
 
             {/* 字段表单 */}
-            {selectedModel?.fieldsSchema.map((field) => (
+            {selectedModel?.fields_schema?.map((field) => (
               <div key={field.name} className="space-y-2">
                 <label className="text-sm font-medium">
                   {field.name}
-                  {field.required !== false && <span className="text-destructive ml-1">*</span>}
+                  <span className="text-destructive ml-1">*</span>
                 </label>
                 <Input
                   placeholder={`输入 ${field.name}`}

@@ -4,27 +4,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { api } from '@/api/client'
+import { getAvailableNoteModelsApiV1NoteModelsAvailableGet } from '@/api/generated/note-models/note-models'
 import { NoteModelDialog } from './components/NoteModelDialog'
-import type { NoteModel } from '@/types'
-
-interface NoteModelResponse extends NoteModel {
-  isBuiltin: boolean
-}
+import type { NoteModelResponse } from '@/api/generated/models'
 
 export function StudioTemplates() {
   const [templates, setTemplates] = useState<NoteModelResponse[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [keyword, setKeyword] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingModel, setEditingModel] = useState<NoteModel | undefined>(undefined)
+  const [editingModel, setEditingModel] = useState<NoteModelResponse | undefined>(undefined)
 
   const fetchTemplates = useCallback(async () => {
     setIsLoading(true)
     try {
-      const params = keyword ? `?keyword=${encodeURIComponent(keyword)}` : ''
-      const data = await api.get<NoteModelResponse[]>(`/note-models/available${params}`)
-      setTemplates(data)
+      const data = await getAvailableNoteModelsApiV1NoteModelsAvailableGet(
+        keyword ? { keyword } : undefined,
+      )
+      setTemplates(data as NoteModelResponse[])
     } catch (err) {
       console.error('Failed to fetch templates:', err)
     } finally {
@@ -41,13 +38,13 @@ export function StudioTemplates() {
     setIsDialogOpen(true)
   }
 
-  function handleEdit(model: NoteModel) {
+  function handleEdit(model: NoteModelResponse) {
     setEditingModel(model)
     setIsDialogOpen(true)
   }
 
-  const builtinTemplates = templates.filter((t) => t.isBuiltin)
-  const userTemplates = templates.filter((t) => !t.isBuiltin)
+  const builtinTemplates = templates.filter((t) => t.is_builtin)
+  const userTemplates = templates.filter((t) => !t.is_builtin)
 
   return (
     <div className="space-y-6">
@@ -145,19 +142,19 @@ function TemplateCard({
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">{template.name}</CardTitle>
-          {template.isBuiltin && (
+          {template.is_builtin && (
             <Badge variant="secondary" className="ml-2">
               内置
             </Badge>
           )}
         </div>
         <CardDescription>
-          {template.fieldsSchema.length} 个字段 · {template.templates.length} 个卡片模板
+          {template.fields_schema?.length ?? 0} 个字段 · {template.templates?.length ?? 0} 个卡片模板
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-1">
-          {template.fieldsSchema.map((field) => (
+          {template.fields_schema?.map((field) => (
             <Badge key={field.name} variant="outline" className="text-xs">
               {field.name}
             </Badge>

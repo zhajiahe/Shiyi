@@ -28,7 +28,7 @@ SYSTEM_USER_ID = "00000000-0000-0000-0000-000000000000"
 SYSTEM_USER_CONFIG = {
     "id": SYSTEM_USER_ID,
     "username": "system",
-    "email": "system@ankiweb.local",
+    "email": "system@shiyi.study",
     "nickname": "Anki Web 官方",
     "hashed_password": get_password_hash("AnkiWeb@System2024!"),
     "is_active": True,
@@ -144,7 +144,6 @@ async def init_shared_decks(db: AsyncSession, system_user_id: str) -> None:
             name=deck_data["title"],
             description=deck_data["description"],
             note_model_id=deck_data["note_model_id"],
-            scheduler="sm2",
         )
         db.add(deck)
         await db.flush()

@@ -3,18 +3,24 @@
  */
 
 import { create } from 'zustand'
-import { api, clearTokens, getAccessToken, setTokens } from '@/api/client'
-import type { AuthTokens, LoginRequest, RegisterRequest, User } from '@/types'
+import {
+  loginApiV1AuthLoginPost,
+  registerApiV1AuthRegisterPost,
+  getCurrentUserInfoApiV1AuthMeGet,
+  refreshTokenApiV1AuthRefreshPost,
+} from '@/api/generated/auth/auth'
+import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/api/fetcher'
+import type { UserResponse, Token } from '@/api/generated/models'
 
 interface AuthState {
-  user: User | null
+  user: UserResponse | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
 
   // Actions
-  login: (data: LoginRequest) => Promise<void>
-  register: (data: RegisterRequest) => Promise<void>
+  login: (username: string, password: string) => Promise<void>
+  register: (username: string, email: string, nickname: string, password: string) => Promise<void>
   logout: () => void
   fetchCurrentUser: () => Promise<void>
   refreshToken: () => Promise<void>
@@ -27,11 +33,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  login: async (data: LoginRequest) => {
+  login: async (username: string, password: string) => {
     set({ isLoading: true, error: null })
     try {
-      const tokens = await api.post<AuthTokens>('/auth/login', data, { skipAuth: true })
-      setTokens(tokens.accessToken, tokens.refreshToken)
+      const tokens = (await loginApiV1AuthLoginPost({ username, password })) as Token
+      setTokens(tokens.access_token, tokens.refresh_token)
       set({ isAuthenticated: true })
 
       // 获取用户信息
@@ -45,12 +51,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  register: async (data: RegisterRequest) => {
+  register: async (username: string, email: string, nickname: string, password: string) => {
     set({ isLoading: true, error: null })
     try {
-      await api.post<User>('/auth/register', data, { skipAuth: true })
+      await registerApiV1AuthRegisterPost({ username, email, nickname, password })
       // 注册成功后自动登录
-      await get().login({ username: data.username, password: data.password })
+      await get().login(username, password)
     } catch (err) {
       const message = err instanceof Error ? err.message : '注册失败'
       set({ error: message })
@@ -67,7 +73,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   fetchCurrentUser: async () => {
     try {
-      const user = await api.get<User>('/auth/me')
+      const user = (await getCurrentUserInfoApiV1AuthMeGet()) as UserResponse
       set({ user, isAuthenticated: true })
     } catch {
       // Token 无效，清除认证状态
@@ -78,17 +84,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   refreshToken: async () => {
     try {
-      const refreshToken = localStorage.getItem('shiyi-refresh-token')
+      const refreshToken = getRefreshToken()
       if (!refreshToken) {
         throw new Error('No refresh token')
       }
 
-      const tokens = await api.post<AuthTokens>(
-        '/auth/refresh',
-        { refresh_token: refreshToken },
-        { skipAuth: true },
-      )
-      setTokens(tokens.accessToken, tokens.refreshToken)
+      const tokens = (await refreshTokenApiV1AuthRefreshPost({
+        refresh_token: refreshToken,
+      })) as Token
+      setTokens(tokens.access_token, tokens.refresh_token)
     } catch {
       // 刷新失败，需要重新登录
       get().logout()

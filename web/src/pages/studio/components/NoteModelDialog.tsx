@@ -12,16 +12,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { api } from '@/api/client'
+import {
+  createNoteModelApiV1NoteModelsPost,
+  updateNoteModelApiV1NoteModelsNoteModelIdPut,
+} from '@/api/generated/note-models/note-models'
+import type { NoteModelResponse, CardTemplateResponse, FieldDefinition } from '@/api/generated/models'
 import { toast } from 'sonner'
-import type { NoteModel, CardTemplate, FieldDefinition } from '@/types'
-
-type FieldSchema = FieldDefinition & { type?: string; required?: boolean }
 
 interface NoteModelDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  noteModel?: NoteModel // 如果传入则为编辑模式
+  noteModel?: NoteModelResponse // 如果传入则为编辑模式
   onSuccess: () => void
 }
 
@@ -67,7 +68,7 @@ export function NoteModelDialog({
   onSuccess,
 }: NoteModelDialogProps) {
   const [name, setName] = useState('')
-  const [fields, setFields] = useState<FieldSchema[]>([])
+  const [fields, setFields] = useState<FieldDefinition[]>([])
   const [templates, setTemplates] = useState<EditableTemplate[]>([])
   const [newFieldName, setNewFieldName] = useState('')
   const [activeTemplateIndex, setActiveTemplateIndex] = useState(0)
@@ -81,23 +82,20 @@ export function NoteModelDialog({
       if (noteModel) {
         // 编辑模式
         setName(noteModel.name)
-        setFields(noteModel.fieldsSchema)
+        setFields(noteModel.fields_schema ?? [])
         setTemplates(
-          noteModel.templates.map((t: CardTemplate) => ({
+          (noteModel.templates ?? []).map((t: CardTemplateResponse) => ({
             id: t.id,
             name: t.name,
-            frontTemplate: t.questionTemplate,
-            backTemplate: t.answerTemplate,
+            frontTemplate: t.question_template,
+            backTemplate: t.answer_template,
             css: DEFAULT_CSS, // CSS 在 NoteModel 级别
           })),
         )
       } else {
         // 创建模式 - 默认值
         setName('')
-        setFields([
-          { name: 'Front', type: 'text', required: true },
-          { name: 'Back', type: 'text', required: true },
-        ])
+        setFields([{ name: 'Front' }, { name: 'Back' }])
         setTemplates([
           {
             name: 'Card 1',
@@ -121,7 +119,7 @@ export function NoteModelDialog({
       toast.error('字段名已存在')
       return
     }
-    setFields([...fields, { name: trimmedName, type: 'text', required: false }])
+    setFields([...fields, { name: trimmedName }])
     setNewFieldName('')
   }
 
@@ -237,10 +235,10 @@ export function NoteModelDialog({
       }
 
       if (noteModel) {
-        await api.put(`/note-models/${noteModel.id}`, payload)
+        await updateNoteModelApiV1NoteModelsNoteModelIdPut(noteModel.id, payload)
         toast.success('模板更新成功')
       } else {
-        await api.post('/note-models', payload)
+        await createNoteModelApiV1NoteModelsPost(payload)
         toast.success('模板创建成功')
       }
       onOpenChange(false)
@@ -288,9 +286,7 @@ export function NoteModelDialog({
                     <div key={index} className="flex items-center gap-2">
                       <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
                       <Input value={field.name} disabled className="flex-1" />
-                      <Badge variant={field.required ? 'default' : 'outline'}>
-                        {field.required ? '必填' : '选填'}
-                      </Badge>
+                      <Badge variant="default">必填</Badge>
                       <Button
                         variant="ghost"
                         size="icon"

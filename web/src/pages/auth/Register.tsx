@@ -28,12 +28,7 @@ export function RegisterPage() {
     }
 
     try {
-      await register({
-        username: formData.username,
-        email: formData.email,
-        nickname: formData.nickname,
-        password: formData.password,
-      })
+      await register(formData.username, formData.email, formData.nickname, formData.password)
       navigate('/studio')
     } catch {
       // 错误已在 store 中处理
