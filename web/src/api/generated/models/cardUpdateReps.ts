@@ -9,4 +9,4 @@
 /**
  * 复习次数
  */
-export type CardUpdateReps = number | null;
+export type CardUpdateReps = number | null

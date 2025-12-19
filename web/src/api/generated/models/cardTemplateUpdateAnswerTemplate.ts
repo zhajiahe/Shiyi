@@ -9,4 +9,4 @@
 /**
  * 答案侧HTML模板
  */
-export type CardTemplateUpdateAnswerTemplate = string | null;
+export type CardTemplateUpdateAnswerTemplate = string | null

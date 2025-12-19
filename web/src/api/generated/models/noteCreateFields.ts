@@ -9,4 +9,4 @@
 /**
  * 字段内容
  */
-export type NoteCreateFields = {[key: string]: string};
+export type NoteCreateFields = { [key: string]: string }

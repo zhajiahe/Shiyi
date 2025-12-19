@@ -9,4 +9,4 @@
 /**
  * 标签列表
  */
-export type SharedDeckUpdateTags = string[] | null;
+export type SharedDeckUpdateTags = string[] | null

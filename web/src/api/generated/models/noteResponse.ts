@@ -5,38 +5,38 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteResponseFields } from './noteResponseFields';
-import type { NoteResponseSourceMeta } from './noteResponseSourceMeta';
-import type { CardResponse } from './cardResponse';
-import type { NoteResponseCreatedAt } from './noteResponseCreatedAt';
-import type { NoteResponseUpdatedAt } from './noteResponseUpdatedAt';
+import type { NoteResponseFields } from './noteResponseFields'
+import type { NoteResponseSourceMeta } from './noteResponseSourceMeta'
+import type { CardResponse } from './cardResponse'
+import type { NoteResponseCreatedAt } from './noteResponseCreatedAt'
+import type { NoteResponseUpdatedAt } from './noteResponseUpdatedAt'
 
 /**
  * 笔记响应
  */
 export interface NoteResponse {
   /** 所属牌组ID */
-  deck_id: string;
+  deck_id: string
   /** 笔记类型ID */
-  note_model_id: string;
+  note_model_id: string
   /** 字段内容 */
-  fields: NoteResponseFields;
+  fields: NoteResponseFields
   /** 标签列表 */
-  tags?: string[];
+  tags?: string[]
   /** 笔记ID */
-  id: string;
+  id: string
   /** 所属用户ID */
-  user_id: string;
+  user_id: string
   /** 语义唯一标识 */
-  guid: string;
+  guid: string
   /** 来源类型 */
-  source_type?: string;
+  source_type?: string
   /** 来源元数据 */
-  source_meta?: NoteResponseSourceMeta;
+  source_meta?: NoteResponseSourceMeta
   /** 关联的卡片 */
-  cards?: CardResponse[];
+  cards?: CardResponse[]
   /** 创建时间 */
-  created_at?: NoteResponseCreatedAt;
+  created_at?: NoteResponseCreatedAt
   /** 更新时间 */
-  updated_at?: NoteResponseUpdatedAt;
+  updated_at?: NoteResponseUpdatedAt
 }

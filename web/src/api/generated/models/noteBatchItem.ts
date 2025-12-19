@@ -5,14 +5,14 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteBatchItemFields } from './noteBatchItemFields';
+import type { NoteBatchItemFields } from './noteBatchItemFields'
 
 /**
  * 批量创建笔记的单项
  */
 export interface NoteBatchItem {
   /** 字段内容 */
-  fields: NoteBatchItemFields;
+  fields: NoteBatchItemFields
   /** 标签列表 */
-  tags?: string[];
+  tags?: string[]
 }

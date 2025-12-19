@@ -9,4 +9,4 @@
 /**
  * 是否上架
  */
-export type SharedDeckUpdateIsActive = boolean | null;
+export type SharedDeckUpdateIsActive = boolean | null

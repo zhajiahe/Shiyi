@@ -9,4 +9,4 @@
 /**
  * 创建时间
  */
-export type UserResponseCreateTime = string | null;
+export type UserResponseCreateTime = string | null

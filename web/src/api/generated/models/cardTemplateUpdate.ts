@@ -5,21 +5,21 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { CardTemplateUpdateName } from './cardTemplateUpdateName';
-import type { CardTemplateUpdateOrd } from './cardTemplateUpdateOrd';
-import type { CardTemplateUpdateQuestionTemplate } from './cardTemplateUpdateQuestionTemplate';
-import type { CardTemplateUpdateAnswerTemplate } from './cardTemplateUpdateAnswerTemplate';
+import type { CardTemplateUpdateName } from './cardTemplateUpdateName'
+import type { CardTemplateUpdateOrd } from './cardTemplateUpdateOrd'
+import type { CardTemplateUpdateQuestionTemplate } from './cardTemplateUpdateQuestionTemplate'
+import type { CardTemplateUpdateAnswerTemplate } from './cardTemplateUpdateAnswerTemplate'
 
 /**
  * 更新卡片模板请求
  */
 export interface CardTemplateUpdate {
   /** 模板名称 */
-  name?: CardTemplateUpdateName;
+  name?: CardTemplateUpdateName
   /** 模板序号 */
-  ord?: CardTemplateUpdateOrd;
+  ord?: CardTemplateUpdateOrd
   /** 问题侧HTML模板 */
-  question_template?: CardTemplateUpdateQuestionTemplate;
+  question_template?: CardTemplateUpdateQuestionTemplate
   /** 答案侧HTML模板 */
-  answer_template?: CardTemplateUpdateAnswerTemplate;
+  answer_template?: CardTemplateUpdateAnswerTemplate
 }

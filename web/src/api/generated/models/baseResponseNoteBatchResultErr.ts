@@ -5,6 +5,6 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteBatchResult } from './noteBatchResult';
+import type { NoteBatchResult } from './noteBatchResult'
 
-export type BaseResponseNoteBatchResultErr = NoteBatchResult | null;
+export type BaseResponseNoteBatchResultErr = NoteBatchResult | null

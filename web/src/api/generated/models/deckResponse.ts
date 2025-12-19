@@ -5,27 +5,27 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { DeckResponseNoteModelId } from './deckResponseNoteModelId';
-import type { DeckResponseDescription } from './deckResponseDescription';
-import type { DeckResponseCreatedAt } from './deckResponseCreatedAt';
-import type { DeckResponseUpdatedAt } from './deckResponseUpdatedAt';
+import type { DeckResponseNoteModelId } from './deckResponseNoteModelId'
+import type { DeckResponseDescription } from './deckResponseDescription'
+import type { DeckResponseCreatedAt } from './deckResponseCreatedAt'
+import type { DeckResponseUpdatedAt } from './deckResponseUpdatedAt'
 
 /**
  * 牌组响应
  */
 export interface DeckResponse {
   /** 牌组ID */
-  id: string;
+  id: string
   /** 所属用户ID */
-  user_id: string;
+  user_id: string
   /** 牌组名称 */
-  name: string;
+  name: string
   /** 绑定的笔记类型ID */
-  note_model_id?: DeckResponseNoteModelId;
+  note_model_id?: DeckResponseNoteModelId
   /** 牌组描述 */
-  description?: DeckResponseDescription;
+  description?: DeckResponseDescription
   /** 创建时间 */
-  created_at?: DeckResponseCreatedAt;
+  created_at?: DeckResponseCreatedAt
   /** 更新时间 */
-  updated_at?: DeckResponseUpdatedAt;
+  updated_at?: DeckResponseUpdatedAt
 }

@@ -9,4 +9,4 @@
 /**
  * 复习后到期时间
  */
-export type ReviewLogCreateNewDue = number | null;
+export type ReviewLogCreateNewDue = number | null

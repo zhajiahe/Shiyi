@@ -9,4 +9,4 @@
 /**
  * FSRS 稳定性
  */
-export type CardUpdateStability = number | null;
+export type CardUpdateStability = number | null

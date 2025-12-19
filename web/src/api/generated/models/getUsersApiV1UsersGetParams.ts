@@ -7,15 +7,15 @@
  */
 
 export type GetUsersApiV1UsersGetParams = {
-/**
- * @minimum 1
- */
-page_num?: number;
-/**
- * @minimum 1
- */
-page_size?: number;
-keyword?: string | null;
-is_active?: boolean | null;
-is_superuser?: boolean | null;
-};
+  /**
+   * @minimum 1
+   */
+  page_num?: number
+  /**
+   * @minimum 1
+   */
+  page_size?: number
+  keyword?: string | null
+  is_active?: boolean | null
+  is_superuser?: boolean | null
+}

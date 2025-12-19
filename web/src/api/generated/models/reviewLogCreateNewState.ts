@@ -9,4 +9,4 @@
 /**
  * 复习后状态
  */
-export type ReviewLogCreateNewState = string | null;
+export type ReviewLogCreateNewState = string | null

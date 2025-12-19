@@ -11,11 +11,11 @@
  */
 export interface NoteBatchResult {
   /** 成功创建的笔记数 */
-  created_count: number;
+  created_count: number
   /** 跳过的笔记数（重复） */
-  skipped_count: number;
+  skipped_count: number
   /** 失败的笔记数 */
-  error_count: number;
+  error_count: number
   /** 创建的笔记ID列表 */
-  created_ids?: string[];
+  created_ids?: string[]
 }

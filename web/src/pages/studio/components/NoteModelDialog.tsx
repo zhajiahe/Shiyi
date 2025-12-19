@@ -16,7 +16,11 @@ import {
   createNoteModelApiV1NoteModelsPost,
   updateNoteModelApiV1NoteModelsNoteModelIdPut,
 } from '@/api/generated/note-models/note-models'
-import type { NoteModelResponse, CardTemplateResponse, FieldDefinition } from '@/api/generated/models'
+import type {
+  NoteModelResponse,
+  CardTemplateResponse,
+  FieldDefinition,
+} from '@/api/generated/models'
 import { toast } from 'sonner'
 
 interface NoteModelDialogProps {
@@ -87,8 +91,8 @@ export function NoteModelDialog({
           (noteModel.templates ?? []).map((t: CardTemplateResponse) => ({
             id: t.id,
             name: t.name,
-            frontTemplate: t.question_template,
-            backTemplate: t.answer_template,
+            frontTemplate: t.question_template ?? '',
+            backTemplate: t.answer_template ?? '',
             css: DEFAULT_CSS, // CSS 在 NoteModel 级别
           })),
         )

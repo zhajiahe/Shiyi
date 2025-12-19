@@ -62,12 +62,15 @@ export function ImportDialog({
   const fetchNoteModel = useCallback(async () => {
     if (!noteModelId) {
       // 获取可用模板列表，选择第一个
-      const models = (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as NoteModelResponse[]
+      const models =
+        (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as unknown as NoteModelResponse[]
       if (models.length > 0) {
         setNoteModel(models[0])
       }
     } else {
-      const model = (await getNoteModelApiV1NoteModelsNoteModelIdGet(noteModelId)) as NoteModelResponse
+      const model = (await getNoteModelApiV1NoteModelsNoteModelIdGet(
+        noteModelId,
+      )) as unknown as NoteModelResponse
       setNoteModel(model)
     }
   }, [noteModelId])
@@ -236,7 +239,7 @@ export function ImportDialog({
         deck_id: deckId,
         note_model_id: noteModel.id,
         notes,
-      })) as NoteBatchResult
+      })) as unknown as NoteBatchResult
 
       setImportResult({
         created: result.created_count,

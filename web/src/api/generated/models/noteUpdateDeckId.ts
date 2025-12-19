@@ -9,4 +9,4 @@
 /**
  * 所属牌组ID
  */
-export type NoteUpdateDeckId = string | null;
+export type NoteUpdateDeckId = string | null

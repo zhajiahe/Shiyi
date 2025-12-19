@@ -9,4 +9,4 @@
 /**
  * 语言
  */
-export type SharedDeckUpdateLanguage = string | null;
+export type SharedDeckUpdateLanguage = string | null

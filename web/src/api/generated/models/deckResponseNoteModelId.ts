@@ -9,4 +9,4 @@
 /**
  * 绑定的笔记类型ID
  */
-export type DeckResponseNoteModelId = string | null;
+export type DeckResponseNoteModelId = string | null

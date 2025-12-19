@@ -9,4 +9,4 @@
 /**
  * 更新时间
  */
-export type DeckResponseUpdatedAt = string | null;
+export type DeckResponseUpdatedAt = string | null

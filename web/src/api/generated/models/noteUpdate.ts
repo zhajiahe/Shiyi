@@ -5,18 +5,18 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteUpdateDeckId } from './noteUpdateDeckId';
-import type { NoteUpdateFields } from './noteUpdateFields';
-import type { NoteUpdateTags } from './noteUpdateTags';
+import type { NoteUpdateDeckId } from './noteUpdateDeckId'
+import type { NoteUpdateFields } from './noteUpdateFields'
+import type { NoteUpdateTags } from './noteUpdateTags'
 
 /**
  * 更新笔记请求
  */
 export interface NoteUpdate {
   /** 所属牌组ID */
-  deck_id?: NoteUpdateDeckId;
+  deck_id?: NoteUpdateDeckId
   /** 字段内容 */
-  fields?: NoteUpdateFields;
+  fields?: NoteUpdateFields
   /** 标签列表 */
-  tags?: NoteUpdateTags;
+  tags?: NoteUpdateTags
 }

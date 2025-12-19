@@ -9,12 +9,12 @@
 /**
  * 来源类型
  */
-export type NoteBatchCreateSourceType = typeof NoteBatchCreateSourceType[keyof typeof NoteBatchCreateSourceType];
-
+export type NoteBatchCreateSourceType =
+  (typeof NoteBatchCreateSourceType)[keyof typeof NoteBatchCreateSourceType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const NoteBatchCreateSourceType = {
   manual: 'manual',
   ai: 'ai',
   import: 'import',
-} as const;
+} as const

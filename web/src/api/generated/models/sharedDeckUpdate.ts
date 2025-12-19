@@ -5,27 +5,27 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { SharedDeckUpdateTitle } from './sharedDeckUpdateTitle';
-import type { SharedDeckUpdateDescription } from './sharedDeckUpdateDescription';
-import type { SharedDeckUpdateLanguage } from './sharedDeckUpdateLanguage';
-import type { SharedDeckUpdateTags } from './sharedDeckUpdateTags';
-import type { SharedDeckUpdateCoverImageUrl } from './sharedDeckUpdateCoverImageUrl';
-import type { SharedDeckUpdateIsActive } from './sharedDeckUpdateIsActive';
+import type { SharedDeckUpdateTitle } from './sharedDeckUpdateTitle'
+import type { SharedDeckUpdateDescription } from './sharedDeckUpdateDescription'
+import type { SharedDeckUpdateLanguage } from './sharedDeckUpdateLanguage'
+import type { SharedDeckUpdateTags } from './sharedDeckUpdateTags'
+import type { SharedDeckUpdateCoverImageUrl } from './sharedDeckUpdateCoverImageUrl'
+import type { SharedDeckUpdateIsActive } from './sharedDeckUpdateIsActive'
 
 /**
  * 更新共享牌组请求
  */
 export interface SharedDeckUpdate {
   /** 标题 */
-  title?: SharedDeckUpdateTitle;
+  title?: SharedDeckUpdateTitle
   /** 描述 */
-  description?: SharedDeckUpdateDescription;
+  description?: SharedDeckUpdateDescription
   /** 语言 */
-  language?: SharedDeckUpdateLanguage;
+  language?: SharedDeckUpdateLanguage
   /** 标签列表 */
-  tags?: SharedDeckUpdateTags;
+  tags?: SharedDeckUpdateTags
   /** 封面图片URL */
-  cover_image_url?: SharedDeckUpdateCoverImageUrl;
+  cover_image_url?: SharedDeckUpdateCoverImageUrl
   /** 是否上架 */
-  is_active?: SharedDeckUpdateIsActive;
+  is_active?: SharedDeckUpdateIsActive
 }

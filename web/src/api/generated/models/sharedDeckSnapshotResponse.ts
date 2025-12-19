@@ -5,27 +5,27 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { SharedDeckSnapshotResponseFileSize } from './sharedDeckSnapshotResponseFileSize';
-import type { SharedDeckSnapshotResponseCreatedAt } from './sharedDeckSnapshotResponseCreatedAt';
+import type { SharedDeckSnapshotResponseFileSize } from './sharedDeckSnapshotResponseFileSize'
+import type { SharedDeckSnapshotResponseCreatedAt } from './sharedDeckSnapshotResponseCreatedAt'
 
 /**
  * 共享牌组快照响应
  */
 export interface SharedDeckSnapshotResponse {
   /** 快照ID */
-  id: string;
+  id: string
   /** 共享牌组ID */
-  shared_deck_id: string;
+  shared_deck_id: string
   /** 版本号 */
-  version: number;
+  version: number
   /** 导出格式版本 */
-  export_format_version?: number;
+  export_format_version?: number
   /** 文件URL */
-  file_url: string;
+  file_url: string
   /** 内容哈希 */
-  content_hash: string;
+  content_hash: string
   /** 文件大小（字节） */
-  file_size?: SharedDeckSnapshotResponseFileSize;
+  file_size?: SharedDeckSnapshotResponseFileSize
   /** 创建时间 */
-  created_at?: SharedDeckSnapshotResponseCreatedAt;
+  created_at?: SharedDeckSnapshotResponseCreatedAt
 }

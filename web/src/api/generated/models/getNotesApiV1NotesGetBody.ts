@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetNotesApiV1NotesGetBody = string[] | null;
+export type GetNotesApiV1NotesGetBody = string[] | null

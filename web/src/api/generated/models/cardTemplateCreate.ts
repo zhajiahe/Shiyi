@@ -15,14 +15,14 @@ export interface CardTemplateCreate {
    * @minLength 1
    * @maxLength 100
    */
-  name: string;
+  name: string
   /**
    * 模板序号（从0开始）
    * @minimum 0
    */
-  ord?: number;
+  ord?: number
   /** 问题侧HTML模板 */
-  question_template?: string;
+  question_template?: string
   /** 答案侧HTML模板 */
-  answer_template?: string;
+  answer_template?: string
 }

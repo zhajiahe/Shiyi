@@ -14,10 +14,10 @@ import type {
   DeckUpdate,
   GetDecksApiV1DecksGetParams,
   HTTPValidationError,
-  PublishDeckRequest
-} from '.././models';
+  PublishDeckRequest,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 获取牌组列表（分页）
@@ -32,42 +32,41 @@ export type getDecksApiV1DecksGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getDecksApiV1DecksGetResponseSuccess = (getDecksApiV1DecksGetResponse200) & {
-  headers: Headers;
-};
-export type getDecksApiV1DecksGetResponseError = (getDecksApiV1DecksGetResponse422) & {
-  headers: Headers;
-};
 
-export type getDecksApiV1DecksGetResponse = (getDecksApiV1DecksGetResponseSuccess | getDecksApiV1DecksGetResponseError)
+export type getDecksApiV1DecksGetResponseSuccess = getDecksApiV1DecksGetResponse200 & {
+  headers: Headers
+}
+export type getDecksApiV1DecksGetResponseError = getDecksApiV1DecksGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetDecksApiV1DecksGetUrl = (params?: GetDecksApiV1DecksGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getDecksApiV1DecksGetResponse =
+  | getDecksApiV1DecksGetResponseSuccess
+  | getDecksApiV1DecksGetResponseError
+
+export const getGetDecksApiV1DecksGetUrl = (params?: GetDecksApiV1DecksGetParams) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ? `/api/v1/decks?${stringifiedParams}` : `/api/v1/decks`
 }
 
-export const getDecksApiV1DecksGet = async (params?: GetDecksApiV1DecksGetParams, options?: RequestInit): Promise<getDecksApiV1DecksGetResponse> => {
-  
-  return customFetch<getDecksApiV1DecksGetResponse>(getGetDecksApiV1DecksGetUrl(params),
-  {      
+export const getDecksApiV1DecksGet = async (
+  params?: GetDecksApiV1DecksGetParams,
+  options?: RequestInit,
+): Promise<getDecksApiV1DecksGetResponse> => {
+  return customFetch<getDecksApiV1DecksGetResponse>(getGetDecksApiV1DecksGetUrl(params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 创建牌组
@@ -82,36 +81,33 @@ export type createDeckApiV1DecksPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type createDeckApiV1DecksPostResponseSuccess = (createDeckApiV1DecksPostResponse201) & {
-  headers: Headers;
-};
-export type createDeckApiV1DecksPostResponseError = (createDeckApiV1DecksPostResponse422) & {
-  headers: Headers;
-};
 
-export type createDeckApiV1DecksPostResponse = (createDeckApiV1DecksPostResponseSuccess | createDeckApiV1DecksPostResponseError)
+export type createDeckApiV1DecksPostResponseSuccess = createDeckApiV1DecksPostResponse201 & {
+  headers: Headers
+}
+export type createDeckApiV1DecksPostResponseError = createDeckApiV1DecksPostResponse422 & {
+  headers: Headers
+}
+
+export type createDeckApiV1DecksPostResponse =
+  | createDeckApiV1DecksPostResponseSuccess
+  | createDeckApiV1DecksPostResponseError
 
 export const getCreateDeckApiV1DecksPostUrl = () => {
-
-
-  
-
   return `/api/v1/decks`
 }
 
-export const createDeckApiV1DecksPost = async (deckCreate: DeckCreate, options?: RequestInit): Promise<createDeckApiV1DecksPostResponse> => {
-  
-  return customFetch<createDeckApiV1DecksPostResponse>(getCreateDeckApiV1DecksPostUrl(),
-  {      
+export const createDeckApiV1DecksPost = async (
+  deckCreate: DeckCreate,
+  options?: RequestInit,
+): Promise<createDeckApiV1DecksPostResponse> => {
+  return customFetch<createDeckApiV1DecksPostResponse>(getCreateDeckApiV1DecksPostUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      deckCreate,)
-  }
-);}
-
+    body: JSON.stringify(deckCreate),
+  })
+}
 
 /**
  * 获取单个牌组详情
@@ -126,35 +122,31 @@ export type getDeckApiV1DecksDeckIdGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getDeckApiV1DecksDeckIdGetResponseSuccess = (getDeckApiV1DecksDeckIdGetResponse200) & {
-  headers: Headers;
-};
-export type getDeckApiV1DecksDeckIdGetResponseError = (getDeckApiV1DecksDeckIdGetResponse422) & {
-  headers: Headers;
-};
 
-export type getDeckApiV1DecksDeckIdGetResponse = (getDeckApiV1DecksDeckIdGetResponseSuccess | getDeckApiV1DecksDeckIdGetResponseError)
+export type getDeckApiV1DecksDeckIdGetResponseSuccess = getDeckApiV1DecksDeckIdGetResponse200 & {
+  headers: Headers
+}
+export type getDeckApiV1DecksDeckIdGetResponseError = getDeckApiV1DecksDeckIdGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetDeckApiV1DecksDeckIdGetUrl = (deckId: string,) => {
+export type getDeckApiV1DecksDeckIdGetResponse =
+  | getDeckApiV1DecksDeckIdGetResponseSuccess
+  | getDeckApiV1DecksDeckIdGetResponseError
 
-
-  
-
+export const getGetDeckApiV1DecksDeckIdGetUrl = (deckId: string) => {
   return `/api/v1/decks/${deckId}`
 }
 
-export const getDeckApiV1DecksDeckIdGet = async (deckId: string, options?: RequestInit): Promise<getDeckApiV1DecksDeckIdGetResponse> => {
-  
-  return customFetch<getDeckApiV1DecksDeckIdGetResponse>(getGetDeckApiV1DecksDeckIdGetUrl(deckId),
-  {      
+export const getDeckApiV1DecksDeckIdGet = async (
+  deckId: string,
+  options?: RequestInit,
+): Promise<getDeckApiV1DecksDeckIdGetResponse> => {
+  return customFetch<getDeckApiV1DecksDeckIdGetResponse>(getGetDeckApiV1DecksDeckIdGetUrl(deckId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 更新牌组
@@ -169,37 +161,39 @@ export type updateDeckApiV1DecksDeckIdPutResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type updateDeckApiV1DecksDeckIdPutResponseSuccess = (updateDeckApiV1DecksDeckIdPutResponse200) & {
-  headers: Headers;
-};
-export type updateDeckApiV1DecksDeckIdPutResponseError = (updateDeckApiV1DecksDeckIdPutResponse422) & {
-  headers: Headers;
-};
 
-export type updateDeckApiV1DecksDeckIdPutResponse = (updateDeckApiV1DecksDeckIdPutResponseSuccess | updateDeckApiV1DecksDeckIdPutResponseError)
+export type updateDeckApiV1DecksDeckIdPutResponseSuccess =
+  updateDeckApiV1DecksDeckIdPutResponse200 & {
+    headers: Headers
+  }
+export type updateDeckApiV1DecksDeckIdPutResponseError =
+  updateDeckApiV1DecksDeckIdPutResponse422 & {
+    headers: Headers
+  }
 
-export const getUpdateDeckApiV1DecksDeckIdPutUrl = (deckId: string,) => {
+export type updateDeckApiV1DecksDeckIdPutResponse =
+  | updateDeckApiV1DecksDeckIdPutResponseSuccess
+  | updateDeckApiV1DecksDeckIdPutResponseError
 
-
-  
-
+export const getUpdateDeckApiV1DecksDeckIdPutUrl = (deckId: string) => {
   return `/api/v1/decks/${deckId}`
 }
 
-export const updateDeckApiV1DecksDeckIdPut = async (deckId: string,
-    deckUpdate: DeckUpdate, options?: RequestInit): Promise<updateDeckApiV1DecksDeckIdPutResponse> => {
-  
-  return customFetch<updateDeckApiV1DecksDeckIdPutResponse>(getUpdateDeckApiV1DecksDeckIdPutUrl(deckId),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      deckUpdate,)
-  }
-);}
-
+export const updateDeckApiV1DecksDeckIdPut = async (
+  deckId: string,
+  deckUpdate: DeckUpdate,
+  options?: RequestInit,
+): Promise<updateDeckApiV1DecksDeckIdPutResponse> => {
+  return customFetch<updateDeckApiV1DecksDeckIdPutResponse>(
+    getUpdateDeckApiV1DecksDeckIdPutUrl(deckId),
+    {
+      ...options,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(deckUpdate),
+    },
+  )
+}
 
 /**
  * 删除牌组（软删除）
@@ -214,35 +208,36 @@ export type deleteDeckApiV1DecksDeckIdDeleteResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type deleteDeckApiV1DecksDeckIdDeleteResponseSuccess = (deleteDeckApiV1DecksDeckIdDeleteResponse200) & {
-  headers: Headers;
-};
-export type deleteDeckApiV1DecksDeckIdDeleteResponseError = (deleteDeckApiV1DecksDeckIdDeleteResponse422) & {
-  headers: Headers;
-};
 
-export type deleteDeckApiV1DecksDeckIdDeleteResponse = (deleteDeckApiV1DecksDeckIdDeleteResponseSuccess | deleteDeckApiV1DecksDeckIdDeleteResponseError)
+export type deleteDeckApiV1DecksDeckIdDeleteResponseSuccess =
+  deleteDeckApiV1DecksDeckIdDeleteResponse200 & {
+    headers: Headers
+  }
+export type deleteDeckApiV1DecksDeckIdDeleteResponseError =
+  deleteDeckApiV1DecksDeckIdDeleteResponse422 & {
+    headers: Headers
+  }
 
-export const getDeleteDeckApiV1DecksDeckIdDeleteUrl = (deckId: string,) => {
+export type deleteDeckApiV1DecksDeckIdDeleteResponse =
+  | deleteDeckApiV1DecksDeckIdDeleteResponseSuccess
+  | deleteDeckApiV1DecksDeckIdDeleteResponseError
 
-
-  
-
+export const getDeleteDeckApiV1DecksDeckIdDeleteUrl = (deckId: string) => {
   return `/api/v1/decks/${deckId}`
 }
 
-export const deleteDeckApiV1DecksDeckIdDelete = async (deckId: string, options?: RequestInit): Promise<deleteDeckApiV1DecksDeckIdDeleteResponse> => {
-  
-  return customFetch<deleteDeckApiV1DecksDeckIdDeleteResponse>(getDeleteDeckApiV1DecksDeckIdDeleteUrl(deckId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
+export const deleteDeckApiV1DecksDeckIdDelete = async (
+  deckId: string,
+  options?: RequestInit,
+): Promise<deleteDeckApiV1DecksDeckIdDeleteResponse> => {
+  return customFetch<deleteDeckApiV1DecksDeckIdDeleteResponse>(
+    getDeleteDeckApiV1DecksDeckIdDeleteUrl(deckId),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  )
+}
 
 /**
  * 将牌组发布为共享牌组
@@ -260,35 +255,36 @@ export type publishDeckApiV1DecksDeckIdPublishPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type publishDeckApiV1DecksDeckIdPublishPostResponseSuccess = (publishDeckApiV1DecksDeckIdPublishPostResponse201) & {
-  headers: Headers;
-};
-export type publishDeckApiV1DecksDeckIdPublishPostResponseError = (publishDeckApiV1DecksDeckIdPublishPostResponse422) & {
-  headers: Headers;
-};
 
-export type publishDeckApiV1DecksDeckIdPublishPostResponse = (publishDeckApiV1DecksDeckIdPublishPostResponseSuccess | publishDeckApiV1DecksDeckIdPublishPostResponseError)
+export type publishDeckApiV1DecksDeckIdPublishPostResponseSuccess =
+  publishDeckApiV1DecksDeckIdPublishPostResponse201 & {
+    headers: Headers
+  }
+export type publishDeckApiV1DecksDeckIdPublishPostResponseError =
+  publishDeckApiV1DecksDeckIdPublishPostResponse422 & {
+    headers: Headers
+  }
 
-export const getPublishDeckApiV1DecksDeckIdPublishPostUrl = (deckId: string,) => {
+export type publishDeckApiV1DecksDeckIdPublishPostResponse =
+  | publishDeckApiV1DecksDeckIdPublishPostResponseSuccess
+  | publishDeckApiV1DecksDeckIdPublishPostResponseError
 
-
-  
-
+export const getPublishDeckApiV1DecksDeckIdPublishPostUrl = (deckId: string) => {
   return `/api/v1/decks/${deckId}/publish`
 }
 
-export const publishDeckApiV1DecksDeckIdPublishPost = async (deckId: string,
-    publishDeckRequest: PublishDeckRequest, options?: RequestInit): Promise<publishDeckApiV1DecksDeckIdPublishPostResponse> => {
-  
-  return customFetch<publishDeckApiV1DecksDeckIdPublishPostResponse>(getPublishDeckApiV1DecksDeckIdPublishPostUrl(deckId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      publishDeckRequest,)
-  }
-);}
-
-
+export const publishDeckApiV1DecksDeckIdPublishPost = async (
+  deckId: string,
+  publishDeckRequest: PublishDeckRequest,
+  options?: RequestInit,
+): Promise<publishDeckApiV1DecksDeckIdPublishPostResponse> => {
+  return customFetch<publishDeckApiV1DecksDeckIdPublishPostResponse>(
+    getPublishDeckApiV1DecksDeckIdPublishPostUrl(deckId),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(publishDeckRequest),
+    },
+  )
+}

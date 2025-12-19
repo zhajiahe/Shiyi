@@ -9,4 +9,4 @@
 /**
  * 标签列表
  */
-export type NoteUpdateTags = string[] | null;
+export type NoteUpdateTags = string[] | null

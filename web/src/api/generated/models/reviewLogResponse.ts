@@ -5,55 +5,55 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { ReviewLogResponsePrevState } from './reviewLogResponsePrevState';
-import type { ReviewLogResponseNewState } from './reviewLogResponseNewState';
-import type { ReviewLogResponsePrevInterval } from './reviewLogResponsePrevInterval';
-import type { ReviewLogResponseNewInterval } from './reviewLogResponseNewInterval';
-import type { ReviewLogResponsePrevEaseFactor } from './reviewLogResponsePrevEaseFactor';
-import type { ReviewLogResponseNewEaseFactor } from './reviewLogResponseNewEaseFactor';
-import type { ReviewLogResponsePrevStability } from './reviewLogResponsePrevStability';
-import type { ReviewLogResponseNewStability } from './reviewLogResponseNewStability';
-import type { ReviewLogResponsePrevDifficulty } from './reviewLogResponsePrevDifficulty';
-import type { ReviewLogResponseNewDifficulty } from './reviewLogResponseNewDifficulty';
-import type { ReviewLogResponseDurationMs } from './reviewLogResponseDurationMs';
-import type { ReviewLogResponseCreatedAt } from './reviewLogResponseCreatedAt';
+import type { ReviewLogResponsePrevState } from './reviewLogResponsePrevState'
+import type { ReviewLogResponseNewState } from './reviewLogResponseNewState'
+import type { ReviewLogResponsePrevInterval } from './reviewLogResponsePrevInterval'
+import type { ReviewLogResponseNewInterval } from './reviewLogResponseNewInterval'
+import type { ReviewLogResponsePrevEaseFactor } from './reviewLogResponsePrevEaseFactor'
+import type { ReviewLogResponseNewEaseFactor } from './reviewLogResponseNewEaseFactor'
+import type { ReviewLogResponsePrevStability } from './reviewLogResponsePrevStability'
+import type { ReviewLogResponseNewStability } from './reviewLogResponseNewStability'
+import type { ReviewLogResponsePrevDifficulty } from './reviewLogResponsePrevDifficulty'
+import type { ReviewLogResponseNewDifficulty } from './reviewLogResponseNewDifficulty'
+import type { ReviewLogResponseDurationMs } from './reviewLogResponseDurationMs'
+import type { ReviewLogResponseCreatedAt } from './reviewLogResponseCreatedAt'
 
 /**
  * 复习日志响应
  */
 export interface ReviewLogResponse {
   /** 日志ID */
-  id: string;
+  id: string
   /** 用户ID */
-  user_id: string;
+  user_id: string
   /** 卡片ID */
-  card_id: string;
+  card_id: string
   /** 复习时间戳（毫秒） */
-  review_time: number;
+  review_time: number
   /** 用户评分 */
-  rating: number;
+  rating: number
   /** 复习前状态 */
-  prev_state?: ReviewLogResponsePrevState;
+  prev_state?: ReviewLogResponsePrevState
   /** 复习后状态 */
-  new_state?: ReviewLogResponseNewState;
+  new_state?: ReviewLogResponseNewState
   /** 复习前间隔 */
-  prev_interval?: ReviewLogResponsePrevInterval;
+  prev_interval?: ReviewLogResponsePrevInterval
   /** 复习后间隔 */
-  new_interval?: ReviewLogResponseNewInterval;
+  new_interval?: ReviewLogResponseNewInterval
   /** 复习前难度系数 */
-  prev_ease_factor?: ReviewLogResponsePrevEaseFactor;
+  prev_ease_factor?: ReviewLogResponsePrevEaseFactor
   /** 复习后难度系数 */
-  new_ease_factor?: ReviewLogResponseNewEaseFactor;
+  new_ease_factor?: ReviewLogResponseNewEaseFactor
   /** 复习前稳定性 */
-  prev_stability?: ReviewLogResponsePrevStability;
+  prev_stability?: ReviewLogResponsePrevStability
   /** 复习后稳定性 */
-  new_stability?: ReviewLogResponseNewStability;
+  new_stability?: ReviewLogResponseNewStability
   /** 复习前难度 */
-  prev_difficulty?: ReviewLogResponsePrevDifficulty;
+  prev_difficulty?: ReviewLogResponsePrevDifficulty
   /** 复习后难度 */
-  new_difficulty?: ReviewLogResponseNewDifficulty;
+  new_difficulty?: ReviewLogResponseNewDifficulty
   /** 回答耗时（毫秒） */
-  duration_ms?: ReviewLogResponseDurationMs;
+  duration_ms?: ReviewLogResponseDurationMs
   /** 创建时间 */
-  created_at?: ReviewLogResponseCreatedAt;
+  created_at?: ReviewLogResponseCreatedAt
 }

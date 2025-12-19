@@ -5,8 +5,8 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { DeckCreateNoteModelId } from './deckCreateNoteModelId';
-import type { DeckCreateDescription } from './deckCreateDescription';
+import type { DeckCreateNoteModelId } from './deckCreateNoteModelId'
+import type { DeckCreateDescription } from './deckCreateDescription'
 
 /**
  * 创建牌组请求
@@ -17,9 +17,9 @@ export interface DeckCreate {
    * @minLength 1
    * @maxLength 100
    */
-  name: string;
+  name: string
   /** 绑定的笔记类型ID */
-  note_model_id?: DeckCreateNoteModelId;
+  note_model_id?: DeckCreateNoteModelId
   /** 牌组描述 */
-  description?: DeckCreateDescription;
+  description?: DeckCreateDescription
 }

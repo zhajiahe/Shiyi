@@ -5,18 +5,18 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { DeckUpdateName } from './deckUpdateName';
-import type { DeckUpdateNoteModelId } from './deckUpdateNoteModelId';
-import type { DeckUpdateDescription } from './deckUpdateDescription';
+import type { DeckUpdateName } from './deckUpdateName'
+import type { DeckUpdateNoteModelId } from './deckUpdateNoteModelId'
+import type { DeckUpdateDescription } from './deckUpdateDescription'
 
 /**
  * 更新牌组请求
  */
 export interface DeckUpdate {
   /** 牌组名称 */
-  name?: DeckUpdateName;
+  name?: DeckUpdateName
   /** 绑定的笔记类型ID */
-  note_model_id?: DeckUpdateNoteModelId;
+  note_model_id?: DeckUpdateNoteModelId
   /** 牌组描述 */
-  description?: DeckUpdateDescription;
+  description?: DeckUpdateDescription
 }

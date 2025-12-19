@@ -11,5 +11,5 @@
  */
 export interface RefreshTokenRequest {
   /** 刷新令牌 */
-  refresh_token: string;
+  refresh_token: string
 }

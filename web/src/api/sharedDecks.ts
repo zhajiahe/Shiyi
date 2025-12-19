@@ -127,7 +127,9 @@ export async function importSharedDeck(
   cardCount: number
 }> {
   // 使用生成的 API 获取导出数据
-  const exportData = (await exportSharedDeckApiV1SharedDecksSlugExportGet(slug)) as unknown as ExportData
+  const exportData = (await exportSharedDeckApiV1SharedDecksSlugExportGet(
+    slug,
+  )) as unknown as ExportData
 
   const now = Date.now()
   const localDeckId = nanoid()

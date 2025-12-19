@@ -9,4 +9,4 @@
 /**
  * FSRS 难度
  */
-export type CardUpdateDifficulty = number | null;
+export type CardUpdateDifficulty = number | null

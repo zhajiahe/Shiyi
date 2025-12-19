@@ -9,4 +9,4 @@
 /**
  * 创建时间
  */
-export type ReviewLogResponseCreatedAt = string | null;
+export type ReviewLogResponseCreatedAt = string | null

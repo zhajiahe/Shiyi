@@ -9,4 +9,4 @@
 /**
  * 创建时间
  */
-export type SharedDeckSnapshotResponseCreatedAt = string | null;
+export type SharedDeckSnapshotResponseCreatedAt = string | null

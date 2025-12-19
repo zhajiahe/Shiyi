@@ -5,7 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { getDecksApiV1DecksGet } from '@/api/generated/decks/decks'
 import { getNoteModelsApiV1NoteModelsGet } from '@/api/generated/note-models/note-models'
-import type { PageResponseDeckResponse, PageResponseNoteModelResponse } from '@/api/generated/models'
+import type {
+  PageResponseDeckResponse,
+  PageResponseNoteModelResponse,
+} from '@/api/generated/models'
 
 interface Stats {
   deckCount: number

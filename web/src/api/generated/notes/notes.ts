@@ -14,10 +14,10 @@ import type {
   HTTPValidationError,
   NoteBatchCreate,
   NoteCreate,
-  NoteUpdate
-} from '.././models';
+  NoteUpdate,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 获取笔记列表（分页）
@@ -32,42 +32,41 @@ export type getNotesApiV1NotesGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getNotesApiV1NotesGetResponseSuccess = (getNotesApiV1NotesGetResponse200) & {
-  headers: Headers;
-};
-export type getNotesApiV1NotesGetResponseError = (getNotesApiV1NotesGetResponse422) & {
-  headers: Headers;
-};
 
-export type getNotesApiV1NotesGetResponse = (getNotesApiV1NotesGetResponseSuccess | getNotesApiV1NotesGetResponseError)
+export type getNotesApiV1NotesGetResponseSuccess = getNotesApiV1NotesGetResponse200 & {
+  headers: Headers
+}
+export type getNotesApiV1NotesGetResponseError = getNotesApiV1NotesGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetNotesApiV1NotesGetUrl = (params?: GetNotesApiV1NotesGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getNotesApiV1NotesGetResponse =
+  | getNotesApiV1NotesGetResponseSuccess
+  | getNotesApiV1NotesGetResponseError
+
+export const getGetNotesApiV1NotesGetUrl = (params?: GetNotesApiV1NotesGetParams) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ? `/api/v1/notes?${stringifiedParams}` : `/api/v1/notes`
 }
 
-export const getNotesApiV1NotesGet = async (params?: GetNotesApiV1NotesGetParams, options?: RequestInit): Promise<getNotesApiV1NotesGetResponse> => {
-  
-  return customFetch<getNotesApiV1NotesGetResponse>(getGetNotesApiV1NotesGetUrl(params),
-  {      
+export const getNotesApiV1NotesGet = async (
+  params?: GetNotesApiV1NotesGetParams,
+  options?: RequestInit,
+): Promise<getNotesApiV1NotesGetResponse> => {
+  return customFetch<getNotesApiV1NotesGetResponse>(getGetNotesApiV1NotesGetUrl(params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 创建笔记（同时自动创建关联的卡片）
@@ -82,36 +81,33 @@ export type createNoteApiV1NotesPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type createNoteApiV1NotesPostResponseSuccess = (createNoteApiV1NotesPostResponse201) & {
-  headers: Headers;
-};
-export type createNoteApiV1NotesPostResponseError = (createNoteApiV1NotesPostResponse422) & {
-  headers: Headers;
-};
 
-export type createNoteApiV1NotesPostResponse = (createNoteApiV1NotesPostResponseSuccess | createNoteApiV1NotesPostResponseError)
+export type createNoteApiV1NotesPostResponseSuccess = createNoteApiV1NotesPostResponse201 & {
+  headers: Headers
+}
+export type createNoteApiV1NotesPostResponseError = createNoteApiV1NotesPostResponse422 & {
+  headers: Headers
+}
+
+export type createNoteApiV1NotesPostResponse =
+  | createNoteApiV1NotesPostResponseSuccess
+  | createNoteApiV1NotesPostResponseError
 
 export const getCreateNoteApiV1NotesPostUrl = () => {
-
-
-  
-
   return `/api/v1/notes`
 }
 
-export const createNoteApiV1NotesPost = async (noteCreate: NoteCreate, options?: RequestInit): Promise<createNoteApiV1NotesPostResponse> => {
-  
-  return customFetch<createNoteApiV1NotesPostResponse>(getCreateNoteApiV1NotesPostUrl(),
-  {      
+export const createNoteApiV1NotesPost = async (
+  noteCreate: NoteCreate,
+  options?: RequestInit,
+): Promise<createNoteApiV1NotesPostResponse> => {
+  return customFetch<createNoteApiV1NotesPostResponse>(getCreateNoteApiV1NotesPostUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      noteCreate,)
-  }
-);}
-
+    body: JSON.stringify(noteCreate),
+  })
+}
 
 /**
  * 获取单个笔记详情
@@ -126,35 +122,31 @@ export type getNoteApiV1NotesNoteIdGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getNoteApiV1NotesNoteIdGetResponseSuccess = (getNoteApiV1NotesNoteIdGetResponse200) & {
-  headers: Headers;
-};
-export type getNoteApiV1NotesNoteIdGetResponseError = (getNoteApiV1NotesNoteIdGetResponse422) & {
-  headers: Headers;
-};
 
-export type getNoteApiV1NotesNoteIdGetResponse = (getNoteApiV1NotesNoteIdGetResponseSuccess | getNoteApiV1NotesNoteIdGetResponseError)
+export type getNoteApiV1NotesNoteIdGetResponseSuccess = getNoteApiV1NotesNoteIdGetResponse200 & {
+  headers: Headers
+}
+export type getNoteApiV1NotesNoteIdGetResponseError = getNoteApiV1NotesNoteIdGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetNoteApiV1NotesNoteIdGetUrl = (noteId: string,) => {
+export type getNoteApiV1NotesNoteIdGetResponse =
+  | getNoteApiV1NotesNoteIdGetResponseSuccess
+  | getNoteApiV1NotesNoteIdGetResponseError
 
-
-  
-
+export const getGetNoteApiV1NotesNoteIdGetUrl = (noteId: string) => {
   return `/api/v1/notes/${noteId}`
 }
 
-export const getNoteApiV1NotesNoteIdGet = async (noteId: string, options?: RequestInit): Promise<getNoteApiV1NotesNoteIdGetResponse> => {
-  
-  return customFetch<getNoteApiV1NotesNoteIdGetResponse>(getGetNoteApiV1NotesNoteIdGetUrl(noteId),
-  {      
+export const getNoteApiV1NotesNoteIdGet = async (
+  noteId: string,
+  options?: RequestInit,
+): Promise<getNoteApiV1NotesNoteIdGetResponse> => {
+  return customFetch<getNoteApiV1NotesNoteIdGetResponse>(getGetNoteApiV1NotesNoteIdGetUrl(noteId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 更新笔记
@@ -169,37 +161,39 @@ export type updateNoteApiV1NotesNoteIdPutResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type updateNoteApiV1NotesNoteIdPutResponseSuccess = (updateNoteApiV1NotesNoteIdPutResponse200) & {
-  headers: Headers;
-};
-export type updateNoteApiV1NotesNoteIdPutResponseError = (updateNoteApiV1NotesNoteIdPutResponse422) & {
-  headers: Headers;
-};
 
-export type updateNoteApiV1NotesNoteIdPutResponse = (updateNoteApiV1NotesNoteIdPutResponseSuccess | updateNoteApiV1NotesNoteIdPutResponseError)
+export type updateNoteApiV1NotesNoteIdPutResponseSuccess =
+  updateNoteApiV1NotesNoteIdPutResponse200 & {
+    headers: Headers
+  }
+export type updateNoteApiV1NotesNoteIdPutResponseError =
+  updateNoteApiV1NotesNoteIdPutResponse422 & {
+    headers: Headers
+  }
 
-export const getUpdateNoteApiV1NotesNoteIdPutUrl = (noteId: string,) => {
+export type updateNoteApiV1NotesNoteIdPutResponse =
+  | updateNoteApiV1NotesNoteIdPutResponseSuccess
+  | updateNoteApiV1NotesNoteIdPutResponseError
 
-
-  
-
+export const getUpdateNoteApiV1NotesNoteIdPutUrl = (noteId: string) => {
   return `/api/v1/notes/${noteId}`
 }
 
-export const updateNoteApiV1NotesNoteIdPut = async (noteId: string,
-    noteUpdate: NoteUpdate, options?: RequestInit): Promise<updateNoteApiV1NotesNoteIdPutResponse> => {
-  
-  return customFetch<updateNoteApiV1NotesNoteIdPutResponse>(getUpdateNoteApiV1NotesNoteIdPutUrl(noteId),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      noteUpdate,)
-  }
-);}
-
+export const updateNoteApiV1NotesNoteIdPut = async (
+  noteId: string,
+  noteUpdate: NoteUpdate,
+  options?: RequestInit,
+): Promise<updateNoteApiV1NotesNoteIdPutResponse> => {
+  return customFetch<updateNoteApiV1NotesNoteIdPutResponse>(
+    getUpdateNoteApiV1NotesNoteIdPutUrl(noteId),
+    {
+      ...options,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(noteUpdate),
+    },
+  )
+}
 
 /**
  * 删除笔记（软删除，同时删除关联的卡片）
@@ -214,35 +208,36 @@ export type deleteNoteApiV1NotesNoteIdDeleteResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type deleteNoteApiV1NotesNoteIdDeleteResponseSuccess = (deleteNoteApiV1NotesNoteIdDeleteResponse200) & {
-  headers: Headers;
-};
-export type deleteNoteApiV1NotesNoteIdDeleteResponseError = (deleteNoteApiV1NotesNoteIdDeleteResponse422) & {
-  headers: Headers;
-};
 
-export type deleteNoteApiV1NotesNoteIdDeleteResponse = (deleteNoteApiV1NotesNoteIdDeleteResponseSuccess | deleteNoteApiV1NotesNoteIdDeleteResponseError)
+export type deleteNoteApiV1NotesNoteIdDeleteResponseSuccess =
+  deleteNoteApiV1NotesNoteIdDeleteResponse200 & {
+    headers: Headers
+  }
+export type deleteNoteApiV1NotesNoteIdDeleteResponseError =
+  deleteNoteApiV1NotesNoteIdDeleteResponse422 & {
+    headers: Headers
+  }
 
-export const getDeleteNoteApiV1NotesNoteIdDeleteUrl = (noteId: string,) => {
+export type deleteNoteApiV1NotesNoteIdDeleteResponse =
+  | deleteNoteApiV1NotesNoteIdDeleteResponseSuccess
+  | deleteNoteApiV1NotesNoteIdDeleteResponseError
 
-
-  
-
+export const getDeleteNoteApiV1NotesNoteIdDeleteUrl = (noteId: string) => {
   return `/api/v1/notes/${noteId}`
 }
 
-export const deleteNoteApiV1NotesNoteIdDelete = async (noteId: string, options?: RequestInit): Promise<deleteNoteApiV1NotesNoteIdDeleteResponse> => {
-  
-  return customFetch<deleteNoteApiV1NotesNoteIdDeleteResponse>(getDeleteNoteApiV1NotesNoteIdDeleteUrl(noteId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
+export const deleteNoteApiV1NotesNoteIdDelete = async (
+  noteId: string,
+  options?: RequestInit,
+): Promise<deleteNoteApiV1NotesNoteIdDeleteResponse> => {
+  return customFetch<deleteNoteApiV1NotesNoteIdDeleteResponse>(
+    getDeleteNoteApiV1NotesNoteIdDeleteUrl(noteId),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  )
+}
 
 /**
  * 批量创建笔记
@@ -261,34 +256,35 @@ export type createNotesBatchApiV1NotesBatchPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type createNotesBatchApiV1NotesBatchPostResponseSuccess = (createNotesBatchApiV1NotesBatchPostResponse201) & {
-  headers: Headers;
-};
-export type createNotesBatchApiV1NotesBatchPostResponseError = (createNotesBatchApiV1NotesBatchPostResponse422) & {
-  headers: Headers;
-};
 
-export type createNotesBatchApiV1NotesBatchPostResponse = (createNotesBatchApiV1NotesBatchPostResponseSuccess | createNotesBatchApiV1NotesBatchPostResponseError)
+export type createNotesBatchApiV1NotesBatchPostResponseSuccess =
+  createNotesBatchApiV1NotesBatchPostResponse201 & {
+    headers: Headers
+  }
+export type createNotesBatchApiV1NotesBatchPostResponseError =
+  createNotesBatchApiV1NotesBatchPostResponse422 & {
+    headers: Headers
+  }
+
+export type createNotesBatchApiV1NotesBatchPostResponse =
+  | createNotesBatchApiV1NotesBatchPostResponseSuccess
+  | createNotesBatchApiV1NotesBatchPostResponseError
 
 export const getCreateNotesBatchApiV1NotesBatchPostUrl = () => {
-
-
-  
-
   return `/api/v1/notes/batch`
 }
 
-export const createNotesBatchApiV1NotesBatchPost = async (noteBatchCreate: NoteBatchCreate, options?: RequestInit): Promise<createNotesBatchApiV1NotesBatchPostResponse> => {
-  
-  return customFetch<createNotesBatchApiV1NotesBatchPostResponse>(getCreateNotesBatchApiV1NotesBatchPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      noteBatchCreate,)
-  }
-);}
-
-
+export const createNotesBatchApiV1NotesBatchPost = async (
+  noteBatchCreate: NoteBatchCreate,
+  options?: RequestInit,
+): Promise<createNotesBatchApiV1NotesBatchPostResponse> => {
+  return customFetch<createNotesBatchApiV1NotesBatchPostResponse>(
+    getCreateNotesBatchApiV1NotesBatchPostUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(noteBatchCreate),
+    },
+  )
+}

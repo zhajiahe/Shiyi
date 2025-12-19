@@ -9,4 +9,4 @@
 /**
  * 创建时间
  */
-export type DeckResponseCreatedAt = string | null;
+export type DeckResponseCreatedAt = string | null

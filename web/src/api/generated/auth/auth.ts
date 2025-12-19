@@ -14,10 +14,10 @@ import type {
   PasswordChange,
   RefreshTokenRequest,
   UserCreate,
-  UserUpdate
-} from '.././models';
+  UserUpdate,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 用户登录
@@ -32,36 +32,33 @@ export type loginApiV1AuthLoginPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type loginApiV1AuthLoginPostResponseSuccess = (loginApiV1AuthLoginPostResponse200) & {
-  headers: Headers;
-};
-export type loginApiV1AuthLoginPostResponseError = (loginApiV1AuthLoginPostResponse422) & {
-  headers: Headers;
-};
 
-export type loginApiV1AuthLoginPostResponse = (loginApiV1AuthLoginPostResponseSuccess | loginApiV1AuthLoginPostResponseError)
+export type loginApiV1AuthLoginPostResponseSuccess = loginApiV1AuthLoginPostResponse200 & {
+  headers: Headers
+}
+export type loginApiV1AuthLoginPostResponseError = loginApiV1AuthLoginPostResponse422 & {
+  headers: Headers
+}
+
+export type loginApiV1AuthLoginPostResponse =
+  | loginApiV1AuthLoginPostResponseSuccess
+  | loginApiV1AuthLoginPostResponseError
 
 export const getLoginApiV1AuthLoginPostUrl = () => {
-
-
-  
-
   return `/api/v1/auth/login`
 }
 
-export const loginApiV1AuthLoginPost = async (loginRequest: LoginRequest, options?: RequestInit): Promise<loginApiV1AuthLoginPostResponse> => {
-  
-  return customFetch<loginApiV1AuthLoginPostResponse>(getLoginApiV1AuthLoginPostUrl(),
-  {      
+export const loginApiV1AuthLoginPost = async (
+  loginRequest: LoginRequest,
+  options?: RequestInit,
+): Promise<loginApiV1AuthLoginPostResponse> => {
+  return customFetch<loginApiV1AuthLoginPostResponse>(getLoginApiV1AuthLoginPostUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      loginRequest,)
-  }
-);}
-
+    body: JSON.stringify(loginRequest),
+  })
+}
 
 /**
  * 刷新访问令牌
@@ -76,36 +73,38 @@ export type refreshTokenApiV1AuthRefreshPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type refreshTokenApiV1AuthRefreshPostResponseSuccess = (refreshTokenApiV1AuthRefreshPostResponse200) & {
-  headers: Headers;
-};
-export type refreshTokenApiV1AuthRefreshPostResponseError = (refreshTokenApiV1AuthRefreshPostResponse422) & {
-  headers: Headers;
-};
 
-export type refreshTokenApiV1AuthRefreshPostResponse = (refreshTokenApiV1AuthRefreshPostResponseSuccess | refreshTokenApiV1AuthRefreshPostResponseError)
+export type refreshTokenApiV1AuthRefreshPostResponseSuccess =
+  refreshTokenApiV1AuthRefreshPostResponse200 & {
+    headers: Headers
+  }
+export type refreshTokenApiV1AuthRefreshPostResponseError =
+  refreshTokenApiV1AuthRefreshPostResponse422 & {
+    headers: Headers
+  }
+
+export type refreshTokenApiV1AuthRefreshPostResponse =
+  | refreshTokenApiV1AuthRefreshPostResponseSuccess
+  | refreshTokenApiV1AuthRefreshPostResponseError
 
 export const getRefreshTokenApiV1AuthRefreshPostUrl = () => {
-
-
-  
-
   return `/api/v1/auth/refresh`
 }
 
-export const refreshTokenApiV1AuthRefreshPost = async (refreshTokenRequest: RefreshTokenRequest, options?: RequestInit): Promise<refreshTokenApiV1AuthRefreshPostResponse> => {
-  
-  return customFetch<refreshTokenApiV1AuthRefreshPostResponse>(getRefreshTokenApiV1AuthRefreshPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      refreshTokenRequest,)
-  }
-);}
-
+export const refreshTokenApiV1AuthRefreshPost = async (
+  refreshTokenRequest: RefreshTokenRequest,
+  options?: RequestInit,
+): Promise<refreshTokenApiV1AuthRefreshPostResponse> => {
+  return customFetch<refreshTokenApiV1AuthRefreshPostResponse>(
+    getRefreshTokenApiV1AuthRefreshPostUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(refreshTokenRequest),
+    },
+  )
+}
 
 /**
  * 用户注册
@@ -120,36 +119,35 @@ export type registerApiV1AuthRegisterPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type registerApiV1AuthRegisterPostResponseSuccess = (registerApiV1AuthRegisterPostResponse201) & {
-  headers: Headers;
-};
-export type registerApiV1AuthRegisterPostResponseError = (registerApiV1AuthRegisterPostResponse422) & {
-  headers: Headers;
-};
 
-export type registerApiV1AuthRegisterPostResponse = (registerApiV1AuthRegisterPostResponseSuccess | registerApiV1AuthRegisterPostResponseError)
+export type registerApiV1AuthRegisterPostResponseSuccess =
+  registerApiV1AuthRegisterPostResponse201 & {
+    headers: Headers
+  }
+export type registerApiV1AuthRegisterPostResponseError =
+  registerApiV1AuthRegisterPostResponse422 & {
+    headers: Headers
+  }
+
+export type registerApiV1AuthRegisterPostResponse =
+  | registerApiV1AuthRegisterPostResponseSuccess
+  | registerApiV1AuthRegisterPostResponseError
 
 export const getRegisterApiV1AuthRegisterPostUrl = () => {
-
-
-  
-
   return `/api/v1/auth/register`
 }
 
-export const registerApiV1AuthRegisterPost = async (userCreate: UserCreate, options?: RequestInit): Promise<registerApiV1AuthRegisterPostResponse> => {
-  
-  return customFetch<registerApiV1AuthRegisterPostResponse>(getRegisterApiV1AuthRegisterPostUrl(),
-  {      
+export const registerApiV1AuthRegisterPost = async (
+  userCreate: UserCreate,
+  options?: RequestInit,
+): Promise<registerApiV1AuthRegisterPostResponse> => {
+  return customFetch<registerApiV1AuthRegisterPostResponse>(getRegisterApiV1AuthRegisterPostUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      userCreate,)
-  }
-);}
-
+    body: JSON.stringify(userCreate),
+  })
+}
 
 /**
  * 获取当前登录用户信息
@@ -159,33 +157,29 @@ export type getCurrentUserInfoApiV1AuthMeGetResponse200 = {
   data: BaseResponseUserResponse
   status: 200
 }
-    
-export type getCurrentUserInfoApiV1AuthMeGetResponseSuccess = (getCurrentUserInfoApiV1AuthMeGetResponse200) & {
-  headers: Headers;
-};
-;
 
-export type getCurrentUserInfoApiV1AuthMeGetResponse = (getCurrentUserInfoApiV1AuthMeGetResponseSuccess)
+export type getCurrentUserInfoApiV1AuthMeGetResponseSuccess =
+  getCurrentUserInfoApiV1AuthMeGetResponse200 & {
+    headers: Headers
+  }
+export type getCurrentUserInfoApiV1AuthMeGetResponse =
+  getCurrentUserInfoApiV1AuthMeGetResponseSuccess
 
 export const getGetCurrentUserInfoApiV1AuthMeGetUrl = () => {
-
-
-  
-
   return `/api/v1/auth/me`
 }
 
-export const getCurrentUserInfoApiV1AuthMeGet = async ( options?: RequestInit): Promise<getCurrentUserInfoApiV1AuthMeGetResponse> => {
-  
-  return customFetch<getCurrentUserInfoApiV1AuthMeGetResponse>(getGetCurrentUserInfoApiV1AuthMeGetUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getCurrentUserInfoApiV1AuthMeGet = async (
+  options?: RequestInit,
+): Promise<getCurrentUserInfoApiV1AuthMeGetResponse> => {
+  return customFetch<getCurrentUserInfoApiV1AuthMeGetResponse>(
+    getGetCurrentUserInfoApiV1AuthMeGetUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 更新当前登录用户信息
@@ -200,36 +194,38 @@ export type updateCurrentUserApiV1AuthMePutResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type updateCurrentUserApiV1AuthMePutResponseSuccess = (updateCurrentUserApiV1AuthMePutResponse200) & {
-  headers: Headers;
-};
-export type updateCurrentUserApiV1AuthMePutResponseError = (updateCurrentUserApiV1AuthMePutResponse422) & {
-  headers: Headers;
-};
 
-export type updateCurrentUserApiV1AuthMePutResponse = (updateCurrentUserApiV1AuthMePutResponseSuccess | updateCurrentUserApiV1AuthMePutResponseError)
+export type updateCurrentUserApiV1AuthMePutResponseSuccess =
+  updateCurrentUserApiV1AuthMePutResponse200 & {
+    headers: Headers
+  }
+export type updateCurrentUserApiV1AuthMePutResponseError =
+  updateCurrentUserApiV1AuthMePutResponse422 & {
+    headers: Headers
+  }
+
+export type updateCurrentUserApiV1AuthMePutResponse =
+  | updateCurrentUserApiV1AuthMePutResponseSuccess
+  | updateCurrentUserApiV1AuthMePutResponseError
 
 export const getUpdateCurrentUserApiV1AuthMePutUrl = () => {
-
-
-  
-
   return `/api/v1/auth/me`
 }
 
-export const updateCurrentUserApiV1AuthMePut = async (userUpdate: UserUpdate, options?: RequestInit): Promise<updateCurrentUserApiV1AuthMePutResponse> => {
-  
-  return customFetch<updateCurrentUserApiV1AuthMePutResponse>(getUpdateCurrentUserApiV1AuthMePutUrl(),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      userUpdate,)
-  }
-);}
-
+export const updateCurrentUserApiV1AuthMePut = async (
+  userUpdate: UserUpdate,
+  options?: RequestInit,
+): Promise<updateCurrentUserApiV1AuthMePutResponse> => {
+  return customFetch<updateCurrentUserApiV1AuthMePutResponse>(
+    getUpdateCurrentUserApiV1AuthMePutUrl(),
+    {
+      ...options,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(userUpdate),
+    },
+  )
+}
 
 /**
  * 修改密码
@@ -244,34 +240,35 @@ export type changePasswordApiV1AuthChangePasswordPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type changePasswordApiV1AuthChangePasswordPostResponseSuccess = (changePasswordApiV1AuthChangePasswordPostResponse200) & {
-  headers: Headers;
-};
-export type changePasswordApiV1AuthChangePasswordPostResponseError = (changePasswordApiV1AuthChangePasswordPostResponse422) & {
-  headers: Headers;
-};
 
-export type changePasswordApiV1AuthChangePasswordPostResponse = (changePasswordApiV1AuthChangePasswordPostResponseSuccess | changePasswordApiV1AuthChangePasswordPostResponseError)
+export type changePasswordApiV1AuthChangePasswordPostResponseSuccess =
+  changePasswordApiV1AuthChangePasswordPostResponse200 & {
+    headers: Headers
+  }
+export type changePasswordApiV1AuthChangePasswordPostResponseError =
+  changePasswordApiV1AuthChangePasswordPostResponse422 & {
+    headers: Headers
+  }
+
+export type changePasswordApiV1AuthChangePasswordPostResponse =
+  | changePasswordApiV1AuthChangePasswordPostResponseSuccess
+  | changePasswordApiV1AuthChangePasswordPostResponseError
 
 export const getChangePasswordApiV1AuthChangePasswordPostUrl = () => {
-
-
-  
-
   return `/api/v1/auth/change-password`
 }
 
-export const changePasswordApiV1AuthChangePasswordPost = async (passwordChange: PasswordChange, options?: RequestInit): Promise<changePasswordApiV1AuthChangePasswordPostResponse> => {
-  
-  return customFetch<changePasswordApiV1AuthChangePasswordPostResponse>(getChangePasswordApiV1AuthChangePasswordPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      passwordChange,)
-  }
-);}
-
-
+export const changePasswordApiV1AuthChangePasswordPost = async (
+  passwordChange: PasswordChange,
+  options?: RequestInit,
+): Promise<changePasswordApiV1AuthChangePasswordPostResponse> => {
+  return customFetch<changePasswordApiV1AuthChangePasswordPostResponse>(
+    getChangePasswordApiV1AuthChangePasswordPostUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(passwordChange),
+    },
+  )
+}

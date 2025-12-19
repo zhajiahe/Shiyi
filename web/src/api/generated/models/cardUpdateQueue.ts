@@ -9,4 +9,4 @@
 /**
  * 队列
  */
-export type CardUpdateQueue = 'new' | 'learning' | 'review' | 'suspended' | null;
+export type CardUpdateQueue = 'new' | 'learning' | 'review' | 'suspended' | null

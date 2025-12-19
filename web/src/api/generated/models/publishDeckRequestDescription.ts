@@ -9,4 +9,4 @@
 /**
  * 描述（Markdown）
  */
-export type PublishDeckRequestDescription = string | null;
+export type PublishDeckRequestDescription = string | null

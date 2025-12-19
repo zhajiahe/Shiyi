@@ -60,6 +60,7 @@ export function PublishDialog({
     try {
       await publishDeckApiV1DecksDeckIdPublishPost(deckId, {
         slug: slug.trim(),
+        title: deckName,
         tags: tags
           .split(',')
           .map((t) => t.trim())

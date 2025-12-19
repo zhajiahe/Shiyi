@@ -5,10 +5,10 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { ValidationErrorLocItem } from './validationErrorLocItem';
+import type { ValidationErrorLocItem } from './validationErrorLocItem'
 
 export interface ValidationError {
-  loc: ValidationErrorLocItem[];
-  msg: string;
-  type: string;
+  loc: ValidationErrorLocItem[]
+  msg: string
+  type: string
 }

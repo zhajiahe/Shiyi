@@ -9,4 +9,4 @@
 /**
  * 回答耗时（毫秒）
  */
-export type ReviewLogResponseDurationMs = number | null;
+export type ReviewLogResponseDurationMs = number | null

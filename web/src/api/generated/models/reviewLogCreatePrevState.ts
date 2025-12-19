@@ -9,4 +9,4 @@
 /**
  * 复习前状态
  */
-export type ReviewLogCreatePrevState = string | null;
+export type ReviewLogCreatePrevState = string | null

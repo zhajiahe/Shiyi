@@ -5,7 +5,7 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 根路径，健康检查
@@ -15,33 +15,22 @@ export type rootGetResponse200 = {
   data: unknown
   status: 200
 }
-    
-export type rootGetResponseSuccess = (rootGetResponse200) & {
-  headers: Headers;
-};
-;
 
-export type rootGetResponse = (rootGetResponseSuccess)
+export type rootGetResponseSuccess = rootGetResponse200 & {
+  headers: Headers
+}
+export type rootGetResponse = rootGetResponseSuccess
 
 export const getRootGetUrl = () => {
-
-
-  
-
   return `/`
 }
 
-export const rootGet = async ( options?: RequestInit): Promise<rootGetResponse> => {
-  
-  return customFetch<rootGetResponse>(getRootGetUrl(),
-  {      
+export const rootGet = async (options?: RequestInit): Promise<rootGetResponse> => {
+  return customFetch<rootGetResponse>(getRootGetUrl(), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 健康检查接口
@@ -51,31 +40,21 @@ export type healthCheckHealthGetResponse200 = {
   data: unknown
   status: 200
 }
-    
-export type healthCheckHealthGetResponseSuccess = (healthCheckHealthGetResponse200) & {
-  headers: Headers;
-};
-;
 
-export type healthCheckHealthGetResponse = (healthCheckHealthGetResponseSuccess)
+export type healthCheckHealthGetResponseSuccess = healthCheckHealthGetResponse200 & {
+  headers: Headers
+}
+export type healthCheckHealthGetResponse = healthCheckHealthGetResponseSuccess
 
 export const getHealthCheckHealthGetUrl = () => {
-
-
-  
-
   return `/health`
 }
 
-export const healthCheckHealthGet = async ( options?: RequestInit): Promise<healthCheckHealthGetResponse> => {
-  
-  return customFetch<healthCheckHealthGetResponse>(getHealthCheckHealthGetUrl(),
-  {      
+export const healthCheckHealthGet = async (
+  options?: RequestInit,
+): Promise<healthCheckHealthGetResponse> => {
+  return customFetch<healthCheckHealthGetResponse>(getHealthCheckHealthGetUrl(), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
+    method: 'GET',
+  })
+}

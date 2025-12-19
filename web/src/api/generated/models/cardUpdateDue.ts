@@ -9,4 +9,4 @@
 /**
  * 下次复习时间戳
  */
-export type CardUpdateDue = number | null;
+export type CardUpdateDue = number | null

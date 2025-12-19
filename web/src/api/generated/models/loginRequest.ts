@@ -15,11 +15,11 @@ export interface LoginRequest {
    * @minLength 3
    * @maxLength 50
    */
-  username: string;
+  username: string
   /**
    * 密码
    * @minLength 6
    * @maxLength 128
    */
-  password: string;
+  password: string
 }

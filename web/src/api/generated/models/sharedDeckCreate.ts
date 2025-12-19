@@ -5,8 +5,8 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { SharedDeckCreateDescription } from './sharedDeckCreateDescription';
-import type { SharedDeckCreateCoverImageUrl } from './sharedDeckCreateCoverImageUrl';
+import type { SharedDeckCreateDescription } from './sharedDeckCreateDescription'
+import type { SharedDeckCreateCoverImageUrl } from './sharedDeckCreateCoverImageUrl'
 
 /**
  * 创建共享牌组请求
@@ -17,23 +17,23 @@ export interface SharedDeckCreate {
    * @minLength 1
    * @maxLength 200
    */
-  title: string;
+  title: string
   /** 描述（Markdown） */
-  description?: SharedDeckCreateDescription;
+  description?: SharedDeckCreateDescription
   /**
    * 语言
    * @maxLength 10
    */
-  language?: string;
+  language?: string
   /** 标签列表 */
-  tags?: string[];
+  tags?: string[]
   /** 封面图片URL */
-  cover_image_url?: SharedDeckCreateCoverImageUrl;
+  cover_image_url?: SharedDeckCreateCoverImageUrl
   /**
    * URL 友好标识
    * @minLength 1
    * @maxLength 100
    * @pattern ^[a-z0-9-]+$
    */
-  slug: string;
+  slug: string
 }

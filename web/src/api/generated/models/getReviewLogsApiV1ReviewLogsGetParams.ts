@@ -7,15 +7,15 @@
  */
 
 export type GetReviewLogsApiV1ReviewLogsGetParams = {
-/**
- * @minimum 1
- */
-page_num?: number;
-/**
- * @minimum 1
- */
-page_size?: number;
-card_id?: string | null;
-start_time?: number | null;
-end_time?: number | null;
-};
+  /**
+   * @minimum 1
+   */
+  page_num?: number
+  /**
+   * @minimum 1
+   */
+  page_size?: number
+  card_id?: string | null
+  start_time?: number | null
+  end_time?: number | null
+}

@@ -33,11 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  getSharedDecks,
-  importSharedDeck,
-  type SharedDeckResponse,
-} from '@/api/sharedDecks'
+import { getSharedDecks, importSharedDeck, type SharedDeckResponse } from '@/api/sharedDecks'
 import { deckRepository } from '@/db/repositories'
 
 export function MarketPage() {
@@ -60,7 +56,7 @@ export function MarketPage() {
   const allTags = useMemo(() => {
     const tagSet = new Set<string>()
     decks.forEach((deck) => {
-      deck.tags.forEach((tag) => tagSet.add(tag))
+      deck.tags?.forEach((tag) => tagSet.add(tag))
     })
     return Array.from(tagSet).sort()
   }, [decks])
@@ -68,7 +64,7 @@ export function MarketPage() {
   // 根据选中标签过滤数据
   const filteredDecks = useMemo(() => {
     if (!selectedTag) return decks
-    return decks.filter((deck) => deck.tags.includes(selectedTag))
+    return decks.filter((deck) => deck.tags?.includes(selectedTag))
   }, [decks, selectedTag])
 
   useEffect(() => {
@@ -81,7 +77,7 @@ export function MarketPage() {
       setError(null)
       // 加载所有牌组（不分页，由前端处理）
       const result = await getSharedDecks({ page: 1, pageSize: 100 })
-      setDecks(result.items)
+      setDecks(result.items ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : '加载失败')
     } finally {
@@ -159,7 +155,7 @@ export function MarketPage() {
       accessorKey: 'tags',
       header: '标签',
       cell: ({ row }) => {
-        const tags = row.original.tags
+        const tags = row.original.tags ?? []
         if (tags.length === 0) return <span className="text-muted-foreground">-</span>
         return (
           <div className="flex flex-wrap gap-1">
@@ -260,7 +256,7 @@ export function MarketPage() {
       return (
         deck.title.toLowerCase().includes(searchLower) ||
         (deck.description?.toLowerCase().includes(searchLower) ?? false) ||
-        deck.tags.some((tag) => tag.toLowerCase().includes(searchLower))
+        (deck.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ?? false)
       )
     },
     state: {

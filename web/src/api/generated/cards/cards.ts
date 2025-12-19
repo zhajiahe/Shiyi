@@ -14,10 +14,10 @@ import type {
   GetCardStatsApiV1CardsStatsGetParams,
   GetCardsApiV1CardsGetParams,
   GetDueCardsApiV1CardsDueGetParams,
-  HTTPValidationError
-} from '.././models';
+  HTTPValidationError,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 获取卡片列表（分页）
@@ -32,42 +32,41 @@ export type getCardsApiV1CardsGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getCardsApiV1CardsGetResponseSuccess = (getCardsApiV1CardsGetResponse200) & {
-  headers: Headers;
-};
-export type getCardsApiV1CardsGetResponseError = (getCardsApiV1CardsGetResponse422) & {
-  headers: Headers;
-};
 
-export type getCardsApiV1CardsGetResponse = (getCardsApiV1CardsGetResponseSuccess | getCardsApiV1CardsGetResponseError)
+export type getCardsApiV1CardsGetResponseSuccess = getCardsApiV1CardsGetResponse200 & {
+  headers: Headers
+}
+export type getCardsApiV1CardsGetResponseError = getCardsApiV1CardsGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetCardsApiV1CardsGetUrl = (params?: GetCardsApiV1CardsGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getCardsApiV1CardsGetResponse =
+  | getCardsApiV1CardsGetResponseSuccess
+  | getCardsApiV1CardsGetResponseError
+
+export const getGetCardsApiV1CardsGetUrl = (params?: GetCardsApiV1CardsGetParams) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ? `/api/v1/cards?${stringifiedParams}` : `/api/v1/cards`
 }
 
-export const getCardsApiV1CardsGet = async (params?: GetCardsApiV1CardsGetParams, options?: RequestInit): Promise<getCardsApiV1CardsGetResponse> => {
-  
-  return customFetch<getCardsApiV1CardsGetResponse>(getGetCardsApiV1CardsGetUrl(params),
-  {      
+export const getCardsApiV1CardsGet = async (
+  params?: GetCardsApiV1CardsGetParams,
+  options?: RequestInit,
+): Promise<getCardsApiV1CardsGetResponse> => {
+  return customFetch<getCardsApiV1CardsGetResponse>(getGetCardsApiV1CardsGetUrl(params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 获取待复习的卡片
@@ -82,42 +81,46 @@ export type getDueCardsApiV1CardsDueGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getDueCardsApiV1CardsDueGetResponseSuccess = (getDueCardsApiV1CardsDueGetResponse200) & {
-  headers: Headers;
-};
-export type getDueCardsApiV1CardsDueGetResponseError = (getDueCardsApiV1CardsDueGetResponse422) & {
-  headers: Headers;
-};
 
-export type getDueCardsApiV1CardsDueGetResponse = (getDueCardsApiV1CardsDueGetResponseSuccess | getDueCardsApiV1CardsDueGetResponseError)
+export type getDueCardsApiV1CardsDueGetResponseSuccess = getDueCardsApiV1CardsDueGetResponse200 & {
+  headers: Headers
+}
+export type getDueCardsApiV1CardsDueGetResponseError = getDueCardsApiV1CardsDueGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetDueCardsApiV1CardsDueGetUrl = (params?: GetDueCardsApiV1CardsDueGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getDueCardsApiV1CardsDueGetResponse =
+  | getDueCardsApiV1CardsDueGetResponseSuccess
+  | getDueCardsApiV1CardsDueGetResponseError
+
+export const getGetDueCardsApiV1CardsDueGetUrl = (params?: GetDueCardsApiV1CardsDueGetParams) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/cards/due?${stringifiedParams}` : `/api/v1/cards/due`
+  return stringifiedParams.length > 0
+    ? `/api/v1/cards/due?${stringifiedParams}`
+    : `/api/v1/cards/due`
 }
 
-export const getDueCardsApiV1CardsDueGet = async (params?: GetDueCardsApiV1CardsDueGetParams, options?: RequestInit): Promise<getDueCardsApiV1CardsDueGetResponse> => {
-  
-  return customFetch<getDueCardsApiV1CardsDueGetResponse>(getGetDueCardsApiV1CardsDueGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getDueCardsApiV1CardsDueGet = async (
+  params?: GetDueCardsApiV1CardsDueGetParams,
+  options?: RequestInit,
+): Promise<getDueCardsApiV1CardsDueGetResponse> => {
+  return customFetch<getDueCardsApiV1CardsDueGetResponse>(
+    getGetDueCardsApiV1CardsDueGetUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 获取卡片统计
@@ -132,42 +135,50 @@ export type getCardStatsApiV1CardsStatsGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getCardStatsApiV1CardsStatsGetResponseSuccess = (getCardStatsApiV1CardsStatsGetResponse200) & {
-  headers: Headers;
-};
-export type getCardStatsApiV1CardsStatsGetResponseError = (getCardStatsApiV1CardsStatsGetResponse422) & {
-  headers: Headers;
-};
 
-export type getCardStatsApiV1CardsStatsGetResponse = (getCardStatsApiV1CardsStatsGetResponseSuccess | getCardStatsApiV1CardsStatsGetResponseError)
+export type getCardStatsApiV1CardsStatsGetResponseSuccess =
+  getCardStatsApiV1CardsStatsGetResponse200 & {
+    headers: Headers
+  }
+export type getCardStatsApiV1CardsStatsGetResponseError =
+  getCardStatsApiV1CardsStatsGetResponse422 & {
+    headers: Headers
+  }
 
-export const getGetCardStatsApiV1CardsStatsGetUrl = (params?: GetCardStatsApiV1CardsStatsGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getCardStatsApiV1CardsStatsGetResponse =
+  | getCardStatsApiV1CardsStatsGetResponseSuccess
+  | getCardStatsApiV1CardsStatsGetResponseError
+
+export const getGetCardStatsApiV1CardsStatsGetUrl = (
+  params?: GetCardStatsApiV1CardsStatsGetParams,
+) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/cards/stats?${stringifiedParams}` : `/api/v1/cards/stats`
+  return stringifiedParams.length > 0
+    ? `/api/v1/cards/stats?${stringifiedParams}`
+    : `/api/v1/cards/stats`
 }
 
-export const getCardStatsApiV1CardsStatsGet = async (params?: GetCardStatsApiV1CardsStatsGetParams, options?: RequestInit): Promise<getCardStatsApiV1CardsStatsGetResponse> => {
-  
-  return customFetch<getCardStatsApiV1CardsStatsGetResponse>(getGetCardStatsApiV1CardsStatsGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getCardStatsApiV1CardsStatsGet = async (
+  params?: GetCardStatsApiV1CardsStatsGetParams,
+  options?: RequestInit,
+): Promise<getCardStatsApiV1CardsStatsGetResponse> => {
+  return customFetch<getCardStatsApiV1CardsStatsGetResponse>(
+    getGetCardStatsApiV1CardsStatsGetUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 获取单个卡片详情
@@ -182,35 +193,31 @@ export type getCardApiV1CardsCardIdGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getCardApiV1CardsCardIdGetResponseSuccess = (getCardApiV1CardsCardIdGetResponse200) & {
-  headers: Headers;
-};
-export type getCardApiV1CardsCardIdGetResponseError = (getCardApiV1CardsCardIdGetResponse422) & {
-  headers: Headers;
-};
 
-export type getCardApiV1CardsCardIdGetResponse = (getCardApiV1CardsCardIdGetResponseSuccess | getCardApiV1CardsCardIdGetResponseError)
+export type getCardApiV1CardsCardIdGetResponseSuccess = getCardApiV1CardsCardIdGetResponse200 & {
+  headers: Headers
+}
+export type getCardApiV1CardsCardIdGetResponseError = getCardApiV1CardsCardIdGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetCardApiV1CardsCardIdGetUrl = (cardId: string,) => {
+export type getCardApiV1CardsCardIdGetResponse =
+  | getCardApiV1CardsCardIdGetResponseSuccess
+  | getCardApiV1CardsCardIdGetResponseError
 
-
-  
-
+export const getGetCardApiV1CardsCardIdGetUrl = (cardId: string) => {
   return `/api/v1/cards/${cardId}`
 }
 
-export const getCardApiV1CardsCardIdGet = async (cardId: string, options?: RequestInit): Promise<getCardApiV1CardsCardIdGetResponse> => {
-  
-  return customFetch<getCardApiV1CardsCardIdGetResponse>(getGetCardApiV1CardsCardIdGetUrl(cardId),
-  {      
+export const getCardApiV1CardsCardIdGet = async (
+  cardId: string,
+  options?: RequestInit,
+): Promise<getCardApiV1CardsCardIdGetResponse> => {
+  return customFetch<getCardApiV1CardsCardIdGetResponse>(getGetCardApiV1CardsCardIdGetUrl(cardId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 更新卡片（主要用于调度状态更新）
@@ -225,37 +232,39 @@ export type updateCardApiV1CardsCardIdPutResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type updateCardApiV1CardsCardIdPutResponseSuccess = (updateCardApiV1CardsCardIdPutResponse200) & {
-  headers: Headers;
-};
-export type updateCardApiV1CardsCardIdPutResponseError = (updateCardApiV1CardsCardIdPutResponse422) & {
-  headers: Headers;
-};
 
-export type updateCardApiV1CardsCardIdPutResponse = (updateCardApiV1CardsCardIdPutResponseSuccess | updateCardApiV1CardsCardIdPutResponseError)
+export type updateCardApiV1CardsCardIdPutResponseSuccess =
+  updateCardApiV1CardsCardIdPutResponse200 & {
+    headers: Headers
+  }
+export type updateCardApiV1CardsCardIdPutResponseError =
+  updateCardApiV1CardsCardIdPutResponse422 & {
+    headers: Headers
+  }
 
-export const getUpdateCardApiV1CardsCardIdPutUrl = (cardId: string,) => {
+export type updateCardApiV1CardsCardIdPutResponse =
+  | updateCardApiV1CardsCardIdPutResponseSuccess
+  | updateCardApiV1CardsCardIdPutResponseError
 
-
-  
-
+export const getUpdateCardApiV1CardsCardIdPutUrl = (cardId: string) => {
   return `/api/v1/cards/${cardId}`
 }
 
-export const updateCardApiV1CardsCardIdPut = async (cardId: string,
-    cardUpdate: CardUpdate, options?: RequestInit): Promise<updateCardApiV1CardsCardIdPutResponse> => {
-  
-  return customFetch<updateCardApiV1CardsCardIdPutResponse>(getUpdateCardApiV1CardsCardIdPutUrl(cardId),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      cardUpdate,)
-  }
-);}
-
+export const updateCardApiV1CardsCardIdPut = async (
+  cardId: string,
+  cardUpdate: CardUpdate,
+  options?: RequestInit,
+): Promise<updateCardApiV1CardsCardIdPutResponse> => {
+  return customFetch<updateCardApiV1CardsCardIdPutResponse>(
+    getUpdateCardApiV1CardsCardIdPutUrl(cardId),
+    {
+      ...options,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(cardUpdate),
+    },
+  )
+}
 
 /**
  * 暂停卡片
@@ -270,35 +279,36 @@ export type suspendCardApiV1CardsCardIdSuspendPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type suspendCardApiV1CardsCardIdSuspendPostResponseSuccess = (suspendCardApiV1CardsCardIdSuspendPostResponse200) & {
-  headers: Headers;
-};
-export type suspendCardApiV1CardsCardIdSuspendPostResponseError = (suspendCardApiV1CardsCardIdSuspendPostResponse422) & {
-  headers: Headers;
-};
 
-export type suspendCardApiV1CardsCardIdSuspendPostResponse = (suspendCardApiV1CardsCardIdSuspendPostResponseSuccess | suspendCardApiV1CardsCardIdSuspendPostResponseError)
+export type suspendCardApiV1CardsCardIdSuspendPostResponseSuccess =
+  suspendCardApiV1CardsCardIdSuspendPostResponse200 & {
+    headers: Headers
+  }
+export type suspendCardApiV1CardsCardIdSuspendPostResponseError =
+  suspendCardApiV1CardsCardIdSuspendPostResponse422 & {
+    headers: Headers
+  }
 
-export const getSuspendCardApiV1CardsCardIdSuspendPostUrl = (cardId: string,) => {
+export type suspendCardApiV1CardsCardIdSuspendPostResponse =
+  | suspendCardApiV1CardsCardIdSuspendPostResponseSuccess
+  | suspendCardApiV1CardsCardIdSuspendPostResponseError
 
-
-  
-
+export const getSuspendCardApiV1CardsCardIdSuspendPostUrl = (cardId: string) => {
   return `/api/v1/cards/${cardId}/suspend`
 }
 
-export const suspendCardApiV1CardsCardIdSuspendPost = async (cardId: string, options?: RequestInit): Promise<suspendCardApiV1CardsCardIdSuspendPostResponse> => {
-  
-  return customFetch<suspendCardApiV1CardsCardIdSuspendPostResponse>(getSuspendCardApiV1CardsCardIdSuspendPostUrl(cardId),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
+export const suspendCardApiV1CardsCardIdSuspendPost = async (
+  cardId: string,
+  options?: RequestInit,
+): Promise<suspendCardApiV1CardsCardIdSuspendPostResponse> => {
+  return customFetch<suspendCardApiV1CardsCardIdSuspendPostResponse>(
+    getSuspendCardApiV1CardsCardIdSuspendPostUrl(cardId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  )
+}
 
 /**
  * 恢复卡片
@@ -313,33 +323,33 @@ export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponseSuccess = (unsuspendCardApiV1CardsCardIdUnsuspendPostResponse200) & {
-  headers: Headers;
-};
-export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponseError = (unsuspendCardApiV1CardsCardIdUnsuspendPostResponse422) & {
-  headers: Headers;
-};
 
-export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponse = (unsuspendCardApiV1CardsCardIdUnsuspendPostResponseSuccess | unsuspendCardApiV1CardsCardIdUnsuspendPostResponseError)
+export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponseSuccess =
+  unsuspendCardApiV1CardsCardIdUnsuspendPostResponse200 & {
+    headers: Headers
+  }
+export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponseError =
+  unsuspendCardApiV1CardsCardIdUnsuspendPostResponse422 & {
+    headers: Headers
+  }
 
-export const getUnsuspendCardApiV1CardsCardIdUnsuspendPostUrl = (cardId: string,) => {
+export type unsuspendCardApiV1CardsCardIdUnsuspendPostResponse =
+  | unsuspendCardApiV1CardsCardIdUnsuspendPostResponseSuccess
+  | unsuspendCardApiV1CardsCardIdUnsuspendPostResponseError
 
-
-  
-
+export const getUnsuspendCardApiV1CardsCardIdUnsuspendPostUrl = (cardId: string) => {
   return `/api/v1/cards/${cardId}/unsuspend`
 }
 
-export const unsuspendCardApiV1CardsCardIdUnsuspendPost = async (cardId: string, options?: RequestInit): Promise<unsuspendCardApiV1CardsCardIdUnsuspendPostResponse> => {
-  
-  return customFetch<unsuspendCardApiV1CardsCardIdUnsuspendPostResponse>(getUnsuspendCardApiV1CardsCardIdUnsuspendPostUrl(cardId),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
+export const unsuspendCardApiV1CardsCardIdUnsuspendPost = async (
+  cardId: string,
+  options?: RequestInit,
+): Promise<unsuspendCardApiV1CardsCardIdUnsuspendPostResponse> => {
+  return customFetch<unsuspendCardApiV1CardsCardIdUnsuspendPostResponse>(
+    getUnsuspendCardApiV1CardsCardIdUnsuspendPostUrl(cardId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  )
+}

@@ -9,4 +9,4 @@
 /**
  * 是否超级管理员
  */
-export type UserUpdateIsSuperuser = boolean | null;
+export type UserUpdateIsSuperuser = boolean | null

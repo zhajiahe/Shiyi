@@ -9,4 +9,4 @@
 /**
  * 模板名称
  */
-export type CardTemplateUpdateName = string | null;
+export type CardTemplateUpdateName = string | null

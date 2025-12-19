@@ -9,4 +9,4 @@
 /**
  * 当前间隔（天）
  */
-export type CardUpdateInterval = number | null;
+export type CardUpdateInterval = number | null

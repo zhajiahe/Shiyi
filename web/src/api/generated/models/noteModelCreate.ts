@@ -5,9 +5,9 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { FieldDefinition } from './fieldDefinition';
-import type { NoteModelCreateCss } from './noteModelCreateCss';
-import type { CardTemplateCreate } from './cardTemplateCreate';
+import type { FieldDefinition } from './fieldDefinition'
+import type { NoteModelCreateCss } from './noteModelCreateCss'
+import type { CardTemplateCreate } from './cardTemplateCreate'
 
 /**
  * 创建笔记类型请求
@@ -18,11 +18,11 @@ export interface NoteModelCreate {
    * @minLength 1
    * @maxLength 100
    */
-  name: string;
+  name: string
   /** 字段定义列表 */
-  fields_schema?: FieldDefinition[];
+  fields_schema?: FieldDefinition[]
   /** 自定义CSS样式 */
-  css?: NoteModelCreateCss;
+  css?: NoteModelCreateCss
   /** 卡片模板列表 */
-  templates?: CardTemplateCreate[];
+  templates?: CardTemplateCreate[]
 }

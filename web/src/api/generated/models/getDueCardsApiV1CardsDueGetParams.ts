@@ -7,18 +7,18 @@
  */
 
 export type GetDueCardsApiV1CardsDueGetParams = {
-/**
- * 牌组ID
- */
-deck_id?: string | null;
-/**
- * 到期时间之前（时间戳）
- */
-due_before?: number | null;
-/**
- * 返回数量限制
- * @minimum 1
- * @maximum 500
- */
-limit?: number;
-};
+  /**
+   * 牌组ID
+   */
+  deck_id?: string | null
+  /**
+   * 到期时间之前（时间戳）
+   */
+  due_before?: number | null
+  /**
+   * 返回数量限制
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number
+}

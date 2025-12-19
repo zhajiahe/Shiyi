@@ -9,4 +9,4 @@
 /**
  * 是否激活
  */
-export type UserUpdateIsActive = boolean | null;
+export type UserUpdateIsActive = boolean | null

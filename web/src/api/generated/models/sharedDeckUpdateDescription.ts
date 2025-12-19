@@ -9,4 +9,4 @@
 /**
  * 描述
  */
-export type SharedDeckUpdateDescription = string | null;
+export type SharedDeckUpdateDescription = string | null

@@ -9,4 +9,4 @@
 /**
  * 复习前难度系数
  */
-export type ReviewLogResponsePrevEaseFactor = number | null;
+export type ReviewLogResponsePrevEaseFactor = number | null

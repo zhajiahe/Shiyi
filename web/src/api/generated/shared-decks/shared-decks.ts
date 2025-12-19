@@ -14,10 +14,10 @@ import type {
   GetSharedDecksApiV1SharedDecksGetParams,
   HTTPValidationError,
   SharedDeckCreate,
-  SharedDeckUpdate
-} from '.././models';
+  SharedDeckUpdate,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 浏览共享牌组列表（公开接口，无需登录）
@@ -32,42 +32,50 @@ export type getSharedDecksApiV1SharedDecksGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getSharedDecksApiV1SharedDecksGetResponseSuccess = (getSharedDecksApiV1SharedDecksGetResponse200) & {
-  headers: Headers;
-};
-export type getSharedDecksApiV1SharedDecksGetResponseError = (getSharedDecksApiV1SharedDecksGetResponse422) & {
-  headers: Headers;
-};
 
-export type getSharedDecksApiV1SharedDecksGetResponse = (getSharedDecksApiV1SharedDecksGetResponseSuccess | getSharedDecksApiV1SharedDecksGetResponseError)
+export type getSharedDecksApiV1SharedDecksGetResponseSuccess =
+  getSharedDecksApiV1SharedDecksGetResponse200 & {
+    headers: Headers
+  }
+export type getSharedDecksApiV1SharedDecksGetResponseError =
+  getSharedDecksApiV1SharedDecksGetResponse422 & {
+    headers: Headers
+  }
 
-export const getGetSharedDecksApiV1SharedDecksGetUrl = (params?: GetSharedDecksApiV1SharedDecksGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getSharedDecksApiV1SharedDecksGetResponse =
+  | getSharedDecksApiV1SharedDecksGetResponseSuccess
+  | getSharedDecksApiV1SharedDecksGetResponseError
+
+export const getGetSharedDecksApiV1SharedDecksGetUrl = (
+  params?: GetSharedDecksApiV1SharedDecksGetParams,
+) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/shared-decks?${stringifiedParams}` : `/api/v1/shared-decks`
+  return stringifiedParams.length > 0
+    ? `/api/v1/shared-decks?${stringifiedParams}`
+    : `/api/v1/shared-decks`
 }
 
-export const getSharedDecksApiV1SharedDecksGet = async (params?: GetSharedDecksApiV1SharedDecksGetParams, options?: RequestInit): Promise<getSharedDecksApiV1SharedDecksGetResponse> => {
-  
-  return customFetch<getSharedDecksApiV1SharedDecksGetResponse>(getGetSharedDecksApiV1SharedDecksGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getSharedDecksApiV1SharedDecksGet = async (
+  params?: GetSharedDecksApiV1SharedDecksGetParams,
+  options?: RequestInit,
+): Promise<getSharedDecksApiV1SharedDecksGetResponse> => {
+  return customFetch<getSharedDecksApiV1SharedDecksGetResponse>(
+    getGetSharedDecksApiV1SharedDecksGetUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 创建共享牌组（需要登录）
@@ -82,36 +90,38 @@ export type createSharedDeckApiV1SharedDecksPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type createSharedDeckApiV1SharedDecksPostResponseSuccess = (createSharedDeckApiV1SharedDecksPostResponse201) & {
-  headers: Headers;
-};
-export type createSharedDeckApiV1SharedDecksPostResponseError = (createSharedDeckApiV1SharedDecksPostResponse422) & {
-  headers: Headers;
-};
 
-export type createSharedDeckApiV1SharedDecksPostResponse = (createSharedDeckApiV1SharedDecksPostResponseSuccess | createSharedDeckApiV1SharedDecksPostResponseError)
+export type createSharedDeckApiV1SharedDecksPostResponseSuccess =
+  createSharedDeckApiV1SharedDecksPostResponse201 & {
+    headers: Headers
+  }
+export type createSharedDeckApiV1SharedDecksPostResponseError =
+  createSharedDeckApiV1SharedDecksPostResponse422 & {
+    headers: Headers
+  }
+
+export type createSharedDeckApiV1SharedDecksPostResponse =
+  | createSharedDeckApiV1SharedDecksPostResponseSuccess
+  | createSharedDeckApiV1SharedDecksPostResponseError
 
 export const getCreateSharedDeckApiV1SharedDecksPostUrl = () => {
-
-
-  
-
   return `/api/v1/shared-decks`
 }
 
-export const createSharedDeckApiV1SharedDecksPost = async (sharedDeckCreate: SharedDeckCreate, options?: RequestInit): Promise<createSharedDeckApiV1SharedDecksPostResponse> => {
-  
-  return customFetch<createSharedDeckApiV1SharedDecksPostResponse>(getCreateSharedDeckApiV1SharedDecksPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      sharedDeckCreate,)
-  }
-);}
-
+export const createSharedDeckApiV1SharedDecksPost = async (
+  sharedDeckCreate: SharedDeckCreate,
+  options?: RequestInit,
+): Promise<createSharedDeckApiV1SharedDecksPostResponse> => {
+  return customFetch<createSharedDeckApiV1SharedDecksPostResponse>(
+    getCreateSharedDeckApiV1SharedDecksPostUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(sharedDeckCreate),
+    },
+  )
+}
 
 /**
  * 获取共享牌组详情（公开接口，无需登录）
@@ -126,35 +136,36 @@ export type getSharedDeckApiV1SharedDecksSlugGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getSharedDeckApiV1SharedDecksSlugGetResponseSuccess = (getSharedDeckApiV1SharedDecksSlugGetResponse200) & {
-  headers: Headers;
-};
-export type getSharedDeckApiV1SharedDecksSlugGetResponseError = (getSharedDeckApiV1SharedDecksSlugGetResponse422) & {
-  headers: Headers;
-};
 
-export type getSharedDeckApiV1SharedDecksSlugGetResponse = (getSharedDeckApiV1SharedDecksSlugGetResponseSuccess | getSharedDeckApiV1SharedDecksSlugGetResponseError)
+export type getSharedDeckApiV1SharedDecksSlugGetResponseSuccess =
+  getSharedDeckApiV1SharedDecksSlugGetResponse200 & {
+    headers: Headers
+  }
+export type getSharedDeckApiV1SharedDecksSlugGetResponseError =
+  getSharedDeckApiV1SharedDecksSlugGetResponse422 & {
+    headers: Headers
+  }
 
-export const getGetSharedDeckApiV1SharedDecksSlugGetUrl = (slug: string,) => {
+export type getSharedDeckApiV1SharedDecksSlugGetResponse =
+  | getSharedDeckApiV1SharedDecksSlugGetResponseSuccess
+  | getSharedDeckApiV1SharedDecksSlugGetResponseError
 
-
-  
-
+export const getGetSharedDeckApiV1SharedDecksSlugGetUrl = (slug: string) => {
   return `/api/v1/shared-decks/${slug}`
 }
 
-export const getSharedDeckApiV1SharedDecksSlugGet = async (slug: string, options?: RequestInit): Promise<getSharedDeckApiV1SharedDecksSlugGetResponse> => {
-  
-  return customFetch<getSharedDeckApiV1SharedDecksSlugGetResponse>(getGetSharedDeckApiV1SharedDecksSlugGetUrl(slug),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getSharedDeckApiV1SharedDecksSlugGet = async (
+  slug: string,
+  options?: RequestInit,
+): Promise<getSharedDeckApiV1SharedDecksSlugGetResponse> => {
+  return customFetch<getSharedDeckApiV1SharedDecksSlugGetResponse>(
+    getGetSharedDeckApiV1SharedDecksSlugGetUrl(slug),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 获取共享牌组下载信息（公开接口，无需登录）
@@ -169,35 +180,36 @@ export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseSuccess = (getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse200) & {
-  headers: Headers;
-};
-export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseError = (getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse422) & {
-  headers: Headers;
-};
 
-export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse = (getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseSuccess | getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseError)
+export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseSuccess =
+  getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse200 & {
+    headers: Headers
+  }
+export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseError =
+  getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse422 & {
+    headers: Headers
+  }
 
-export const getGetSharedDeckDownloadApiV1SharedDecksSlugDownloadGetUrl = (slug: string,) => {
+export type getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse =
+  | getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseSuccess
+  | getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponseError
 
-
-  
-
+export const getGetSharedDeckDownloadApiV1SharedDecksSlugDownloadGetUrl = (slug: string) => {
   return `/api/v1/shared-decks/${slug}/download`
 }
 
-export const getSharedDeckDownloadApiV1SharedDecksSlugDownloadGet = async (slug: string, options?: RequestInit): Promise<getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse> => {
-  
-  return customFetch<getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse>(getGetSharedDeckDownloadApiV1SharedDecksSlugDownloadGetUrl(slug),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getSharedDeckDownloadApiV1SharedDecksSlugDownloadGet = async (
+  slug: string,
+  options?: RequestInit,
+): Promise<getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse> => {
+  return customFetch<getSharedDeckDownloadApiV1SharedDecksSlugDownloadGetResponse>(
+    getGetSharedDeckDownloadApiV1SharedDecksSlugDownloadGetUrl(slug),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 导出共享牌组数据（公开接口，无需登录）
@@ -218,35 +230,36 @@ export type exportSharedDeckApiV1SharedDecksSlugExportGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type exportSharedDeckApiV1SharedDecksSlugExportGetResponseSuccess = (exportSharedDeckApiV1SharedDecksSlugExportGetResponse200) & {
-  headers: Headers;
-};
-export type exportSharedDeckApiV1SharedDecksSlugExportGetResponseError = (exportSharedDeckApiV1SharedDecksSlugExportGetResponse422) & {
-  headers: Headers;
-};
 
-export type exportSharedDeckApiV1SharedDecksSlugExportGetResponse = (exportSharedDeckApiV1SharedDecksSlugExportGetResponseSuccess | exportSharedDeckApiV1SharedDecksSlugExportGetResponseError)
+export type exportSharedDeckApiV1SharedDecksSlugExportGetResponseSuccess =
+  exportSharedDeckApiV1SharedDecksSlugExportGetResponse200 & {
+    headers: Headers
+  }
+export type exportSharedDeckApiV1SharedDecksSlugExportGetResponseError =
+  exportSharedDeckApiV1SharedDecksSlugExportGetResponse422 & {
+    headers: Headers
+  }
 
-export const getExportSharedDeckApiV1SharedDecksSlugExportGetUrl = (slug: string,) => {
+export type exportSharedDeckApiV1SharedDecksSlugExportGetResponse =
+  | exportSharedDeckApiV1SharedDecksSlugExportGetResponseSuccess
+  | exportSharedDeckApiV1SharedDecksSlugExportGetResponseError
 
-
-  
-
+export const getExportSharedDeckApiV1SharedDecksSlugExportGetUrl = (slug: string) => {
   return `/api/v1/shared-decks/${slug}/export`
 }
 
-export const exportSharedDeckApiV1SharedDecksSlugExportGet = async (slug: string, options?: RequestInit): Promise<exportSharedDeckApiV1SharedDecksSlugExportGetResponse> => {
-  
-  return customFetch<exportSharedDeckApiV1SharedDecksSlugExportGetResponse>(getExportSharedDeckApiV1SharedDecksSlugExportGetUrl(slug),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const exportSharedDeckApiV1SharedDecksSlugExportGet = async (
+  slug: string,
+  options?: RequestInit,
+): Promise<exportSharedDeckApiV1SharedDecksSlugExportGetResponse> => {
+  return customFetch<exportSharedDeckApiV1SharedDecksSlugExportGetResponse>(
+    getExportSharedDeckApiV1SharedDecksSlugExportGetUrl(slug),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 更新共享牌组（需要登录且是作者）
@@ -261,37 +274,39 @@ export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseSuccess = (updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse200) & {
-  headers: Headers;
-};
-export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseError = (updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse422) & {
-  headers: Headers;
-};
 
-export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse = (updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseSuccess | updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseError)
+export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseSuccess =
+  updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse200 & {
+    headers: Headers
+  }
+export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseError =
+  updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse422 & {
+    headers: Headers
+  }
 
-export const getUpdateSharedDeckApiV1SharedDecksSharedDeckIdPutUrl = (sharedDeckId: string,) => {
+export type updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse =
+  | updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseSuccess
+  | updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponseError
 
-
-  
-
+export const getUpdateSharedDeckApiV1SharedDecksSharedDeckIdPutUrl = (sharedDeckId: string) => {
   return `/api/v1/shared-decks/${sharedDeckId}`
 }
 
-export const updateSharedDeckApiV1SharedDecksSharedDeckIdPut = async (sharedDeckId: string,
-    sharedDeckUpdate: SharedDeckUpdate, options?: RequestInit): Promise<updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse> => {
-  
-  return customFetch<updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse>(getUpdateSharedDeckApiV1SharedDecksSharedDeckIdPutUrl(sharedDeckId),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      sharedDeckUpdate,)
-  }
-);}
-
+export const updateSharedDeckApiV1SharedDecksSharedDeckIdPut = async (
+  sharedDeckId: string,
+  sharedDeckUpdate: SharedDeckUpdate,
+  options?: RequestInit,
+): Promise<updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse> => {
+  return customFetch<updateSharedDeckApiV1SharedDecksSharedDeckIdPutResponse>(
+    getUpdateSharedDeckApiV1SharedDecksSharedDeckIdPutUrl(sharedDeckId),
+    {
+      ...options,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(sharedDeckUpdate),
+    },
+  )
+}
 
 /**
  * 删除共享牌组（需要登录且是作者）
@@ -306,35 +321,36 @@ export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseSuccess = (deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse200) & {
-  headers: Headers;
-};
-export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseError = (deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse422) & {
-  headers: Headers;
-};
 
-export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse = (deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseSuccess | deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseError)
+export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseSuccess =
+  deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse200 & {
+    headers: Headers
+  }
+export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseError =
+  deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse422 & {
+    headers: Headers
+  }
 
-export const getDeleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteUrl = (sharedDeckId: string,) => {
+export type deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse =
+  | deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseSuccess
+  | deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponseError
 
-
-  
-
+export const getDeleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteUrl = (sharedDeckId: string) => {
   return `/api/v1/shared-decks/${sharedDeckId}`
 }
 
-export const deleteSharedDeckApiV1SharedDecksSharedDeckIdDelete = async (sharedDeckId: string, options?: RequestInit): Promise<deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse> => {
-  
-  return customFetch<deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse>(getDeleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteUrl(sharedDeckId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
+export const deleteSharedDeckApiV1SharedDecksSharedDeckIdDelete = async (
+  sharedDeckId: string,
+  options?: RequestInit,
+): Promise<deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse> => {
+  return customFetch<deleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteResponse>(
+    getDeleteSharedDeckApiV1SharedDecksSharedDeckIdDeleteUrl(sharedDeckId),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  )
+}
 
 /**
  * 发布共享牌组的新版本
@@ -353,33 +369,35 @@ export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostRespo
   data: HTTPValidationError
   status: 422
 }
-    
-export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseSuccess = (publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse200) & {
-  headers: Headers;
-};
-export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseError = (publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse422) & {
-  headers: Headers;
-};
 
-export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse = (publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseSuccess | publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseError)
+export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseSuccess =
+  publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse200 & {
+    headers: Headers
+  }
+export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseError =
+  publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse422 & {
+    headers: Headers
+  }
 
-export const getPublishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostUrl = (sharedDeckId: string,) => {
+export type publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse =
+  | publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseSuccess
+  | publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponseError
 
-
-  
-
+export const getPublishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostUrl = (
+  sharedDeckId: string,
+) => {
   return `/api/v1/shared-decks/${sharedDeckId}/publish-version`
 }
 
-export const publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPost = async (sharedDeckId: string, options?: RequestInit): Promise<publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse> => {
-  
-  return customFetch<publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse>(getPublishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostUrl(sharedDeckId),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
+export const publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPost = async (
+  sharedDeckId: string,
+  options?: RequestInit,
+): Promise<publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse> => {
+  return customFetch<publishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostResponse>(
+    getPublishNewVersionApiV1SharedDecksSharedDeckIdPublishVersionPostUrl(sharedDeckId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  )
+}

@@ -5,21 +5,21 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { UserUpdateEmail } from './userUpdateEmail';
-import type { UserUpdateNickname } from './userUpdateNickname';
-import type { UserUpdateIsActive } from './userUpdateIsActive';
-import type { UserUpdateIsSuperuser } from './userUpdateIsSuperuser';
+import type { UserUpdateEmail } from './userUpdateEmail'
+import type { UserUpdateNickname } from './userUpdateNickname'
+import type { UserUpdateIsActive } from './userUpdateIsActive'
+import type { UserUpdateIsSuperuser } from './userUpdateIsSuperuser'
 
 /**
  * 更新用户请求
  */
 export interface UserUpdate {
   /** 邮箱 */
-  email?: UserUpdateEmail;
+  email?: UserUpdateEmail
   /** 昵称 */
-  nickname?: UserUpdateNickname;
+  nickname?: UserUpdateNickname
   /** 是否激活 */
-  is_active?: UserUpdateIsActive;
+  is_active?: UserUpdateIsActive
   /** 是否超级管理员 */
-  is_superuser?: UserUpdateIsSuperuser;
+  is_superuser?: UserUpdateIsSuperuser
 }

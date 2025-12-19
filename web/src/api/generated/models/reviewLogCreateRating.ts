@@ -9,8 +9,8 @@
 /**
  * 用户评分: 1=Again, 2=Hard, 3=Good, 4=Easy
  */
-export type ReviewLogCreateRating = typeof ReviewLogCreateRating[keyof typeof ReviewLogCreateRating];
-
+export type ReviewLogCreateRating =
+  (typeof ReviewLogCreateRating)[keyof typeof ReviewLogCreateRating]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ReviewLogCreateRating = {
@@ -18,4 +18,4 @@ export const ReviewLogCreateRating = {
   NUMBER_2: 2,
   NUMBER_3: 3,
   NUMBER_4: 4,
-} as const;
+} as const

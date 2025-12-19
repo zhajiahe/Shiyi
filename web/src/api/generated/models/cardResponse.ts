@@ -5,56 +5,56 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { CardResponseState } from './cardResponseState';
-import type { CardResponseQueue } from './cardResponseQueue';
-import type { CardResponseLastReview } from './cardResponseLastReview';
-import type { CardResponseCreatedAt } from './cardResponseCreatedAt';
-import type { CardResponseUpdatedAt } from './cardResponseUpdatedAt';
+import type { CardResponseState } from './cardResponseState'
+import type { CardResponseQueue } from './cardResponseQueue'
+import type { CardResponseLastReview } from './cardResponseLastReview'
+import type { CardResponseCreatedAt } from './cardResponseCreatedAt'
+import type { CardResponseUpdatedAt } from './cardResponseUpdatedAt'
 
 /**
  * 卡片响应
  */
 export interface CardResponse {
   /** 状态 */
-  state?: CardResponseState;
+  state?: CardResponseState
   /** 队列 */
-  queue?: CardResponseQueue;
+  queue?: CardResponseQueue
   /** 下次复习时间戳或天编号 */
-  due?: number;
+  due?: number
   /**
    * 当前间隔（天）
    * @minimum 0
    */
-  interval?: number;
+  interval?: number
   /**
    * 难度系数（2500=2.5）
    * @minimum 1300
    */
-  ease_factor?: number;
+  ease_factor?: number
   /** 卡片ID */
-  id: string;
+  id: string
   /** 所属用户ID */
-  user_id: string;
+  user_id: string
   /** 所属笔记ID */
-  note_id: string;
+  note_id: string
   /** 所属牌组ID */
-  deck_id: string;
+  deck_id: string
   /** 卡片模板ID */
-  card_template_id: string;
+  card_template_id: string
   /** 模板序号 */
-  ord?: number;
+  ord?: number
   /** 复习次数 */
-  reps?: number;
+  reps?: number
   /** 遗忘次数 */
-  lapses?: number;
+  lapses?: number
   /** 上次复习时间戳 */
-  last_review?: CardResponseLastReview;
+  last_review?: CardResponseLastReview
   /** FSRS 稳定性 */
-  stability?: number;
+  stability?: number
   /** FSRS 难度 */
-  difficulty?: number;
+  difficulty?: number
   /** 创建时间 */
-  created_at?: CardResponseCreatedAt;
+  created_at?: CardResponseCreatedAt
   /** 更新时间 */
-  updated_at?: CardResponseUpdatedAt;
+  updated_at?: CardResponseUpdatedAt
 }

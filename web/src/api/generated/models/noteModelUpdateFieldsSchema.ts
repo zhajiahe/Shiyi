@@ -5,9 +5,9 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { FieldDefinition } from './fieldDefinition';
+import type { FieldDefinition } from './fieldDefinition'
 
 /**
  * 字段定义列表
  */
-export type NoteModelUpdateFieldsSchema = FieldDefinition[] | null;
+export type NoteModelUpdateFieldsSchema = FieldDefinition[] | null

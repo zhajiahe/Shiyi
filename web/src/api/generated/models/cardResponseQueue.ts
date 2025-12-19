@@ -9,8 +9,7 @@
 /**
  * 队列
  */
-export type CardResponseQueue = typeof CardResponseQueue[keyof typeof CardResponseQueue];
-
+export type CardResponseQueue = (typeof CardResponseQueue)[keyof typeof CardResponseQueue]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CardResponseQueue = {
@@ -18,4 +17,4 @@ export const CardResponseQueue = {
   learning: 'learning',
   review: 'review',
   suspended: 'suspended',
-} as const;
+} as const

@@ -5,23 +5,23 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteBatchItem } from './noteBatchItem';
-import type { NoteBatchCreateSourceType } from './noteBatchCreateSourceType';
+import type { NoteBatchItem } from './noteBatchItem'
+import type { NoteBatchCreateSourceType } from './noteBatchCreateSourceType'
 
 /**
  * 批量创建笔记请求
  */
 export interface NoteBatchCreate {
   /** 所属牌组ID */
-  deck_id: string;
+  deck_id: string
   /** 笔记类型ID */
-  note_model_id: string;
+  note_model_id: string
   /**
    * 笔记列表（最多1000条）
    * @minItems 1
    * @maxItems 1000
    */
-  notes: NoteBatchItem[];
+  notes: NoteBatchItem[]
   /** 来源类型 */
-  source_type?: NoteBatchCreateSourceType;
+  source_type?: NoteBatchCreateSourceType
 }

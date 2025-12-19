@@ -9,4 +9,4 @@
 /**
  * 内容哈希
  */
-export type SharedDeckDetailResponseContentHash = string | null;
+export type SharedDeckDetailResponseContentHash = string | null

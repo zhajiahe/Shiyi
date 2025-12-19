@@ -9,4 +9,4 @@
 /**
  * 复习后稳定性
  */
-export type ReviewLogResponseNewStability = number | null;
+export type ReviewLogResponseNewStability = number | null

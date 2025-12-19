@@ -9,4 +9,4 @@
 /**
  * 牌组描述
  */
-export type DeckCreateDescription = string | null;
+export type DeckCreateDescription = string | null

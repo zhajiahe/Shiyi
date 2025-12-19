@@ -9,4 +9,4 @@
 /**
  * 复习后难度
  */
-export type ReviewLogCreateNewDifficulty = number | null;
+export type ReviewLogCreateNewDifficulty = number | null

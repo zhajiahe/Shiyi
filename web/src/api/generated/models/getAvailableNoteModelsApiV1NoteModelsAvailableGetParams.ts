@@ -7,5 +7,5 @@
  */
 
 export type GetAvailableNoteModelsApiV1NoteModelsAvailableGetParams = {
-keyword?: string | null;
-};
+  keyword?: string | null
+}

@@ -21,7 +21,7 @@ export function StudioTemplates() {
       const data = await getAvailableNoteModelsApiV1NoteModelsAvailableGet(
         keyword ? { keyword } : undefined,
       )
-      setTemplates(data as NoteModelResponse[])
+      setTemplates(data as unknown as NoteModelResponse[])
     } catch (err) {
       console.error('Failed to fetch templates:', err)
     } finally {
@@ -149,7 +149,8 @@ function TemplateCard({
           )}
         </div>
         <CardDescription>
-          {template.fields_schema?.length ?? 0} 个字段 · {template.templates?.length ?? 0} 个卡片模板
+          {template.fields_schema?.length ?? 0} 个字段 · {template.templates?.length ?? 0}{' '}
+          个卡片模板
         </CardDescription>
       </CardHeader>
       <CardContent>

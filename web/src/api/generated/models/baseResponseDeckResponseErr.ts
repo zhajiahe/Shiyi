@@ -5,6 +5,6 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { DeckResponse } from './deckResponse';
+import type { DeckResponse } from './deckResponse'
 
-export type BaseResponseDeckResponseErr = DeckResponse | null;
+export type BaseResponseDeckResponseErr = DeckResponse | null

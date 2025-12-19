@@ -9,4 +9,4 @@
 /**
  * 邮箱
  */
-export type UserUpdateEmail = string | null;
+export type UserUpdateEmail = string | null

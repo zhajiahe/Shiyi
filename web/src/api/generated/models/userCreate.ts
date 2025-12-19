@@ -15,23 +15,23 @@ export interface UserCreate {
    * @minLength 3
    * @maxLength 50
    */
-  username: string;
+  username: string
   /** 邮箱 */
-  email: string;
+  email: string
   /**
    * 昵称
    * @minLength 1
    * @maxLength 50
    */
-  nickname: string;
+  nickname: string
   /**
    * 密码
    * @minLength 6
    * @maxLength 128
    */
-  password: string;
+  password: string
   /** 是否激活 */
-  is_active?: boolean;
+  is_active?: boolean
   /** 是否超级管理员 */
-  is_superuser?: boolean;
+  is_superuser?: boolean
 }

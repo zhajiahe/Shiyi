@@ -7,16 +7,16 @@
  */
 
 export type GetCardsApiV1CardsGetParams = {
-/**
- * @minimum 1
- */
-page_num?: number;
-/**
- * @minimum 1
- */
-page_size?: number;
-deck_id?: string | null;
-state?: 'new' | 'learning' | 'review' | 'relearning' | null;
-queue?: 'new' | 'learning' | 'review' | 'suspended' | null;
-due_before?: number | null;
-};
+  /**
+   * @minimum 1
+   */
+  page_num?: number
+  /**
+   * @minimum 1
+   */
+  page_size?: number
+  deck_id?: string | null
+  state?: 'new' | 'learning' | 'review' | 'relearning' | null
+  queue?: 'new' | 'learning' | 'review' | 'suspended' | null
+  due_before?: number | null
+}

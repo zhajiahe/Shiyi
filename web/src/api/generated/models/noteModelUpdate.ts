@@ -5,18 +5,18 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteModelUpdateName } from './noteModelUpdateName';
-import type { NoteModelUpdateFieldsSchema } from './noteModelUpdateFieldsSchema';
-import type { NoteModelUpdateCss } from './noteModelUpdateCss';
+import type { NoteModelUpdateName } from './noteModelUpdateName'
+import type { NoteModelUpdateFieldsSchema } from './noteModelUpdateFieldsSchema'
+import type { NoteModelUpdateCss } from './noteModelUpdateCss'
 
 /**
  * 更新笔记类型请求
  */
 export interface NoteModelUpdate {
   /** 笔记类型名称 */
-  name?: NoteModelUpdateName;
+  name?: NoteModelUpdateName
   /** 字段定义列表 */
-  fields_schema?: NoteModelUpdateFieldsSchema;
+  fields_schema?: NoteModelUpdateFieldsSchema
   /** 自定义CSS样式 */
-  css?: NoteModelUpdateCss;
+  css?: NoteModelUpdateCss
 }

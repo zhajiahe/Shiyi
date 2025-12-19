@@ -9,4 +9,4 @@
 /**
  * 上次复习时间戳
  */
-export type CardUpdateLastReview = number | null;
+export type CardUpdateLastReview = number | null

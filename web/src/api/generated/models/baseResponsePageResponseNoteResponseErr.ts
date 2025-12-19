@@ -5,6 +5,6 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { PageResponseNoteResponse } from './pageResponseNoteResponse';
+import type { PageResponseNoteResponse } from './pageResponseNoteResponse'
 
-export type BaseResponsePageResponseNoteResponseErr = PageResponseNoteResponse | null;
+export type BaseResponsePageResponseNoteResponseErr = PageResponseNoteResponse | null

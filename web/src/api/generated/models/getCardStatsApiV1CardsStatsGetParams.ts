@@ -7,8 +7,8 @@
  */
 
 export type GetCardStatsApiV1CardsStatsGetParams = {
-/**
- * 牌组ID
- */
-deck_id?: string | null;
-};
+  /**
+   * 牌组ID
+   */
+  deck_id?: string | null
+}

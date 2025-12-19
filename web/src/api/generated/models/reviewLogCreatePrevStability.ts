@@ -9,4 +9,4 @@
 /**
  * 复习前稳定性
  */
-export type ReviewLogCreatePrevStability = number | null;
+export type ReviewLogCreatePrevStability = number | null

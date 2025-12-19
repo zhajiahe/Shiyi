@@ -12,10 +12,10 @@ import type {
   GetUsersApiV1UsersGetParams,
   HTTPValidationError,
   UserCreate,
-  UserUpdate
-} from '.././models';
+  UserUpdate,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 获取用户列表（分页）- 需要超级管理员权限
@@ -30,42 +30,41 @@ export type getUsersApiV1UsersGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getUsersApiV1UsersGetResponseSuccess = (getUsersApiV1UsersGetResponse200) & {
-  headers: Headers;
-};
-export type getUsersApiV1UsersGetResponseError = (getUsersApiV1UsersGetResponse422) & {
-  headers: Headers;
-};
 
-export type getUsersApiV1UsersGetResponse = (getUsersApiV1UsersGetResponseSuccess | getUsersApiV1UsersGetResponseError)
+export type getUsersApiV1UsersGetResponseSuccess = getUsersApiV1UsersGetResponse200 & {
+  headers: Headers
+}
+export type getUsersApiV1UsersGetResponseError = getUsersApiV1UsersGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetUsersApiV1UsersGetUrl = (params?: GetUsersApiV1UsersGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getUsersApiV1UsersGetResponse =
+  | getUsersApiV1UsersGetResponseSuccess
+  | getUsersApiV1UsersGetResponseError
+
+export const getGetUsersApiV1UsersGetUrl = (params?: GetUsersApiV1UsersGetParams) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ? `/api/v1/users?${stringifiedParams}` : `/api/v1/users`
 }
 
-export const getUsersApiV1UsersGet = async (params?: GetUsersApiV1UsersGetParams, options?: RequestInit): Promise<getUsersApiV1UsersGetResponse> => {
-  
-  return customFetch<getUsersApiV1UsersGetResponse>(getGetUsersApiV1UsersGetUrl(params),
-  {      
+export const getUsersApiV1UsersGet = async (
+  params?: GetUsersApiV1UsersGetParams,
+  options?: RequestInit,
+): Promise<getUsersApiV1UsersGetResponse> => {
+  return customFetch<getUsersApiV1UsersGetResponse>(getGetUsersApiV1UsersGetUrl(params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 创建新用户 - 需要超级管理员权限
@@ -80,36 +79,33 @@ export type createUserApiV1UsersPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type createUserApiV1UsersPostResponseSuccess = (createUserApiV1UsersPostResponse201) & {
-  headers: Headers;
-};
-export type createUserApiV1UsersPostResponseError = (createUserApiV1UsersPostResponse422) & {
-  headers: Headers;
-};
 
-export type createUserApiV1UsersPostResponse = (createUserApiV1UsersPostResponseSuccess | createUserApiV1UsersPostResponseError)
+export type createUserApiV1UsersPostResponseSuccess = createUserApiV1UsersPostResponse201 & {
+  headers: Headers
+}
+export type createUserApiV1UsersPostResponseError = createUserApiV1UsersPostResponse422 & {
+  headers: Headers
+}
+
+export type createUserApiV1UsersPostResponse =
+  | createUserApiV1UsersPostResponseSuccess
+  | createUserApiV1UsersPostResponseError
 
 export const getCreateUserApiV1UsersPostUrl = () => {
-
-
-  
-
   return `/api/v1/users`
 }
 
-export const createUserApiV1UsersPost = async (userCreate: UserCreate, options?: RequestInit): Promise<createUserApiV1UsersPostResponse> => {
-  
-  return customFetch<createUserApiV1UsersPostResponse>(getCreateUserApiV1UsersPostUrl(),
-  {      
+export const createUserApiV1UsersPost = async (
+  userCreate: UserCreate,
+  options?: RequestInit,
+): Promise<createUserApiV1UsersPostResponse> => {
+  return customFetch<createUserApiV1UsersPostResponse>(getCreateUserApiV1UsersPostUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      userCreate,)
-  }
-);}
-
+    body: JSON.stringify(userCreate),
+  })
+}
 
 /**
  * 获取单个用户详情 - 需要超级管理员权限
@@ -124,35 +120,31 @@ export type getUserApiV1UsersUserIdGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getUserApiV1UsersUserIdGetResponseSuccess = (getUserApiV1UsersUserIdGetResponse200) & {
-  headers: Headers;
-};
-export type getUserApiV1UsersUserIdGetResponseError = (getUserApiV1UsersUserIdGetResponse422) & {
-  headers: Headers;
-};
 
-export type getUserApiV1UsersUserIdGetResponse = (getUserApiV1UsersUserIdGetResponseSuccess | getUserApiV1UsersUserIdGetResponseError)
+export type getUserApiV1UsersUserIdGetResponseSuccess = getUserApiV1UsersUserIdGetResponse200 & {
+  headers: Headers
+}
+export type getUserApiV1UsersUserIdGetResponseError = getUserApiV1UsersUserIdGetResponse422 & {
+  headers: Headers
+}
 
-export const getGetUserApiV1UsersUserIdGetUrl = (userId: string,) => {
+export type getUserApiV1UsersUserIdGetResponse =
+  | getUserApiV1UsersUserIdGetResponseSuccess
+  | getUserApiV1UsersUserIdGetResponseError
 
-
-  
-
+export const getGetUserApiV1UsersUserIdGetUrl = (userId: string) => {
   return `/api/v1/users/${userId}`
 }
 
-export const getUserApiV1UsersUserIdGet = async (userId: string, options?: RequestInit): Promise<getUserApiV1UsersUserIdGetResponse> => {
-  
-  return customFetch<getUserApiV1UsersUserIdGetResponse>(getGetUserApiV1UsersUserIdGetUrl(userId),
-  {      
+export const getUserApiV1UsersUserIdGet = async (
+  userId: string,
+  options?: RequestInit,
+): Promise<getUserApiV1UsersUserIdGetResponse> => {
+  return customFetch<getUserApiV1UsersUserIdGetResponse>(getGetUserApiV1UsersUserIdGetUrl(userId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  })
+}
 
 /**
  * 更新用户信息 - 需要超级管理员权限
@@ -167,37 +159,39 @@ export type updateUserApiV1UsersUserIdPutResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type updateUserApiV1UsersUserIdPutResponseSuccess = (updateUserApiV1UsersUserIdPutResponse200) & {
-  headers: Headers;
-};
-export type updateUserApiV1UsersUserIdPutResponseError = (updateUserApiV1UsersUserIdPutResponse422) & {
-  headers: Headers;
-};
 
-export type updateUserApiV1UsersUserIdPutResponse = (updateUserApiV1UsersUserIdPutResponseSuccess | updateUserApiV1UsersUserIdPutResponseError)
+export type updateUserApiV1UsersUserIdPutResponseSuccess =
+  updateUserApiV1UsersUserIdPutResponse200 & {
+    headers: Headers
+  }
+export type updateUserApiV1UsersUserIdPutResponseError =
+  updateUserApiV1UsersUserIdPutResponse422 & {
+    headers: Headers
+  }
 
-export const getUpdateUserApiV1UsersUserIdPutUrl = (userId: string,) => {
+export type updateUserApiV1UsersUserIdPutResponse =
+  | updateUserApiV1UsersUserIdPutResponseSuccess
+  | updateUserApiV1UsersUserIdPutResponseError
 
-
-  
-
+export const getUpdateUserApiV1UsersUserIdPutUrl = (userId: string) => {
   return `/api/v1/users/${userId}`
 }
 
-export const updateUserApiV1UsersUserIdPut = async (userId: string,
-    userUpdate: UserUpdate, options?: RequestInit): Promise<updateUserApiV1UsersUserIdPutResponse> => {
-  
-  return customFetch<updateUserApiV1UsersUserIdPutResponse>(getUpdateUserApiV1UsersUserIdPutUrl(userId),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      userUpdate,)
-  }
-);}
-
+export const updateUserApiV1UsersUserIdPut = async (
+  userId: string,
+  userUpdate: UserUpdate,
+  options?: RequestInit,
+): Promise<updateUserApiV1UsersUserIdPutResponse> => {
+  return customFetch<updateUserApiV1UsersUserIdPutResponse>(
+    getUpdateUserApiV1UsersUserIdPutUrl(userId),
+    {
+      ...options,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(userUpdate),
+    },
+  )
+}
 
 /**
  * 删除用户（逻辑删除）- 需要超级管理员权限
@@ -212,33 +206,33 @@ export type deleteUserApiV1UsersUserIdDeleteResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type deleteUserApiV1UsersUserIdDeleteResponseSuccess = (deleteUserApiV1UsersUserIdDeleteResponse200) & {
-  headers: Headers;
-};
-export type deleteUserApiV1UsersUserIdDeleteResponseError = (deleteUserApiV1UsersUserIdDeleteResponse422) & {
-  headers: Headers;
-};
 
-export type deleteUserApiV1UsersUserIdDeleteResponse = (deleteUserApiV1UsersUserIdDeleteResponseSuccess | deleteUserApiV1UsersUserIdDeleteResponseError)
+export type deleteUserApiV1UsersUserIdDeleteResponseSuccess =
+  deleteUserApiV1UsersUserIdDeleteResponse200 & {
+    headers: Headers
+  }
+export type deleteUserApiV1UsersUserIdDeleteResponseError =
+  deleteUserApiV1UsersUserIdDeleteResponse422 & {
+    headers: Headers
+  }
 
-export const getDeleteUserApiV1UsersUserIdDeleteUrl = (userId: string,) => {
+export type deleteUserApiV1UsersUserIdDeleteResponse =
+  | deleteUserApiV1UsersUserIdDeleteResponseSuccess
+  | deleteUserApiV1UsersUserIdDeleteResponseError
 
-
-  
-
+export const getDeleteUserApiV1UsersUserIdDeleteUrl = (userId: string) => {
   return `/api/v1/users/${userId}`
 }
 
-export const deleteUserApiV1UsersUserIdDelete = async (userId: string, options?: RequestInit): Promise<deleteUserApiV1UsersUserIdDeleteResponse> => {
-  
-  return customFetch<deleteUserApiV1UsersUserIdDeleteResponse>(getDeleteUserApiV1UsersUserIdDeleteUrl(userId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
+export const deleteUserApiV1UsersUserIdDelete = async (
+  userId: string,
+  options?: RequestInit,
+): Promise<deleteUserApiV1UsersUserIdDeleteResponse> => {
+  return customFetch<deleteUserApiV1UsersUserIdDeleteResponse>(
+    getDeleteUserApiV1UsersUserIdDeleteUrl(userId),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  )
+}

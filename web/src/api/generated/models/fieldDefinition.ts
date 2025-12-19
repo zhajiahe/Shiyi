@@ -5,7 +5,7 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { FieldDefinitionDescription } from './fieldDefinitionDescription';
+import type { FieldDefinitionDescription } from './fieldDefinitionDescription'
 
 /**
  * 字段定义
@@ -16,7 +16,7 @@ export interface FieldDefinition {
    * @minLength 1
    * @maxLength 50
    */
-  name: string;
+  name: string
   /** 字段描述 */
-  description?: FieldDefinitionDescription;
+  description?: FieldDefinitionDescription
 }

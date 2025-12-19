@@ -5,12 +5,12 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { SharedDeckDetailResponseDescription } from './sharedDeckDetailResponseDescription';
-import type { SharedDeckDetailResponseCoverImageUrl } from './sharedDeckDetailResponseCoverImageUrl';
-import type { SharedDeckDetailResponseContentHash } from './sharedDeckDetailResponseContentHash';
-import type { SharedDeckDetailResponseCreatedAt } from './sharedDeckDetailResponseCreatedAt';
-import type { SharedDeckDetailResponseUpdatedAt } from './sharedDeckDetailResponseUpdatedAt';
-import type { SharedDeckSnapshotResponse } from './sharedDeckSnapshotResponse';
+import type { SharedDeckDetailResponseDescription } from './sharedDeckDetailResponseDescription'
+import type { SharedDeckDetailResponseCoverImageUrl } from './sharedDeckDetailResponseCoverImageUrl'
+import type { SharedDeckDetailResponseContentHash } from './sharedDeckDetailResponseContentHash'
+import type { SharedDeckDetailResponseCreatedAt } from './sharedDeckDetailResponseCreatedAt'
+import type { SharedDeckDetailResponseUpdatedAt } from './sharedDeckDetailResponseUpdatedAt'
+import type { SharedDeckSnapshotResponse } from './sharedDeckSnapshotResponse'
 
 /**
  * 共享牌组详情响应（包含快照）
@@ -21,44 +21,44 @@ export interface SharedDeckDetailResponse {
    * @minLength 1
    * @maxLength 200
    */
-  title: string;
+  title: string
   /** 描述（Markdown） */
-  description?: SharedDeckDetailResponseDescription;
+  description?: SharedDeckDetailResponseDescription
   /**
    * 语言
    * @maxLength 10
    */
-  language?: string;
+  language?: string
   /** 标签列表 */
-  tags?: string[];
+  tags?: string[]
   /** 封面图片URL */
-  cover_image_url?: SharedDeckDetailResponseCoverImageUrl;
+  cover_image_url?: SharedDeckDetailResponseCoverImageUrl
   /** 共享牌组ID */
-  id: string;
+  id: string
   /** 作者ID */
-  author_id: string;
+  author_id: string
   /** URL 友好标识 */
-  slug: string;
+  slug: string
   /** 卡片数量 */
-  card_count?: number;
+  card_count?: number
   /** 笔记数量 */
-  note_count?: number;
+  note_count?: number
   /** 下载次数 */
-  download_count?: number;
+  download_count?: number
   /** 当前版本号 */
-  version?: number;
+  version?: number
   /** 内容哈希 */
-  content_hash?: SharedDeckDetailResponseContentHash;
+  content_hash?: SharedDeckDetailResponseContentHash
   /** 是否精选 */
-  is_featured?: boolean;
+  is_featured?: boolean
   /** 是否官方 */
-  is_official?: boolean;
+  is_official?: boolean
   /** 是否上架 */
-  is_active?: boolean;
+  is_active?: boolean
   /** 创建时间 */
-  created_at?: SharedDeckDetailResponseCreatedAt;
+  created_at?: SharedDeckDetailResponseCreatedAt
   /** 更新时间 */
-  updated_at?: SharedDeckDetailResponseUpdatedAt;
+  updated_at?: SharedDeckDetailResponseUpdatedAt
   /** 版本快照列表 */
-  snapshots?: SharedDeckSnapshotResponse[];
+  snapshots?: SharedDeckSnapshotResponse[]
 }

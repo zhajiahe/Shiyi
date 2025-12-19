@@ -9,4 +9,4 @@
 /**
  * 更新时间
  */
-export type UserResponseUpdateTime = string | null;
+export type UserResponseUpdateTime = string | null

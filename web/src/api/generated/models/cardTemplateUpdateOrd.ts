@@ -9,4 +9,4 @@
 /**
  * 模板序号
  */
-export type CardTemplateUpdateOrd = number | null;
+export type CardTemplateUpdateOrd = number | null

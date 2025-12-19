@@ -9,4 +9,4 @@
 /**
  * 文件大小（字节）
  */
-export type SharedDeckSnapshotResponseFileSize = number | null;
+export type SharedDeckSnapshotResponseFileSize = number | null

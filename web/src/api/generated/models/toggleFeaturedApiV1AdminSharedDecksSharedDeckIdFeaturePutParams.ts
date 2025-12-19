@@ -7,5 +7,5 @@
  */
 
 export type ToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutParams = {
-featured: boolean;
-};
+  featured: boolean
+}

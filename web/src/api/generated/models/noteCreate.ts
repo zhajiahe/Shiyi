@@ -5,24 +5,24 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteCreateFields } from './noteCreateFields';
-import type { NoteCreateSourceType } from './noteCreateSourceType';
-import type { NoteCreateSourceMeta } from './noteCreateSourceMeta';
+import type { NoteCreateFields } from './noteCreateFields'
+import type { NoteCreateSourceType } from './noteCreateSourceType'
+import type { NoteCreateSourceMeta } from './noteCreateSourceMeta'
 
 /**
  * 创建笔记请求
  */
 export interface NoteCreate {
   /** 所属牌组ID */
-  deck_id: string;
+  deck_id: string
   /** 笔记类型ID */
-  note_model_id: string;
+  note_model_id: string
   /** 字段内容 */
-  fields: NoteCreateFields;
+  fields: NoteCreateFields
   /** 标签列表 */
-  tags?: string[];
+  tags?: string[]
   /** 来源类型 */
-  source_type?: NoteCreateSourceType;
+  source_type?: NoteCreateSourceType
   /** 来源元数据 */
-  source_meta?: NoteCreateSourceMeta;
+  source_meta?: NoteCreateSourceMeta
 }

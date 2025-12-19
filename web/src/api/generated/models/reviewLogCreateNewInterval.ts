@@ -9,4 +9,4 @@
 /**
  * 复习后间隔（天）
  */
-export type ReviewLogCreateNewInterval = number | null;
+export type ReviewLogCreateNewInterval = number | null

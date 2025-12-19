@@ -7,9 +7,9 @@
  */
 
 export interface BaseResponseNoneType {
-  success: boolean;
-  code: number;
-  msg: string;
-  data?: null;
-  err?: null;
+  success: boolean
+  code: number
+  msg: string
+  data?: null
+  err?: null
 }

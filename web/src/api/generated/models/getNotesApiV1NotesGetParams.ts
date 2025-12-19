@@ -7,15 +7,15 @@
  */
 
 export type GetNotesApiV1NotesGetParams = {
-/**
- * @minimum 1
- */
-page_num?: number;
-/**
- * @minimum 1
- */
-page_size?: number;
-deck_id?: string | null;
-keyword?: string | null;
-tags?: string | null;
-};
+  /**
+   * @minimum 1
+   */
+  page_num?: number
+  /**
+   * @minimum 1
+   */
+  page_size?: number
+  deck_id?: string | null
+  keyword?: string | null
+  tags?: string | null
+}

@@ -9,4 +9,4 @@
 /**
  * 牌组名称
  */
-export type DeckUpdateName = string | null;
+export type DeckUpdateName = string | null

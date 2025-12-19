@@ -9,4 +9,4 @@
 /**
  * 自定义CSS样式
  */
-export type NoteModelResponseCss = string | null;
+export type NoteModelResponseCss = string | null

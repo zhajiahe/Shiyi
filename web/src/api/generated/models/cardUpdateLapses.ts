@@ -9,4 +9,4 @@
 /**
  * 遗忘次数
  */
-export type CardUpdateLapses = number | null;
+export type CardUpdateLapses = number | null

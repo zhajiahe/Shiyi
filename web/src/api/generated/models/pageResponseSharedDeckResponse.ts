@@ -5,15 +5,15 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { SharedDeckResponse } from './sharedDeckResponse';
+import type { SharedDeckResponse } from './sharedDeckResponse'
 
 export interface PageResponseSharedDeckResponse {
   /** 当前页码 */
-  page_num?: number;
+  page_num?: number
   /** 每页数量 */
-  page_size?: number;
+  page_size?: number
   /** 总记录数 */
-  total?: number;
+  total?: number
   /** 分页数据 */
-  items?: SharedDeckResponse[];
+  items?: SharedDeckResponse[]
 }

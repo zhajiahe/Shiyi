@@ -9,4 +9,4 @@
 /**
  * 问题侧HTML模板
  */
-export type CardTemplateUpdateQuestionTemplate = string | null;
+export type CardTemplateUpdateQuestionTemplate = string | null

@@ -5,11 +5,11 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { FieldDefinition } from './fieldDefinition';
-import type { NoteModelResponseCss } from './noteModelResponseCss';
-import type { CardTemplateResponse } from './cardTemplateResponse';
-import type { NoteModelResponseCreatedAt } from './noteModelResponseCreatedAt';
-import type { NoteModelResponseUpdatedAt } from './noteModelResponseUpdatedAt';
+import type { FieldDefinition } from './fieldDefinition'
+import type { NoteModelResponseCss } from './noteModelResponseCss'
+import type { CardTemplateResponse } from './cardTemplateResponse'
+import type { NoteModelResponseCreatedAt } from './noteModelResponseCreatedAt'
+import type { NoteModelResponseUpdatedAt } from './noteModelResponseUpdatedAt'
 
 /**
  * 笔记类型响应
@@ -20,21 +20,21 @@ export interface NoteModelResponse {
    * @minLength 1
    * @maxLength 100
    */
-  name: string;
+  name: string
   /** 字段定义列表 */
-  fields_schema?: FieldDefinition[];
+  fields_schema?: FieldDefinition[]
   /** 自定义CSS样式 */
-  css?: NoteModelResponseCss;
+  css?: NoteModelResponseCss
   /** 笔记类型ID */
-  id: string;
+  id: string
   /** 所属用户ID */
-  user_id: string;
+  user_id: string
   /** 是否内置/预设模板 */
-  is_builtin?: boolean;
+  is_builtin?: boolean
   /** 卡片模板列表 */
-  templates?: CardTemplateResponse[];
+  templates?: CardTemplateResponse[]
   /** 创建时间 */
-  created_at?: NoteModelResponseCreatedAt;
+  created_at?: NoteModelResponseCreatedAt
   /** 更新时间 */
-  updated_at?: NoteModelResponseUpdatedAt;
+  updated_at?: NoteModelResponseUpdatedAt
 }

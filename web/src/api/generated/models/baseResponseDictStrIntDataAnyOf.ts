@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type BaseResponseDictStrIntDataAnyOf = {[key: string]: number};
+export type BaseResponseDictStrIntDataAnyOf = { [key: string]: number }

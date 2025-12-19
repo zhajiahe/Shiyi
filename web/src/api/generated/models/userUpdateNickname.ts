@@ -9,4 +9,4 @@
 /**
  * 昵称
  */
-export type UserUpdateNickname = string | null;
+export type UserUpdateNickname = string | null

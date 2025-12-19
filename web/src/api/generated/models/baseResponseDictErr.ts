@@ -5,6 +5,6 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { BaseResponseDictErrAnyOf } from './baseResponseDictErrAnyOf';
+import type { BaseResponseDictErrAnyOf } from './baseResponseDictErrAnyOf'
 
-export type BaseResponseDictErr = BaseResponseDictErrAnyOf | null;
+export type BaseResponseDictErr = BaseResponseDictErrAnyOf | null

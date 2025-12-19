@@ -9,4 +9,4 @@
 /**
  * 笔记类型名称
  */
-export type NoteModelUpdateName = string | null;
+export type NoteModelUpdateName = string | null

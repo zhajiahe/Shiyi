@@ -7,5 +7,5 @@
  */
 
 export type ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams = {
-official: boolean;
-};
+  official: boolean
+}

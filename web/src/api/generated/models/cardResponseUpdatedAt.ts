@@ -9,4 +9,4 @@
 /**
  * 更新时间
  */
-export type CardResponseUpdatedAt = string | null;
+export type CardResponseUpdatedAt = string | null

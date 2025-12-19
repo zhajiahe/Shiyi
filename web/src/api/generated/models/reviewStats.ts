@@ -11,13 +11,13 @@
  */
 export interface ReviewStats {
   /** 总复习次数 */
-  total_reviews: number;
+  total_reviews: number
   /** 今日复习次数 */
-  reviews_today: number;
+  reviews_today: number
   /** 本周复习次数 */
-  reviews_this_week: number;
+  reviews_this_week: number
   /** 平均评分 */
-  average_rating: number;
+  average_rating: number
   /** 记忆保持率（Good/Easy 比例） */
-  retention_rate: number;
+  retention_rate: number
 }

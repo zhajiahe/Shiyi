@@ -5,13 +5,13 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { BaseResponseUserResponseData } from './baseResponseUserResponseData';
-import type { BaseResponseUserResponseErr } from './baseResponseUserResponseErr';
+import type { BaseResponseUserResponseData } from './baseResponseUserResponseData'
+import type { BaseResponseUserResponseErr } from './baseResponseUserResponseErr'
 
 export interface BaseResponseUserResponse {
-  success: boolean;
-  code: number;
-  msg: string;
-  data?: BaseResponseUserResponseData;
-  err?: BaseResponseUserResponseErr;
+  success: boolean
+  code: number
+  msg: string
+  data?: BaseResponseUserResponseData
+  err?: BaseResponseUserResponseErr
 }

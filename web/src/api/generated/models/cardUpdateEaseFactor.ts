@@ -9,4 +9,4 @@
 /**
  * 难度系数
  */
-export type CardUpdateEaseFactor = number | null;
+export type CardUpdateEaseFactor = number | null

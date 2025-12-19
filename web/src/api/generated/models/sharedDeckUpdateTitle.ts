@@ -9,4 +9,4 @@
 /**
  * 标题
  */
-export type SharedDeckUpdateTitle = string | null;
+export type SharedDeckUpdateTitle = string | null

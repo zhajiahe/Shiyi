@@ -7,13 +7,13 @@
  */
 
 export type GetNoteModelsApiV1NoteModelsGetParams = {
-/**
- * @minimum 1
- */
-page_num?: number;
-/**
- * @minimum 1
- */
-page_size?: number;
-keyword?: string | null;
-};
+  /**
+   * @minimum 1
+   */
+  page_num?: number
+  /**
+   * @minimum 1
+   */
+  page_size?: number
+  keyword?: string | null
+}

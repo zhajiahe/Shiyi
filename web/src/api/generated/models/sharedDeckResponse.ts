@@ -5,11 +5,11 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { SharedDeckResponseDescription } from './sharedDeckResponseDescription';
-import type { SharedDeckResponseCoverImageUrl } from './sharedDeckResponseCoverImageUrl';
-import type { SharedDeckResponseContentHash } from './sharedDeckResponseContentHash';
-import type { SharedDeckResponseCreatedAt } from './sharedDeckResponseCreatedAt';
-import type { SharedDeckResponseUpdatedAt } from './sharedDeckResponseUpdatedAt';
+import type { SharedDeckResponseDescription } from './sharedDeckResponseDescription'
+import type { SharedDeckResponseCoverImageUrl } from './sharedDeckResponseCoverImageUrl'
+import type { SharedDeckResponseContentHash } from './sharedDeckResponseContentHash'
+import type { SharedDeckResponseCreatedAt } from './sharedDeckResponseCreatedAt'
+import type { SharedDeckResponseUpdatedAt } from './sharedDeckResponseUpdatedAt'
 
 /**
  * 共享牌组响应
@@ -20,42 +20,42 @@ export interface SharedDeckResponse {
    * @minLength 1
    * @maxLength 200
    */
-  title: string;
+  title: string
   /** 描述（Markdown） */
-  description?: SharedDeckResponseDescription;
+  description?: SharedDeckResponseDescription
   /**
    * 语言
    * @maxLength 10
    */
-  language?: string;
+  language?: string
   /** 标签列表 */
-  tags?: string[];
+  tags?: string[]
   /** 封面图片URL */
-  cover_image_url?: SharedDeckResponseCoverImageUrl;
+  cover_image_url?: SharedDeckResponseCoverImageUrl
   /** 共享牌组ID */
-  id: string;
+  id: string
   /** 作者ID */
-  author_id: string;
+  author_id: string
   /** URL 友好标识 */
-  slug: string;
+  slug: string
   /** 卡片数量 */
-  card_count?: number;
+  card_count?: number
   /** 笔记数量 */
-  note_count?: number;
+  note_count?: number
   /** 下载次数 */
-  download_count?: number;
+  download_count?: number
   /** 当前版本号 */
-  version?: number;
+  version?: number
   /** 内容哈希 */
-  content_hash?: SharedDeckResponseContentHash;
+  content_hash?: SharedDeckResponseContentHash
   /** 是否精选 */
-  is_featured?: boolean;
+  is_featured?: boolean
   /** 是否官方 */
-  is_official?: boolean;
+  is_official?: boolean
   /** 是否上架 */
-  is_active?: boolean;
+  is_active?: boolean
   /** 创建时间 */
-  created_at?: SharedDeckResponseCreatedAt;
+  created_at?: SharedDeckResponseCreatedAt
   /** 更新时间 */
-  updated_at?: SharedDeckResponseUpdatedAt;
+  updated_at?: SharedDeckResponseUpdatedAt
 }

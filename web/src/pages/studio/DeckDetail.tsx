@@ -6,11 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getDeckApiV1DecksDeckIdGet } from '@/api/generated/decks/decks'
 import { getNotesApiV1NotesGet } from '@/api/generated/notes/notes'
-import type {
-  DeckResponse,
-  NoteResponse,
-  PageResponseNoteResponse,
-} from '@/api/generated/models'
+import type { DeckResponse, NoteResponse, PageResponseNoteResponse } from '@/api/generated/models'
 import { NoteDialog } from './components/NoteDialog'
 import { PublishDialog } from './components/PublishDialog'
 import { ImportDialog } from './components/ImportDialog'

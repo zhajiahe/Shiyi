@@ -5,6 +5,6 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { Token } from './token';
+import type { Token } from './token'
 
-export type BaseResponseTokenData = Token | null;
+export type BaseResponseTokenData = Token | null

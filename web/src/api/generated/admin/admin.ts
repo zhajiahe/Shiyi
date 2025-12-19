@@ -11,10 +11,10 @@ import type {
   HTTPValidationError,
   ToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutParams,
   ToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutParams,
-  ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams
-} from '.././models';
+  ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 设置/取消精选牌组
@@ -33,44 +33,52 @@ export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse422
   data: HTTPValidationError
   status: 422
 }
-    
-export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseSuccess = (toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse200) & {
-  headers: Headers;
-};
-export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseError = (toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse422) & {
-  headers: Headers;
-};
 
-export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse = (toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseSuccess | toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseError)
+export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseSuccess =
+  toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse200 & {
+    headers: Headers
+  }
+export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseError =
+  toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse422 & {
+    headers: Headers
+  }
 
-export const getToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutUrl = (sharedDeckId: string,
-    params: ToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse =
+  | toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseSuccess
+  | toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponseError
+
+export const getToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutUrl = (
+  sharedDeckId: string,
+  params: ToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutParams,
+) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/admin/shared-decks/${sharedDeckId}/feature?${stringifiedParams}` : `/api/v1/admin/shared-decks/${sharedDeckId}/feature`
+  return stringifiedParams.length > 0
+    ? `/api/v1/admin/shared-decks/${sharedDeckId}/feature?${stringifiedParams}`
+    : `/api/v1/admin/shared-decks/${sharedDeckId}/feature`
 }
 
-export const toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePut = async (sharedDeckId: string,
-    params: ToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutParams, options?: RequestInit): Promise<toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse> => {
-  
-  return customFetch<toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse>(getToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutUrl(sharedDeckId,params),
-  {      
-    ...options,
-    method: 'PUT'
-    
-    
-  }
-);}
-
+export const toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePut = async (
+  sharedDeckId: string,
+  params: ToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutParams,
+  options?: RequestInit,
+): Promise<toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse> => {
+  return customFetch<toggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutResponse>(
+    getToggleFeaturedApiV1AdminSharedDecksSharedDeckIdFeaturePutUrl(sharedDeckId, params),
+    {
+      ...options,
+      method: 'PUT',
+    },
+  )
+}
 
 /**
  * 设置/取消官方推荐
@@ -89,44 +97,52 @@ export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse42
   data: HTTPValidationError
   status: 422
 }
-    
-export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseSuccess = (toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse200) & {
-  headers: Headers;
-};
-export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseError = (toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse422) & {
-  headers: Headers;
-};
 
-export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse = (toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseSuccess | toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseError)
+export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseSuccess =
+  toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse200 & {
+    headers: Headers
+  }
+export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseError =
+  toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse422 & {
+    headers: Headers
+  }
 
-export const getToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutUrl = (sharedDeckId: string,
-    params: ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse =
+  | toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseSuccess
+  | toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponseError
+
+export const getToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutUrl = (
+  sharedDeckId: string,
+  params: ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams,
+) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/admin/shared-decks/${sharedDeckId}/official?${stringifiedParams}` : `/api/v1/admin/shared-decks/${sharedDeckId}/official`
+  return stringifiedParams.length > 0
+    ? `/api/v1/admin/shared-decks/${sharedDeckId}/official?${stringifiedParams}`
+    : `/api/v1/admin/shared-decks/${sharedDeckId}/official`
 }
 
-export const toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPut = async (sharedDeckId: string,
-    params: ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams, options?: RequestInit): Promise<toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse> => {
-  
-  return customFetch<toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse>(getToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutUrl(sharedDeckId,params),
-  {      
-    ...options,
-    method: 'PUT'
-    
-    
-  }
-);}
-
+export const toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPut = async (
+  sharedDeckId: string,
+  params: ToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutParams,
+  options?: RequestInit,
+): Promise<toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse> => {
+  return customFetch<toggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutResponse>(
+    getToggleOfficialApiV1AdminSharedDecksSharedDeckIdOfficialPutUrl(sharedDeckId, params),
+    {
+      ...options,
+      method: 'PUT',
+    },
+  )
+}
 
 /**
  * 上架/下架共享牌组
@@ -145,44 +161,52 @@ export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse422 = 
   data: HTTPValidationError
   status: 422
 }
-    
-export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseSuccess = (toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse200) & {
-  headers: Headers;
-};
-export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseError = (toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse422) & {
-  headers: Headers;
-};
 
-export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse = (toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseSuccess | toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseError)
+export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseSuccess =
+  toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse200 & {
+    headers: Headers
+  }
+export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseError =
+  toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse422 & {
+    headers: Headers
+  }
 
-export const getToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutUrl = (sharedDeckId: string,
-    params: ToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse =
+  | toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseSuccess
+  | toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponseError
+
+export const getToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutUrl = (
+  sharedDeckId: string,
+  params: ToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutParams,
+) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/admin/shared-decks/${sharedDeckId}/active?${stringifiedParams}` : `/api/v1/admin/shared-decks/${sharedDeckId}/active`
+  return stringifiedParams.length > 0
+    ? `/api/v1/admin/shared-decks/${sharedDeckId}/active?${stringifiedParams}`
+    : `/api/v1/admin/shared-decks/${sharedDeckId}/active`
 }
 
-export const toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePut = async (sharedDeckId: string,
-    params: ToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutParams, options?: RequestInit): Promise<toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse> => {
-  
-  return customFetch<toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse>(getToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutUrl(sharedDeckId,params),
-  {      
-    ...options,
-    method: 'PUT'
-    
-    
-  }
-);}
-
+export const toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePut = async (
+  sharedDeckId: string,
+  params: ToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutParams,
+  options?: RequestInit,
+): Promise<toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse> => {
+  return customFetch<toggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutResponse>(
+    getToggleActiveApiV1AdminSharedDecksSharedDeckIdActivePutUrl(sharedDeckId, params),
+    {
+      ...options,
+      method: 'PUT',
+    },
+  )
+}
 
 /**
  * 获取系统统计数据
@@ -198,31 +222,26 @@ export type getSystemStatsApiV1AdminStatsGetResponse200 = {
   data: BaseResponseDict
   status: 200
 }
-    
-export type getSystemStatsApiV1AdminStatsGetResponseSuccess = (getSystemStatsApiV1AdminStatsGetResponse200) & {
-  headers: Headers;
-};
-;
 
-export type getSystemStatsApiV1AdminStatsGetResponse = (getSystemStatsApiV1AdminStatsGetResponseSuccess)
+export type getSystemStatsApiV1AdminStatsGetResponseSuccess =
+  getSystemStatsApiV1AdminStatsGetResponse200 & {
+    headers: Headers
+  }
+export type getSystemStatsApiV1AdminStatsGetResponse =
+  getSystemStatsApiV1AdminStatsGetResponseSuccess
 
 export const getGetSystemStatsApiV1AdminStatsGetUrl = () => {
-
-
-  
-
   return `/api/v1/admin/stats`
 }
 
-export const getSystemStatsApiV1AdminStatsGet = async ( options?: RequestInit): Promise<getSystemStatsApiV1AdminStatsGetResponse> => {
-  
-  return customFetch<getSystemStatsApiV1AdminStatsGetResponse>(getGetSystemStatsApiV1AdminStatsGetUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
+export const getSystemStatsApiV1AdminStatsGet = async (
+  options?: RequestInit,
+): Promise<getSystemStatsApiV1AdminStatsGetResponse> => {
+  return customFetch<getSystemStatsApiV1AdminStatsGetResponse>(
+    getGetSystemStatsApiV1AdminStatsGetUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}

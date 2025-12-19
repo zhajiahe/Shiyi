@@ -36,7 +36,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (username: string, password: string) => {
     set({ isLoading: true, error: null })
     try {
-      const tokens = (await loginApiV1AuthLoginPost({ username, password })) as Token
+      const tokens = (await loginApiV1AuthLoginPost({ username, password })) as unknown as Token
       setTokens(tokens.access_token, tokens.refresh_token)
       set({ isAuthenticated: true })
 
@@ -73,7 +73,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   fetchCurrentUser: async () => {
     try {
-      const user = (await getCurrentUserInfoApiV1AuthMeGet()) as UserResponse
+      const user = (await getCurrentUserInfoApiV1AuthMeGet()) as unknown as UserResponse
       set({ user, isAuthenticated: true })
     } catch {
       // Token 无效，清除认证状态
@@ -91,7 +91,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       const tokens = (await refreshTokenApiV1AuthRefreshPost({
         refresh_token: refreshToken,
-      })) as Token
+      })) as unknown as Token
       setTokens(tokens.access_token, tokens.refresh_token)
     } catch {
       // 刷新失败，需要重新登录

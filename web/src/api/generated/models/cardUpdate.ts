@@ -5,39 +5,39 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { CardUpdateState } from './cardUpdateState';
-import type { CardUpdateQueue } from './cardUpdateQueue';
-import type { CardUpdateDue } from './cardUpdateDue';
-import type { CardUpdateInterval } from './cardUpdateInterval';
-import type { CardUpdateEaseFactor } from './cardUpdateEaseFactor';
-import type { CardUpdateReps } from './cardUpdateReps';
-import type { CardUpdateLapses } from './cardUpdateLapses';
-import type { CardUpdateLastReview } from './cardUpdateLastReview';
-import type { CardUpdateStability } from './cardUpdateStability';
-import type { CardUpdateDifficulty } from './cardUpdateDifficulty';
+import type { CardUpdateState } from './cardUpdateState'
+import type { CardUpdateQueue } from './cardUpdateQueue'
+import type { CardUpdateDue } from './cardUpdateDue'
+import type { CardUpdateInterval } from './cardUpdateInterval'
+import type { CardUpdateEaseFactor } from './cardUpdateEaseFactor'
+import type { CardUpdateReps } from './cardUpdateReps'
+import type { CardUpdateLapses } from './cardUpdateLapses'
+import type { CardUpdateLastReview } from './cardUpdateLastReview'
+import type { CardUpdateStability } from './cardUpdateStability'
+import type { CardUpdateDifficulty } from './cardUpdateDifficulty'
 
 /**
  * 更新卡片请求（主要用于调度状态更新）
  */
 export interface CardUpdate {
   /** 状态 */
-  state?: CardUpdateState;
+  state?: CardUpdateState
   /** 队列 */
-  queue?: CardUpdateQueue;
+  queue?: CardUpdateQueue
   /** 下次复习时间戳 */
-  due?: CardUpdateDue;
+  due?: CardUpdateDue
   /** 当前间隔（天） */
-  interval?: CardUpdateInterval;
+  interval?: CardUpdateInterval
   /** 难度系数 */
-  ease_factor?: CardUpdateEaseFactor;
+  ease_factor?: CardUpdateEaseFactor
   /** 复习次数 */
-  reps?: CardUpdateReps;
+  reps?: CardUpdateReps
   /** 遗忘次数 */
-  lapses?: CardUpdateLapses;
+  lapses?: CardUpdateLapses
   /** 上次复习时间戳 */
-  last_review?: CardUpdateLastReview;
+  last_review?: CardUpdateLastReview
   /** FSRS 稳定性 */
-  stability?: CardUpdateStability;
+  stability?: CardUpdateStability
   /** FSRS 难度 */
-  difficulty?: CardUpdateDifficulty;
+  difficulty?: CardUpdateDifficulty
 }

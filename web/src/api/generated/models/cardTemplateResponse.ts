@@ -5,8 +5,8 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { CardTemplateResponseCreatedAt } from './cardTemplateResponseCreatedAt';
-import type { CardTemplateResponseUpdatedAt } from './cardTemplateResponseUpdatedAt';
+import type { CardTemplateResponseCreatedAt } from './cardTemplateResponseCreatedAt'
+import type { CardTemplateResponseUpdatedAt } from './cardTemplateResponseUpdatedAt'
 
 /**
  * 卡片模板响应
@@ -17,22 +17,22 @@ export interface CardTemplateResponse {
    * @minLength 1
    * @maxLength 100
    */
-  name: string;
+  name: string
   /**
    * 模板序号（从0开始）
    * @minimum 0
    */
-  ord?: number;
+  ord?: number
   /** 问题侧HTML模板 */
-  question_template?: string;
+  question_template?: string
   /** 答案侧HTML模板 */
-  answer_template?: string;
+  answer_template?: string
   /** 模板ID */
-  id: string;
+  id: string
   /** 所属笔记类型ID */
-  note_model_id: string;
+  note_model_id: string
   /** 创建时间 */
-  created_at?: CardTemplateResponseCreatedAt;
+  created_at?: CardTemplateResponseCreatedAt
   /** 更新时间 */
-  updated_at?: CardTemplateResponseUpdatedAt;
+  updated_at?: CardTemplateResponseUpdatedAt
 }

@@ -9,4 +9,4 @@
 /**
  * 字段内容
  */
-export type NoteBatchItemFields = {[key: string]: string};
+export type NoteBatchItemFields = { [key: string]: string }

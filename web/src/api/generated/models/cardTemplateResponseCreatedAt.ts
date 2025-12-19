@@ -9,4 +9,4 @@
 /**
  * 创建时间
  */
-export type CardTemplateResponseCreatedAt = string | null;
+export type CardTemplateResponseCreatedAt = string | null

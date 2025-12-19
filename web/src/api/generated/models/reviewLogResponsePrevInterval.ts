@@ -9,4 +9,4 @@
 /**
  * 复习前间隔
  */
-export type ReviewLogResponsePrevInterval = number | null;
+export type ReviewLogResponsePrevInterval = number | null

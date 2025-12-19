@@ -9,8 +9,7 @@
 /**
  * 状态
  */
-export type CardResponseState = typeof CardResponseState[keyof typeof CardResponseState];
-
+export type CardResponseState = (typeof CardResponseState)[keyof typeof CardResponseState]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CardResponseState = {
@@ -18,4 +17,4 @@ export const CardResponseState = {
   learning: 'learning',
   review: 'review',
   relearning: 'relearning',
-} as const;
+} as const

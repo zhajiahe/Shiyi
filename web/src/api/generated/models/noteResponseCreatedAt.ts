@@ -9,4 +9,4 @@
 /**
  * 创建时间
  */
-export type NoteResponseCreatedAt = string | null;
+export type NoteResponseCreatedAt = string | null

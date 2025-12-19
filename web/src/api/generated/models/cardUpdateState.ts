@@ -9,4 +9,4 @@
 /**
  * 状态
  */
-export type CardUpdateState = 'new' | 'learning' | 'review' | 'relearning' | null;
+export type CardUpdateState = 'new' | 'learning' | 'review' | 'relearning' | null

@@ -9,4 +9,4 @@
 /**
  * 描述（Markdown）
  */
-export type SharedDeckCreateDescription = string | null;
+export type SharedDeckCreateDescription = string | null

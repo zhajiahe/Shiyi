@@ -9,12 +9,11 @@
 /**
  * 来源类型
  */
-export type NoteCreateSourceType = typeof NoteCreateSourceType[keyof typeof NoteCreateSourceType];
-
+export type NoteCreateSourceType = (typeof NoteCreateSourceType)[keyof typeof NoteCreateSourceType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const NoteCreateSourceType = {
   manual: 'manual',
   ai: 'ai',
   import: 'import',
-} as const;
+} as const

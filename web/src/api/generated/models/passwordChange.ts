@@ -15,11 +15,11 @@ export interface PasswordChange {
    * @minLength 6
    * @maxLength 128
    */
-  old_password: string;
+  old_password: string
   /**
    * 新密码
    * @minLength 6
    * @maxLength 128
    */
-  new_password: string;
+  new_password: string
 }

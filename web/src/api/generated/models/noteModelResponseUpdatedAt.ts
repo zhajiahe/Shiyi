@@ -9,4 +9,4 @@
 /**
  * 更新时间
  */
-export type NoteModelResponseUpdatedAt = string | null;
+export type NoteModelResponseUpdatedAt = string | null

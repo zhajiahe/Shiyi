@@ -10,9 +10,9 @@
  * Token基础数据
  */
 export interface Token {
-  id: string;
-  nickname: string;
-  access_token: string;
-  refresh_token: string;
-  token_type?: string;
+  id: string
+  nickname: string
+  access_token: string
+  refresh_token: string
+  token_type?: string
 }

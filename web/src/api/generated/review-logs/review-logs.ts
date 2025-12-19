@@ -11,10 +11,10 @@ import type {
   BaseResponseReviewStats,
   GetReviewLogsApiV1ReviewLogsGetParams,
   HTTPValidationError,
-  ReviewLogCreate
-} from '.././models';
+  ReviewLogCreate,
+} from '.././models'
 
-import { customFetch } from '../../fetcher';
+import { customFetch } from '../../fetcher'
 
 /**
  * 获取复习日志列表（分页）
@@ -29,42 +29,50 @@ export type getReviewLogsApiV1ReviewLogsGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getReviewLogsApiV1ReviewLogsGetResponseSuccess = (getReviewLogsApiV1ReviewLogsGetResponse200) & {
-  headers: Headers;
-};
-export type getReviewLogsApiV1ReviewLogsGetResponseError = (getReviewLogsApiV1ReviewLogsGetResponse422) & {
-  headers: Headers;
-};
 
-export type getReviewLogsApiV1ReviewLogsGetResponse = (getReviewLogsApiV1ReviewLogsGetResponseSuccess | getReviewLogsApiV1ReviewLogsGetResponseError)
+export type getReviewLogsApiV1ReviewLogsGetResponseSuccess =
+  getReviewLogsApiV1ReviewLogsGetResponse200 & {
+    headers: Headers
+  }
+export type getReviewLogsApiV1ReviewLogsGetResponseError =
+  getReviewLogsApiV1ReviewLogsGetResponse422 & {
+    headers: Headers
+  }
 
-export const getGetReviewLogsApiV1ReviewLogsGetUrl = (params?: GetReviewLogsApiV1ReviewLogsGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type getReviewLogsApiV1ReviewLogsGetResponse =
+  | getReviewLogsApiV1ReviewLogsGetResponseSuccess
+  | getReviewLogsApiV1ReviewLogsGetResponseError
+
+export const getGetReviewLogsApiV1ReviewLogsGetUrl = (
+  params?: GetReviewLogsApiV1ReviewLogsGetParams,
+) => {
+  const normalizedParams = new URLSearchParams()
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
-  });
+  })
 
-  const stringifiedParams = normalizedParams.toString();
+  const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0 ? `/api/v1/review-logs?${stringifiedParams}` : `/api/v1/review-logs`
+  return stringifiedParams.length > 0
+    ? `/api/v1/review-logs?${stringifiedParams}`
+    : `/api/v1/review-logs`
 }
 
-export const getReviewLogsApiV1ReviewLogsGet = async (params?: GetReviewLogsApiV1ReviewLogsGetParams, options?: RequestInit): Promise<getReviewLogsApiV1ReviewLogsGetResponse> => {
-  
-  return customFetch<getReviewLogsApiV1ReviewLogsGetResponse>(getGetReviewLogsApiV1ReviewLogsGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getReviewLogsApiV1ReviewLogsGet = async (
+  params?: GetReviewLogsApiV1ReviewLogsGetParams,
+  options?: RequestInit,
+): Promise<getReviewLogsApiV1ReviewLogsGetResponse> => {
+  return customFetch<getReviewLogsApiV1ReviewLogsGetResponse>(
+    getGetReviewLogsApiV1ReviewLogsGetUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 创建复习日志
@@ -79,36 +87,38 @@ export type createReviewLogApiV1ReviewLogsPostResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type createReviewLogApiV1ReviewLogsPostResponseSuccess = (createReviewLogApiV1ReviewLogsPostResponse201) & {
-  headers: Headers;
-};
-export type createReviewLogApiV1ReviewLogsPostResponseError = (createReviewLogApiV1ReviewLogsPostResponse422) & {
-  headers: Headers;
-};
 
-export type createReviewLogApiV1ReviewLogsPostResponse = (createReviewLogApiV1ReviewLogsPostResponseSuccess | createReviewLogApiV1ReviewLogsPostResponseError)
+export type createReviewLogApiV1ReviewLogsPostResponseSuccess =
+  createReviewLogApiV1ReviewLogsPostResponse201 & {
+    headers: Headers
+  }
+export type createReviewLogApiV1ReviewLogsPostResponseError =
+  createReviewLogApiV1ReviewLogsPostResponse422 & {
+    headers: Headers
+  }
+
+export type createReviewLogApiV1ReviewLogsPostResponse =
+  | createReviewLogApiV1ReviewLogsPostResponseSuccess
+  | createReviewLogApiV1ReviewLogsPostResponseError
 
 export const getCreateReviewLogApiV1ReviewLogsPostUrl = () => {
-
-
-  
-
   return `/api/v1/review-logs`
 }
 
-export const createReviewLogApiV1ReviewLogsPost = async (reviewLogCreate: ReviewLogCreate, options?: RequestInit): Promise<createReviewLogApiV1ReviewLogsPostResponse> => {
-  
-  return customFetch<createReviewLogApiV1ReviewLogsPostResponse>(getCreateReviewLogApiV1ReviewLogsPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      reviewLogCreate,)
-  }
-);}
-
+export const createReviewLogApiV1ReviewLogsPost = async (
+  reviewLogCreate: ReviewLogCreate,
+  options?: RequestInit,
+): Promise<createReviewLogApiV1ReviewLogsPostResponse> => {
+  return customFetch<createReviewLogApiV1ReviewLogsPostResponse>(
+    getCreateReviewLogApiV1ReviewLogsPostUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(reviewLogCreate),
+    },
+  )
+}
 
 /**
  * 获取复习统计
@@ -118,33 +128,29 @@ export type getReviewStatsApiV1ReviewLogsStatsGetResponse200 = {
   data: BaseResponseReviewStats
   status: 200
 }
-    
-export type getReviewStatsApiV1ReviewLogsStatsGetResponseSuccess = (getReviewStatsApiV1ReviewLogsStatsGetResponse200) & {
-  headers: Headers;
-};
-;
 
-export type getReviewStatsApiV1ReviewLogsStatsGetResponse = (getReviewStatsApiV1ReviewLogsStatsGetResponseSuccess)
+export type getReviewStatsApiV1ReviewLogsStatsGetResponseSuccess =
+  getReviewStatsApiV1ReviewLogsStatsGetResponse200 & {
+    headers: Headers
+  }
+export type getReviewStatsApiV1ReviewLogsStatsGetResponse =
+  getReviewStatsApiV1ReviewLogsStatsGetResponseSuccess
 
 export const getGetReviewStatsApiV1ReviewLogsStatsGetUrl = () => {
-
-
-  
-
   return `/api/v1/review-logs/stats`
 }
 
-export const getReviewStatsApiV1ReviewLogsStatsGet = async ( options?: RequestInit): Promise<getReviewStatsApiV1ReviewLogsStatsGetResponse> => {
-  
-  return customFetch<getReviewStatsApiV1ReviewLogsStatsGetResponse>(getGetReviewStatsApiV1ReviewLogsStatsGetUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+export const getReviewStatsApiV1ReviewLogsStatsGet = async (
+  options?: RequestInit,
+): Promise<getReviewStatsApiV1ReviewLogsStatsGetResponse> => {
+  return customFetch<getReviewStatsApiV1ReviewLogsStatsGetResponse>(
+    getGetReviewStatsApiV1ReviewLogsStatsGetUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}
 
 /**
  * 获取单个复习日志详情
@@ -159,33 +165,33 @@ export type getReviewLogApiV1ReviewLogsLogIdGetResponse422 = {
   data: HTTPValidationError
   status: 422
 }
-    
-export type getReviewLogApiV1ReviewLogsLogIdGetResponseSuccess = (getReviewLogApiV1ReviewLogsLogIdGetResponse200) & {
-  headers: Headers;
-};
-export type getReviewLogApiV1ReviewLogsLogIdGetResponseError = (getReviewLogApiV1ReviewLogsLogIdGetResponse422) & {
-  headers: Headers;
-};
 
-export type getReviewLogApiV1ReviewLogsLogIdGetResponse = (getReviewLogApiV1ReviewLogsLogIdGetResponseSuccess | getReviewLogApiV1ReviewLogsLogIdGetResponseError)
+export type getReviewLogApiV1ReviewLogsLogIdGetResponseSuccess =
+  getReviewLogApiV1ReviewLogsLogIdGetResponse200 & {
+    headers: Headers
+  }
+export type getReviewLogApiV1ReviewLogsLogIdGetResponseError =
+  getReviewLogApiV1ReviewLogsLogIdGetResponse422 & {
+    headers: Headers
+  }
 
-export const getGetReviewLogApiV1ReviewLogsLogIdGetUrl = (logId: string,) => {
+export type getReviewLogApiV1ReviewLogsLogIdGetResponse =
+  | getReviewLogApiV1ReviewLogsLogIdGetResponseSuccess
+  | getReviewLogApiV1ReviewLogsLogIdGetResponseError
 
-
-  
-
+export const getGetReviewLogApiV1ReviewLogsLogIdGetUrl = (logId: string) => {
   return `/api/v1/review-logs/${logId}`
 }
 
-export const getReviewLogApiV1ReviewLogsLogIdGet = async (logId: string, options?: RequestInit): Promise<getReviewLogApiV1ReviewLogsLogIdGetResponse> => {
-  
-  return customFetch<getReviewLogApiV1ReviewLogsLogIdGetResponse>(getGetReviewLogApiV1ReviewLogsLogIdGetUrl(logId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
+export const getReviewLogApiV1ReviewLogsLogIdGet = async (
+  logId: string,
+  options?: RequestInit,
+): Promise<getReviewLogApiV1ReviewLogsLogIdGetResponse> => {
+  return customFetch<getReviewLogApiV1ReviewLogsLogIdGetResponse>(
+    getGetReviewLogApiV1ReviewLogsLogIdGetUrl(logId),
+    {
+      ...options,
+      method: 'GET',
+    },
+  )
+}

@@ -56,7 +56,8 @@ export function NoteDialog({
   async function fetchNoteModels() {
     setIsLoading(true)
     try {
-      const data = (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as NoteModelResponse[]
+      const data =
+        (await getAvailableNoteModelsApiV1NoteModelsAvailableGet()) as unknown as NoteModelResponse[]
       setNoteModels(data)
       if (data.length > 0) {
         setSelectedModel(data[0])
@@ -72,7 +73,9 @@ export function NoteDialog({
   async function fetchNoteModel(id: string) {
     setIsLoading(true)
     try {
-      const data = (await getNoteModelApiV1NoteModelsNoteModelIdGet(id)) as NoteModelResponse
+      const data = (await getNoteModelApiV1NoteModelsNoteModelIdGet(
+        id,
+      )) as unknown as NoteModelResponse
       setSelectedModel(data)
       initializeFields(data)
     } catch (err) {

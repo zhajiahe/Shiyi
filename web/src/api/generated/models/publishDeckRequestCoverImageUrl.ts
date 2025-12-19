@@ -9,4 +9,4 @@
 /**
  * 封面图片URL
  */
-export type PublishDeckRequestCoverImageUrl = string | null;
+export type PublishDeckRequestCoverImageUrl = string | null

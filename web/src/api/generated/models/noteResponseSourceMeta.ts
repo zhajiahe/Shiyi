@@ -5,9 +5,9 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteResponseSourceMetaAnyOf } from './noteResponseSourceMetaAnyOf';
+import type { NoteResponseSourceMetaAnyOf } from './noteResponseSourceMetaAnyOf'
 
 /**
  * 来源元数据
  */
-export type NoteResponseSourceMeta = NoteResponseSourceMetaAnyOf | null;
+export type NoteResponseSourceMeta = NoteResponseSourceMetaAnyOf | null

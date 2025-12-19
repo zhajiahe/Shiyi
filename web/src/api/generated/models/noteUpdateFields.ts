@@ -5,9 +5,9 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteUpdateFieldsAnyOf } from './noteUpdateFieldsAnyOf';
+import type { NoteUpdateFieldsAnyOf } from './noteUpdateFieldsAnyOf'
 
 /**
  * 字段内容
  */
-export type NoteUpdateFields = NoteUpdateFieldsAnyOf | null;
+export type NoteUpdateFields = NoteUpdateFieldsAnyOf | null

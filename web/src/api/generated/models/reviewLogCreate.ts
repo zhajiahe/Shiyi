@@ -5,55 +5,55 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { ReviewLogCreateRating } from './reviewLogCreateRating';
-import type { ReviewLogCreatePrevState } from './reviewLogCreatePrevState';
-import type { ReviewLogCreateNewState } from './reviewLogCreateNewState';
-import type { ReviewLogCreatePrevInterval } from './reviewLogCreatePrevInterval';
-import type { ReviewLogCreateNewInterval } from './reviewLogCreateNewInterval';
-import type { ReviewLogCreatePrevEaseFactor } from './reviewLogCreatePrevEaseFactor';
-import type { ReviewLogCreateNewEaseFactor } from './reviewLogCreateNewEaseFactor';
-import type { ReviewLogCreatePrevDue } from './reviewLogCreatePrevDue';
-import type { ReviewLogCreateNewDue } from './reviewLogCreateNewDue';
-import type { ReviewLogCreatePrevStability } from './reviewLogCreatePrevStability';
-import type { ReviewLogCreateNewStability } from './reviewLogCreateNewStability';
-import type { ReviewLogCreatePrevDifficulty } from './reviewLogCreatePrevDifficulty';
-import type { ReviewLogCreateNewDifficulty } from './reviewLogCreateNewDifficulty';
-import type { ReviewLogCreateDurationMs } from './reviewLogCreateDurationMs';
+import type { ReviewLogCreateRating } from './reviewLogCreateRating'
+import type { ReviewLogCreatePrevState } from './reviewLogCreatePrevState'
+import type { ReviewLogCreateNewState } from './reviewLogCreateNewState'
+import type { ReviewLogCreatePrevInterval } from './reviewLogCreatePrevInterval'
+import type { ReviewLogCreateNewInterval } from './reviewLogCreateNewInterval'
+import type { ReviewLogCreatePrevEaseFactor } from './reviewLogCreatePrevEaseFactor'
+import type { ReviewLogCreateNewEaseFactor } from './reviewLogCreateNewEaseFactor'
+import type { ReviewLogCreatePrevDue } from './reviewLogCreatePrevDue'
+import type { ReviewLogCreateNewDue } from './reviewLogCreateNewDue'
+import type { ReviewLogCreatePrevStability } from './reviewLogCreatePrevStability'
+import type { ReviewLogCreateNewStability } from './reviewLogCreateNewStability'
+import type { ReviewLogCreatePrevDifficulty } from './reviewLogCreatePrevDifficulty'
+import type { ReviewLogCreateNewDifficulty } from './reviewLogCreateNewDifficulty'
+import type { ReviewLogCreateDurationMs } from './reviewLogCreateDurationMs'
 
 /**
  * 创建复习日志请求
  */
 export interface ReviewLogCreate {
   /** 卡片ID */
-  card_id: string;
+  card_id: string
   /** 复习时间戳（毫秒） */
-  review_time: number;
+  review_time: number
   /** 用户评分: 1=Again, 2=Hard, 3=Good, 4=Easy */
-  rating: ReviewLogCreateRating;
+  rating: ReviewLogCreateRating
   /** 复习前状态 */
-  prev_state?: ReviewLogCreatePrevState;
+  prev_state?: ReviewLogCreatePrevState
   /** 复习后状态 */
-  new_state?: ReviewLogCreateNewState;
+  new_state?: ReviewLogCreateNewState
   /** 复习前间隔（天） */
-  prev_interval?: ReviewLogCreatePrevInterval;
+  prev_interval?: ReviewLogCreatePrevInterval
   /** 复习后间隔（天） */
-  new_interval?: ReviewLogCreateNewInterval;
+  new_interval?: ReviewLogCreateNewInterval
   /** 复习前难度系数 */
-  prev_ease_factor?: ReviewLogCreatePrevEaseFactor;
+  prev_ease_factor?: ReviewLogCreatePrevEaseFactor
   /** 复习后难度系数 */
-  new_ease_factor?: ReviewLogCreateNewEaseFactor;
+  new_ease_factor?: ReviewLogCreateNewEaseFactor
   /** 复习前到期时间 */
-  prev_due?: ReviewLogCreatePrevDue;
+  prev_due?: ReviewLogCreatePrevDue
   /** 复习后到期时间 */
-  new_due?: ReviewLogCreateNewDue;
+  new_due?: ReviewLogCreateNewDue
   /** 复习前稳定性 */
-  prev_stability?: ReviewLogCreatePrevStability;
+  prev_stability?: ReviewLogCreatePrevStability
   /** 复习后稳定性 */
-  new_stability?: ReviewLogCreateNewStability;
+  new_stability?: ReviewLogCreateNewStability
   /** 复习前难度 */
-  prev_difficulty?: ReviewLogCreatePrevDifficulty;
+  prev_difficulty?: ReviewLogCreatePrevDifficulty
   /** 复习后难度 */
-  new_difficulty?: ReviewLogCreateNewDifficulty;
+  new_difficulty?: ReviewLogCreateNewDifficulty
   /** 本次回答耗时（毫秒） */
-  duration_ms?: ReviewLogCreateDurationMs;
+  duration_ms?: ReviewLogCreateDurationMs
 }

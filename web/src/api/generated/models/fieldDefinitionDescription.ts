@@ -9,4 +9,4 @@
 /**
  * 字段描述
  */
-export type FieldDefinitionDescription = string | null;
+export type FieldDefinitionDescription = string | null

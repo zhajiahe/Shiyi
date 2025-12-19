@@ -7,17 +7,17 @@
  */
 
 export type GetSharedDecksApiV1SharedDecksGetParams = {
-/**
- * @minimum 1
- */
-page_num?: number;
-/**
- * @minimum 1
- */
-page_size?: number;
-language?: string | null;
-tag?: string | null;
-q?: string | null;
-is_featured?: boolean | null;
-is_official?: boolean | null;
-};
+  /**
+   * @minimum 1
+   */
+  page_num?: number
+  /**
+   * @minimum 1
+   */
+  page_size?: number
+  language?: string | null
+  tag?: string | null
+  q?: string | null
+  is_featured?: boolean | null
+  is_official?: boolean | null
+}

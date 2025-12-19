@@ -5,8 +5,8 @@
  * Shiyi Study is a platform for learning and studying.
  * OpenAPI spec version: 1.0.0
  */
-import type { UserResponseCreateTime } from './userResponseCreateTime';
-import type { UserResponseUpdateTime } from './userResponseUpdateTime';
+import type { UserResponseCreateTime } from './userResponseCreateTime'
+import type { UserResponseUpdateTime } from './userResponseUpdateTime'
 
 /**
  * 用户响应
@@ -17,23 +17,23 @@ export interface UserResponse {
    * @minLength 3
    * @maxLength 50
    */
-  username: string;
+  username: string
   /** 邮箱 */
-  email: string;
+  email: string
   /**
    * 昵称
    * @minLength 1
    * @maxLength 50
    */
-  nickname: string;
+  nickname: string
   /** 用户ID */
-  id: string;
+  id: string
   /** 是否激活 */
-  is_active: boolean;
+  is_active: boolean
   /** 是否超级管理员 */
-  is_superuser: boolean;
+  is_superuser: boolean
   /** 创建时间 */
-  create_time?: UserResponseCreateTime;
+  create_time?: UserResponseCreateTime
   /** 更新时间 */
-  update_time?: UserResponseUpdateTime;
+  update_time?: UserResponseUpdateTime
 }

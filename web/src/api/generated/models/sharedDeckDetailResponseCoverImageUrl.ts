@@ -9,4 +9,4 @@
 /**
  * 封面图片URL
  */
-export type SharedDeckDetailResponseCoverImageUrl = string | null;
+export type SharedDeckDetailResponseCoverImageUrl = string | null

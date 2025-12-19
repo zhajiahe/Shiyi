@@ -9,4 +9,4 @@
 /**
  * 字段内容
  */
-export type NoteResponseFields = {[key: string]: string};
+export type NoteResponseFields = { [key: string]: string }
