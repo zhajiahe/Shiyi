@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Save,
   Loader2,
@@ -13,6 +13,8 @@ import {
   Brain,
   Palette,
   Info,
+  RefreshCw,
+  Check,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -63,6 +65,56 @@ export function SettingsPage() {
   // AI 配置
   const { config: aiConfig, setConfig: setAIConfig } = useAIConfigStore()
   const [showApiKey, setShowApiKey] = useState(false)
+  const [fetchedModels, setFetchedModels] = useState<string[]>([])
+  const [isFetchingModels, setIsFetchingModels] = useState(false)
+  const [modelsFetchError, setModelsFetchError] = useState<string | null>(null)
+
+  // 获取模型列表
+  const fetchModels = useCallback(async () => {
+    if (!aiConfig.apiKey || !aiConfig.baseUrl) {
+      return
+    }
+
+    setIsFetchingModels(true)
+    setModelsFetchError(null)
+    setFetchedModels([])
+
+    try {
+      const response = await fetch(`${aiConfig.baseUrl}/models`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${aiConfig.apiKey}`,
+        },
+      })
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}))
+        throw new Error(error.error?.message || `请求失败: ${response.status}`)
+      }
+
+      const data = await response.json()
+      // OpenAI 格式: { data: [{ id: "gpt-4o", ... }] }
+      const models = (data.data || [])
+        .map((m: { id: string }) => m.id)
+        .filter((id: string) => id)
+        .sort((a: string, b: string) => a.localeCompare(b))
+
+      setFetchedModels(models)
+
+      // 如果当前选择的模型不在列表中，自动选择第一个
+      if (models.length > 0 && !models.includes(aiConfig.model)) {
+        setAIConfig({ model: models[0] })
+      }
+
+      toast.success(`获取到 ${models.length} 个模型`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '获取模型列表失败'
+      setModelsFetchError(message)
+      toast.error(message)
+    } finally {
+      setIsFetchingModels(false)
+    }
+  }, [aiConfig.apiKey, aiConfig.baseUrl, aiConfig.model, setAIConfig])
 
   // 存储相关状态
   const [storageInfo, setStorageInfo] = useState<{
@@ -533,42 +585,109 @@ export function SettingsPage() {
                     </p>
                   </div>
 
-                  {/* Base URL 和模型 - 双栏 */}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">API Base URL</label>
-                      <Input
-                        placeholder="https://api.openai.com/v1"
-                        value={aiConfig.baseUrl}
-                        onChange={(e) => setAIConfig({ baseUrl: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">模型</label>
-                      <select
-                        className="w-full h-10 px-3 py-2 border rounded-md bg-background"
-                        value={aiConfig.model}
-                        onChange={(e) => setAIConfig({ model: e.target.value })}
-                      >
-                        {POPULAR_MODELS.map((model) => (
-                          <option key={model.value} value={model.value}>
-                            {model.label} ({model.provider})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  {/* Base URL */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">API Base URL</label>
+                    <Input
+                      placeholder="https://api.openai.com/v1"
+                      value={aiConfig.baseUrl}
+                      onChange={(e) => {
+                        setAIConfig({ baseUrl: e.target.value })
+                        setFetchedModels([]) // 清空已获取的模型
+                      }}
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      支持 OpenAI、DeepSeek、通义千问等兼容接口
+                    </p>
                   </div>
 
-                  {/* 自定义模型 */}
+                  {/* 模型选择 */}
                   <div>
-                    <label className="block text-sm font-medium mb-2">自定义模型名称</label>
-                    <Input
-                      placeholder="输入自定义模型名称（可选）"
-                      value={
-                        POPULAR_MODELS.some((m) => m.value === aiConfig.model) ? '' : aiConfig.model
-                      }
-                      onChange={(e) => setAIConfig({ model: e.target.value })}
-                    />
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium">
+                        模型 <span className="text-destructive">*</span>
+                      </label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={fetchModels}
+                        disabled={!aiConfig.apiKey || !aiConfig.baseUrl || isFetchingModels}
+                      >
+                        {isFetchingModels ? (
+                          <>
+                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                            获取中...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            获取模型列表
+                          </>
+                        )}
+                      </Button>
+                    </div>
+
+                    {/* 模型列表 */}
+                    {fetchedModels.length > 0 ? (
+                      <div className="space-y-2">
+                        <select
+                          className="w-full h-10 px-3 py-2 border rounded-md bg-background"
+                          value={aiConfig.model}
+                          onChange={(e) => setAIConfig({ model: e.target.value })}
+                        >
+                          {fetchedModels.map((model) => (
+                            <option key={model} value={model}>
+                              {model}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Check className="h-3 w-3 text-green-500" />
+                          已获取 {fetchedModels.length} 个可用模型
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {/* 常用模型下拉 + 自定义输入 */}
+                        <div className="flex gap-2">
+                          <select
+                            className="flex-1 h-10 px-3 py-2 border rounded-md bg-background"
+                            value={
+                              POPULAR_MODELS.some((m) => m.value === aiConfig.model)
+                                ? aiConfig.model
+                                : ''
+                            }
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                setAIConfig({ model: e.target.value })
+                              }
+                            }}
+                          >
+                            <option value="">选择常用模型...</option>
+                            {POPULAR_MODELS.map((model) => (
+                              <option key={model.value} value={model.value}>
+                                {model.label} ({model.provider})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <Input
+                          placeholder="或输入自定义模型名称"
+                          value={
+                            POPULAR_MODELS.some((m) => m.value === aiConfig.model)
+                              ? ''
+                              : aiConfig.model
+                          }
+                          onChange={(e) => setAIConfig({ model: e.target.value })}
+                        />
+                        {modelsFetchError && (
+                          <p className="text-xs text-destructive">{modelsFetchError}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          填写 API Key 和 Base URL 后可点击上方按钮获取可用模型
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* 配置状态 */}
