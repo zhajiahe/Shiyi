@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Plus, Star } from 'lucide-react'
+import { Plus, Star, Sparkles } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { getAvailableNoteModelsApiV1NoteModelsAvailableGet } from '@/api/generated/note-models/note-models'
 import { NoteModelDialog } from './components/NoteModelDialog'
+import { AIGenerateTemplateDialog } from './components/AIGenerateTemplateDialog'
 import type { NoteModelResponse } from '@/api/generated/models'
 
 export function StudioTemplates() {
@@ -13,6 +14,7 @@ export function StudioTemplates() {
   const [isLoading, setIsLoading] = useState(true)
   const [keyword, setKeyword] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false)
   const [editingModel, setEditingModel] = useState<NoteModelResponse | undefined>(undefined)
 
   const fetchTemplates = useCallback(async () => {
@@ -57,10 +59,16 @@ export function StudioTemplates() {
           <h1 className="text-2xl font-bold">模板市场</h1>
           <p className="text-muted-foreground">浏览内置模板或创建自定义笔记类型</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          创建模板
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsAIDialogOpen(true)}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            AI 生成
+          </Button>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            创建模板
+          </Button>
+        </div>
       </div>
 
       <div className="max-w-md">
@@ -128,6 +136,12 @@ export function StudioTemplates() {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         noteModel={editingModel}
+        onSuccess={fetchTemplates}
+      />
+
+      <AIGenerateTemplateDialog
+        open={isAIDialogOpen}
+        onOpenChange={setIsAIDialogOpen}
         onSuccess={fetchTemplates}
       />
     </div>
