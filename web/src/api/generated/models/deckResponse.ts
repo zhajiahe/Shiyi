@@ -7,6 +7,7 @@
  */
 import type { DeckResponseNoteModelId } from './deckResponseNoteModelId'
 import type { DeckResponseDescription } from './deckResponseDescription'
+import type { DeckResponsePublishedDeckId } from './deckResponsePublishedDeckId'
 import type { DeckResponseCreatedAt } from './deckResponseCreatedAt'
 import type { DeckResponseUpdatedAt } from './deckResponseUpdatedAt'
 
@@ -24,6 +25,8 @@ export interface DeckResponse {
   note_model_id?: DeckResponseNoteModelId
   /** 牌组描述 */
   description?: DeckResponseDescription
+  /** 关联的已发布牌组ID（非空表示已发布） */
+  published_deck_id?: DeckResponsePublishedDeckId
   /** 创建时间 */
   created_at?: DeckResponseCreatedAt
   /** 更新时间 */

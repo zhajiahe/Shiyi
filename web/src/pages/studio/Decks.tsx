@@ -66,6 +66,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Badge } from '@/components/ui/badge'
 import {
   getDecksApiV1DecksGet,
   createDeckApiV1DecksPost,
@@ -208,6 +209,11 @@ export function StudioDecks() {
           >
             <Folder className="h-4 w-4 text-muted-foreground" />
             {deck.name}
+            {deck.published_deck_id && (
+              <Badge variant="default" className="bg-green-600 hover:bg-green-700 text-xs">
+                已发布
+              </Badge>
+            )}
           </Link>
         )
       },

@@ -1,6 +1,15 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Plus, FileText, Share, Upload, Sparkles } from 'lucide-react'
+import {
+  ArrowLeft,
+  Plus,
+  FileText,
+  Share,
+  Upload,
+  Sparkles,
+  Pencil,
+  CheckCircle,
+} from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +26,7 @@ import { NoteDialog } from './components/NoteDialog'
 import { PublishDialog } from './components/PublishDialog'
 import { ImportDialog } from './components/ImportDialog'
 import { AIGenerateDialog } from './components/AIGenerateDialog'
+import { EditDeckDialog } from './components/EditDeckDialog'
 
 export function StudioDeckDetail() {
   const { id } = useParams<{ id: string }>()
@@ -29,6 +39,7 @@ export function StudioDeckDetail() {
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false)
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
   const [isAIDialogOpen, setIsAIDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   const fetchDeck = useCallback(async () => {
     try {
@@ -88,12 +99,28 @@ export function StudioDeckDetail() {
           </Link>
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">{deck.name}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">{deck.name}</h1>
+            {deck.published_deck_id && (
+              <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                已发布
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setIsEditDialogOpen(true)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </div>
           {deck.description && <p className="text-muted-foreground">{deck.description}</p>}
         </div>
         <Button variant="outline" onClick={() => setIsPublishDialogOpen(true)}>
           <Share className="mr-2 h-4 w-4" />
-          发布到市场
+          {deck.published_deck_id ? '更新发布' : '发布到市场'}
         </Button>
       </div>
 
@@ -224,7 +251,20 @@ export function StudioDeckDetail() {
           onOpenChange={setIsAIDialogOpen}
           deckId={id}
           noteModel={noteModel}
+          existingNotes={notes.map((n) => n.fields || {})}
           onSuccess={fetchNotes}
+        />
+      )}
+
+      {/* 编辑牌组弹窗 */}
+      {id && deck && (
+        <EditDeckDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          deckId={id}
+          initialName={deck.name}
+          initialDescription={deck.description || ''}
+          onSuccess={fetchDeck}
         />
       )}
     </div>

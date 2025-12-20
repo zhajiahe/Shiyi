@@ -41,6 +41,7 @@ class DeckResponse(BaseModel):
     name: str = Field(..., description="牌组名称")
     note_model_id: str | None = Field(default=None, description="绑定的笔记类型ID")
     description: str | None = Field(default=None, description="牌组描述")
+    published_deck_id: str | None = Field(default=None, description="关联的已发布牌组ID（非空表示已发布）")
     created_at: datetime | None = Field(default=None, description="创建时间")
     updated_at: datetime | None = Field(default=None, description="更新时间")
 

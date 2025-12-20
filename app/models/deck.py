@@ -3,7 +3,7 @@
 """
 
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, BaseTableMixin
 
@@ -21,6 +21,12 @@ class Deck(Base, BaseTableMixin):
         String(36), ForeignKey("note_models.id"), nullable=True, index=True, comment="绑定的笔记类型ID"
     )
     description: Mapped[str | None] = mapped_column(String(500), nullable=True, comment="牌组描述")
+    published_deck_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("shared_decks.id"), nullable=True, index=True, comment="关联的已发布牌组ID"
+    )
+
+    # 关系
+    published_deck = relationship("SharedDeck", foreign_keys=[published_deck_id])
 
     def __repr__(self) -> str:
         return f"<Deck(id={self.id}, name={self.name})>"

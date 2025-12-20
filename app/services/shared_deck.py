@@ -247,6 +247,10 @@ class SharedDeckService:
             }
         )
 
+        # 更新源牌组的 published_deck_id
+        deck.published_deck_id = shared_deck.id
+        await self.db.commit()
+
         return shared_deck
 
     async def publish_new_version(
