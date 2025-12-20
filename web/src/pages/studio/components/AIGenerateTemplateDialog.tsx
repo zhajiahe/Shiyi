@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -16,11 +16,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAIConfigStore } from '@/stores/useAIConfigStore'
 import { createNoteModelApiV1NoteModelsPost } from '@/api/generated/note-models/note-models'
 import { toast } from 'sonner'
-import { Sparkles, Loader2, Settings, RefreshCw, Plus, Trash2, Code, Eye } from 'lucide-react'
+import {
+  Sparkles,
+  Loader2,
+  Settings,
+  RefreshCw,
+  Plus,
+  Trash2,
+  Code,
+  Eye,
+  FileText,
+  Globe,
+  Upload,
+} from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { createOpenAI } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
 import { z } from 'zod'
+
+type ReferenceMode = 'none' | 'file' | 'url'
+const SUPPORTED_FILE_TYPES = ['.txt', '.md', '.html']
+const JINA_READER_PREFIX = 'https://r.jina.ai/'
 
 interface AIGenerateTemplateDialogProps {
   open: boolean
@@ -85,6 +101,15 @@ export function AIGenerateTemplateDialog({
   // 输入状态
   const [description, setDescription] = useState('')
 
+  // 参考资料状态
+  const [referenceMode, setReferenceMode] = useState<ReferenceMode>('none')
+  const [fileContent, setFileContent] = useState('')
+  const [fileName, setFileName] = useState('')
+  const [url, setUrl] = useState('')
+  const [urlContent, setUrlContent] = useState('')
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   // 生成状态
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -109,9 +134,73 @@ export function AIGenerateTemplateDialog({
     setEditMode('front')
   }, [])
 
+  // 获取当前参考资料内容
+  const referenceContent = useMemo(() => {
+    switch (referenceMode) {
+      case 'file':
+        return fileContent
+      case 'url':
+        return urlContent
+      default:
+        return ''
+    }
+  }, [referenceMode, fileContent, urlContent])
+
+  // 处理文件上传
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+    if (!SUPPORTED_FILE_TYPES.includes(ext)) {
+      toast.error('不支持的文件类型', {
+        description: `仅支持 ${SUPPORTED_FILE_TYPES.join(', ')} 格式`,
+      })
+      return
+    }
+
+    try {
+      const text = await file.text()
+      setFileContent(text)
+      setFileName(file.name)
+      toast.success(`已加载文件: ${file.name}`)
+    } catch {
+      toast.error('读取文件失败')
+    }
+  }
+
+  // 加载网页内容
+  const loadUrlContent = async () => {
+    if (!url.trim()) {
+      toast.error('请输入网页地址')
+      return
+    }
+
+    setIsLoadingUrl(true)
+    try {
+      const jinaUrl = JINA_READER_PREFIX + encodeURIComponent(url.trim())
+      const response = await fetch(jinaUrl)
+
+      if (!response.ok) {
+        throw new Error(`获取失败: ${response.status}`)
+      }
+
+      const text = await response.text()
+      setUrlContent(text)
+      toast.success('网页内容加载成功')
+    } catch (err) {
+      console.error('加载网页失败:', err)
+      toast.error('加载网页失败', {
+        description: err instanceof Error ? err.message : '请检查网址是否正确',
+      })
+    } finally {
+      setIsLoadingUrl(false)
+    }
+  }
+
   // 构建 Prompt
   const buildPrompt = useCallback(() => {
-    return `你是一个专业的闪卡模板设计师。根据用户描述，设计一个结构化的笔记类型（Note Model）。
+    let prompt = `你是一个专业的闪卡模板设计师。根据用户描述，设计一个结构化的笔记类型（Note Model）。
 
 设计要求：
 1. 字段名称使用简洁的英文或中文，便于引用
@@ -123,9 +212,22 @@ export function AIGenerateTemplateDialog({
 
 用户需求：
 ${description}
+`
 
+    // 添加参考资料
+    if (referenceContent.trim()) {
+      prompt += `
+参考资料（请根据内容结构设计合适的字段）：
+${referenceContent.slice(0, 3000)}
+${referenceContent.length > 3000 ? '\n...(内容已截断)' : ''}
+`
+    }
+
+    prompt += `
 请设计一个适合间隔重复学习的卡片模板。`
-  }, [description])
+
+    return prompt
+  }, [description, referenceContent])
 
   // 使用 AI 生成模板
   const generateTemplate = async () => {
@@ -219,6 +321,11 @@ ${description}
     setTimeout(() => {
       setStep('input')
       setDescription('')
+      setReferenceMode('none')
+      setFileContent('')
+      setFileName('')
+      setUrl('')
+      setUrlContent('')
       setGeneratedTemplate(null)
       setEditingName('')
       setEditingFields([])
@@ -335,9 +442,97 @@ ${description}
                   placeholder="例如：我需要一个日语单词学习卡片，包含假名、汉字、词性、中文释义、例句..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
+                  rows={3}
                   className="resize-none"
                 />
+              </div>
+
+              {/* 参考资料 */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium">参考资料（可选）</label>
+                  <div className="flex gap-1">
+                    <Button
+                      variant={referenceMode === 'none' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={() => setReferenceMode('none')}
+                    >
+                      无
+                    </Button>
+                    <Button
+                      variant={referenceMode === 'file' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={() => setReferenceMode('file')}
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      文件
+                    </Button>
+                    <Button
+                      variant={referenceMode === 'url' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={() => setReferenceMode('url')}
+                    >
+                      <Globe className="h-4 w-4 mr-1" />
+                      网页
+                    </Button>
+                  </div>
+                </div>
+
+                {/* 文件上传 */}
+                {referenceMode === 'file' && (
+                  <div className="space-y-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept={SUPPORTED_FILE_TYPES.join(',')}
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                    >
+                      {fileName ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <FileText className="h-5 w-5 text-primary" />
+                          <span className="font-medium">{fileName}</span>
+                          <span className="text-muted-foreground">({fileContent.length} 字符)</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                          <Upload className="h-5 w-5" />
+                          <span>点击上传 {SUPPORTED_FILE_TYPES.join('/')} 文件</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 网页 URL */}
+                {referenceMode === 'url' && (
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://example.com/article"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={loadUrlContent}
+                        disabled={isLoadingUrl || !url.trim()}
+                      >
+                        {isLoadingUrl ? <Loader2 className="h-4 w-4 animate-spin" /> : '加载'}
+                      </Button>
+                    </div>
+                    {urlContent && (
+                      <div className="text-sm text-muted-foreground">
+                        ✓ 已加载 {urlContent.length} 字符
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground">
