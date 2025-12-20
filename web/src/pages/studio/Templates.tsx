@@ -80,7 +80,19 @@ export function StudioTemplates() {
       setDeleteTarget(null)
       fetchTemplates()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '删除失败')
+      // 检查是否是外键约束错误
+      const errorMsg = err instanceof Error ? err.message : '删除失败'
+      if (
+        errorMsg.includes('foreign key') ||
+        errorMsg.includes('constraint') ||
+        errorMsg.includes('FOREIGN KEY')
+      ) {
+        toast.error('无法删除模板', {
+          description: '该模板正在被某些牌组使用，请先删除或修改相关牌组',
+        })
+      } else {
+        toast.error(errorMsg)
+      }
     } finally {
       setIsDeleting(false)
     }
@@ -184,12 +196,13 @@ export function StudioTemplates() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除模板</AlertDialogTitle>
-            <AlertDialogDescription>
-              确定要删除模板 "{deleteTarget?.name}" 吗？此操作无法撤销。
-              <br />
-              <span className="text-destructive font-medium">
-                注意：如果有牌组正在使用此模板，可能会影响相关笔记。
-              </span>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>确定要删除模板 "{deleteTarget?.name}" 吗？此操作无法撤销。</p>
+                <p className="text-destructive font-medium">
+                  ⚠️ 如果有牌组正在使用此模板，需要先删除或修改相关牌组才能删除模板。
+                </p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
