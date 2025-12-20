@@ -200,31 +200,44 @@ export function AIGenerateTemplateDialog({
 
   // 构建 Prompt
   const buildPrompt = useCallback(() => {
-    let prompt = `你是一个专业的闪卡模板设计师。根据用户描述，设计一个结构化的笔记类型（Note Model）。
+    let prompt = `你是一个专业的闪卡模板设计师。根据用户描述，设计一个结构化的笔记类型。
 
-设计要求：
-1. 字段名称使用简洁的英文或中文，便于引用
-2. 模板使用 daisyUI 组件，风格现代简洁
-3. 使用 Mustache 语法引用字段：{{字段名}}
-4. 条件渲染使用 {{#字段名}}...{{/字段名}}
-5. CSS 使用 daisyUI 的 oklch 变量配色
-6. 考虑学习效果，正面简洁，背面详细
+## 输出格式要求
+请严格按以下 JSON 格式输出，不要输出其他内容：
+{
+  "name": "模板名称",
+  "fields": [
+    {"name": "字段1", "description": "可选的字段说明"},
+    {"name": "字段2"}
+  ],
+  "templates": [
+    {
+      "name": "正向卡片",
+      "questionTemplate": "<div class='...'>{{字段1}}</div>",
+      "answerTemplate": "<div class='...'>{{字段1}}<hr>{{字段2}}</div>"
+    }
+  ],
+  "css": ".card { ... }"
+}
 
-用户需求：
-${description}
-`
+## 设计规范
+1. 字段名称：使用简洁的英文或中文，3-6 个字段为宜
+2. HTML 模板：使用 daisyUI 组件类名，风格现代简洁
+3. 字段引用：使用 Mustache 语法 {{字段名}}
+4. 条件渲染：使用 {{#字段名}}内容{{/字段名}}
+5. CSS：使用 daisyUI 的 oklch 变量配色
+6. 学习优化：问题面简洁聚焦，答案面详细完整
+
+## 用户需求
+${description}`
 
     // 添加参考资料
     if (referenceContent.trim()) {
       prompt += `
-参考资料（请根据内容结构设计合适的字段）：
-${referenceContent.slice(0, 3000)}
-${referenceContent.length > 3000 ? '\n...(内容已截断)' : ''}
-`
-    }
 
-    prompt += `
-请设计一个适合间隔重复学习的卡片模板。`
+## 参考资料（分析结构设计字段）
+${referenceContent.slice(0, 3000)}${referenceContent.length > 3000 ? '\n...(已截断)' : ''}`
+    }
 
     return prompt
   }, [description, referenceContent])
@@ -251,20 +264,44 @@ ${referenceContent.length > 3000 ? '\n...(内容已截断)' : ''}
         apiKey: config.apiKey,
       })
 
+      // 使用 json 模式，兼容更多模型
       const result = await generateObject({
         model: openai(config.model),
         schema: noteModelSchema,
+        mode: 'json', // 使用 JSON 模式，更多模型支持
         prompt: buildPrompt(),
       })
 
       const template = result.object as GeneratedTemplate
+
+      // 验证生成结果
+      if (!template.name || !template.fields?.length || !template.templates?.length) {
+        throw new Error('生成结果不完整，请重试')
+      }
+
       setGeneratedTemplate(template)
       initEditingState(template)
       setStep('preview')
       toast.success('模板生成成功！')
     } catch (err) {
       console.error('AI 生成失败:', err)
-      toast.error(err instanceof Error ? err.message : 'AI 生成失败')
+
+      // 提供更有帮助的错误信息
+      let errorMessage = 'AI 生成失败'
+      if (err instanceof Error) {
+        if (err.message.includes('did not match schema')) {
+          errorMessage =
+            '模型返回格式不符合要求，请尝试使用 GPT-4o 或 DeepSeek 等支持 JSON 输出的模型'
+        } else if (err.message.includes('API key')) {
+          errorMessage = 'API Key 无效，请检查设置'
+        } else if (err.message.includes('model')) {
+          errorMessage = '模型不可用，请检查模型名称是否正确'
+        } else {
+          errorMessage = err.message
+        }
+      }
+
+      toast.error(errorMessage)
       setStep('input')
     } finally {
       setIsGenerating(false)
