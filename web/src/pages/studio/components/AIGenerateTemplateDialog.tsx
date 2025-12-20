@@ -91,6 +91,63 @@ const PRESET_SCENARIOS = [
   { label: '数学公式', prompt: '数学公式卡片，包含公式名称、公式内容、变量说明、应用例题' },
 ]
 
+// 根据字段名生成示例数据
+const generateSampleData = (fieldName: string): string => {
+  const name = fieldName.toLowerCase()
+  // 常见字段的示例数据
+  const samples: Record<string, string> = {
+    // 英语单词相关
+    单词: 'serendipity',
+    word: 'serendipity',
+    音标: '/ˌserənˈdɪpəti/',
+    phonetic: '/ˌserənˈdɪpəti/',
+    词性: 'noun',
+    pos: 'n.',
+    partOfSpeech: 'noun',
+    释义: '意外发现美好事物的运气',
+    meaning: '意外发现美好事物的运气',
+    中文释义: '意外发现美好事物的运气',
+    definition: 'The occurrence of events by chance in a happy way.',
+    例句: 'Finding that vintage bookstore was pure serendipity.',
+    example: 'Finding that vintage bookstore was pure serendipity.',
+    英文例句: 'Finding that vintage bookstore was pure serendipity.',
+    例句翻译: '发现那家复古书店纯属意外之喜。',
+    translation: '发现那家复古书店纯属意外之喜。',
+    // 编程相关
+    概念: 'Closure',
+    代码: 'const add = (a) => (b) => a + b;',
+    code: 'const add = (a) => (b) => a + b;',
+    // 历史相关
+    事件: '文艺复兴',
+    时间: '14-17世纪',
+    date: '14-17世纪',
+    地点: '意大利佛罗伦萨',
+    location: 'Florence, Italy',
+    人物: '达芬奇、米开朗基罗',
+    // 通用
+    name: 'Example Name',
+    名称: '示例名称',
+    title: 'Example Title',
+    标题: '示例标题',
+    描述: '这是一段示例描述文本。',
+    description: 'This is a sample description.',
+    内容: '这是示例内容。',
+    content: 'Sample content here.',
+    备注: '附加说明信息',
+    note: 'Additional notes here.',
+  }
+
+  // 尝试匹配
+  for (const [key, value] of Object.entries(samples)) {
+    if (name.includes(key.toLowerCase()) || key.toLowerCase().includes(name)) {
+      return value
+    }
+  }
+
+  // 默认返回字段名作为示例
+  return `示例${fieldName}`
+}
+
 export function AIGenerateTemplateDialog({
   open,
   onOpenChange,
@@ -395,20 +452,59 @@ ${referenceContent.slice(0, 3000)}${referenceContent.length > 3000 ? '\n...(已�
   // 获取当前模板的编辑内容
   const currentTemplate = editingTemplates[activeTemplateIndex]
 
-  // 预览 HTML
+  // 生成字段示例数据映射
+  const sampleDataMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    editingFields.forEach((f) => {
+      map[f.name] = generateSampleData(f.name)
+    })
+    return map
+  }, [editingFields])
+
+  // 预览 HTML（带 CSS 和示例数据）
   const previewHtml = useMemo(() => {
     if (!currentTemplate) return ''
     const template =
       editMode === 'front' ? currentTemplate.questionTemplate : currentTemplate.answerTemplate
-    // 简单替换字段为示例值
+
+    // 替换字段为示例值
     let html = template
     editingFields.forEach((f) => {
-      html = html.replace(new RegExp(`{{${f.name}}}`, 'g'), `[${f.name}]`)
+      const sampleValue = sampleDataMap[f.name] || `示例${f.name}`
+      // 替换普通字段引用
+      html = html.replace(new RegExp(`{{${f.name}}}`, 'g'), sampleValue)
+      // 处理条件块（假设字段有值）
       html = html.replace(new RegExp(`{{#${f.name}}}`, 'g'), '')
       html = html.replace(new RegExp(`{{/${f.name}}}`, 'g'), '')
     })
     return html
-  }, [currentTemplate, editMode, editingFields])
+  }, [currentTemplate, editMode, editingFields, sampleDataMap])
+
+  // 完整的预览内容（包含 CSS）
+  const fullPreviewHtml = useMemo(() => {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 16px;
+            margin: 0;
+            background: #fff;
+          }
+          ${editingCss}
+        </style>
+      </head>
+      <body>
+        ${previewHtml}
+      </body>
+      </html>
+    `
+  }, [previewHtml, editingCss])
 
   // 未配置 AI
   if (!isConfigured()) {
@@ -725,20 +821,27 @@ ${referenceContent.slice(0, 3000)}${referenceContent.length > 3000 ? '\n...(已�
                   </TabsContent>
                 </Tabs>
 
-                {/* 预览 */}
-                {editMode !== 'css' && (
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">预览</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div
-                        className="min-h-24 p-4 border rounded-lg bg-card"
-                        dangerouslySetInnerHTML={{ __html: previewHtml }}
-                      />
-                    </CardContent>
-                  </Card>
-                )}
+                {/* 预览（使用 iframe 隔离 CSS） */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm">
+                        {editMode === 'css' ? '样式预览' : '预览'}
+                      </CardTitle>
+                      <Badge variant="outline" className="text-xs">
+                        {editMode === 'front' ? '问题面' : editMode === 'back' ? '答案面' : '样式'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <iframe
+                      srcDoc={fullPreviewHtml}
+                      className="w-full min-h-32 border rounded-lg bg-white"
+                      sandbox="allow-scripts"
+                      title="模板预览"
+                    />
+                  </CardContent>
+                </Card>
               </div>
             </div>
           )}
